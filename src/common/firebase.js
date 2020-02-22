@@ -1,6 +1,7 @@
 import firebase from "firebase/app"
 import "firebase/auth"
 import "firebase/functions"
+import "firebase/storage"
 import { fetchStart, fetchSucceeded, fetchFailed } from "./actions"
 import { Globals } from "./models"
 
@@ -12,7 +13,8 @@ export const initializeFirebase = ({
   API_BASE_URL,
   FIREBASE_API_KEY,
   FIREBASE_AUTH_DOMAIN,
-  FIREBASE_PROJECT_ID
+  FIREBASE_PROJECT_ID,
+  FIREBASE_STORAGE_BUCKET
 }) => {
   if (firebase.apps.length) {
     return
@@ -20,15 +22,38 @@ export const initializeFirebase = ({
   firebase.initializeApp({
     apiKey: FIREBASE_API_KEY,
     authDomain: FIREBASE_AUTH_DOMAIN,
-    projectId: FIREBASE_PROJECT_ID
+    projectId: FIREBASE_PROJECT_ID,
+    storageBucket: FIREBASE_STORAGE_BUCKET
   })
-  console.log("うおお")
   if (ENVIRONMENT !== "production") {
-    console.log("devやぞ")
-    // ローカル環境の場合
     firebase.functions().useFunctionsEmulator(API_BASE_URL)
   }
   return firebase
+}
+
+export const onAuthStateChanged = (onSignedIn, onSignInFailed, onSignedOut) => {
+  firebase.auth().onAuthStateChanged(user => {
+    if (user) {
+      onSignedIn(user)
+    } else {
+      onSignedOut()
+      signIn(onSignedIn, onSignInFailed)
+    }
+  })
+}
+
+export const signIn = async (onSignedIn, onSignInFailed) => {
+  const provider = new firebase.auth.GoogleAuthProvider()
+  firebase
+    .auth()
+    .signInWithPopup(provider)
+    .then(result => {
+      onSignedIn(result)
+    })
+    .catch(error => {
+      console.error(error)
+      onSignInFailed()
+    })
 }
 
 /**
@@ -43,21 +68,19 @@ export const callFunction = async ({
   dispatch(fetchStart({ config: { name, data } }))
   try {
     let callable
-    if ((globals ? globals.env.ENVIRONMENT : Globals.env.ENVIRONMENT) !== "production") {
-      console.log("devやぞ２")
-      // ローカル環境の場合
+    if (
+      (globals ? globals.env.ENVIRONMENT : Globals.env.ENVIRONMENT) !==
+      "production"
+    ) {
       callable = firebase.functions().httpsCallable(name)
     } else {
-      console.log(
-        "region: ",
-        globals ? globals.env.FIREBASE_REGION : Globals.env.FIREBASE_REGION
-      )
       callable = firebase
         .app()
-        .functions(globals ? globals.env.FIREBASE_REGION : Globals.env.FIREBASE_REGION)
+        .functions(
+          globals ? globals.env.FIREBASE_REGION : Globals.env.FIREBASE_REGION
+        )
         .httpsCallable(name)
     }
-    console.log("callable: ", callable)
     const result = await callable(data)
     dispatch(fetchSucceeded({ config: { name, data } }))
     return result
@@ -65,4 +88,13 @@ export const callFunction = async ({
     dispatch(fetchFailed({ config: { name, data } }))
     throw error
   }
+}
+
+/**
+ * ファイルをアップロードする
+ */
+export const upload = async (file, name) => {
+  const storageRef = firebase.storage().ref()
+  const imageRef = storageRef.child(name)
+  return await imageRef.put(file)
 }

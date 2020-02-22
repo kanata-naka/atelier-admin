@@ -1,4 +1,5 @@
 import React from "react"
+import Link from "next/link"
 
 export default class extends React.Component {
   render() {
@@ -21,9 +22,11 @@ class GlobalNavItem extends React.Component {
     return (
       <li className={"global-nav-item" + (children ? " has-children" : "")}>
         {href ? (
-          <a className="global-nav-item__link" href={href}>
-            <p>{title}</p>
-          </a>
+          <Link href={href}>
+            <a className="global-nav-item__link">
+              <p>{title}</p>
+            </a>
+          </Link>
         ) : (
           <p>{title}</p>
         )}

@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from "react"
 import { Button, Badge } from "react-bootstrap"
+import { formatDateTimeFromUnixTimestamp } from "../../../utils/dateUtil"
 import { adjust } from "../../../utils/domUtils"
 import Grid from "../../../common/components/Grid"
 import Pagination from "../../../common/components/Pagination"
@@ -66,11 +67,11 @@ export default class extends React.Component {
                 <div className="dates">
                   <div className="date-row">
                     <Badge variant="secondary">投稿日時</Badge>
-                    <span className="date-value">{item.createdAt}</span>
+                    <span className="date-value">{formatDateTimeFromUnixTimestamp(item.createdAt)}</span>
                   </div>
                   <div className="date-row">
                     <Badge variant="secondary">更新日時</Badge>
-                    <span className="date-value">{item.updatedAt}</span>
+                    <span className="date-value">{formatDateTimeFromUnixTimestamp(item.updatedAt)}</span>
                   </div>
                 </div>
               )

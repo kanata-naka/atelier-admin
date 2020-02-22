@@ -1,7 +1,8 @@
 import { connect } from "react-redux"
 import { initialize } from "redux-form"
 import Router from "next/router"
-import { callFunction } from "../../../common/firebase"
+import uuidv4 from "uuid/v4"
+import { callFunction, upload } from "../../../common/firebase"
 import Notification from "../../../common/components/Notification"
 import { MODULE_NAME } from "../models"
 import { getItemById } from "../reducer"
@@ -14,33 +15,49 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   onSubmit: async values => {
-    const files = []
-    const images = values.images.map(_image => {
-      if (_image.newFile) {
-        files.push(_image.newFile)
-      }
-      return {
-        name: _image.name,
-        newFile: !!_image.newFile,
-        removed: _image.removed
-      }
-    })
+    const id = values.id || uuidv4()
+    let images
+    try {
+      images = await Promise.all(values.images.map(async _image => {
+        console.log(_image)
+        let name
+        if (_image.newFile) {
+          // 画像をアップロードする
+          const file = _image.newFile
+          name = `arts/${id}/images/${file.name}`
+          await upload(file, name)
+        } else {
+          name = _image.name
+        }
+        return {
+          name,
+          newFile: !!_image.newFile,
+          removed: _image.removed
+        }
+      }))
+    } catch (error) {
+      console.error(error)
+      Notification.error(
+        "作品のアップロードに失敗しました。\n" + JSON.stringify(error)
+      )
+      return
+    }
 
-    const formData = new FormData()
-    files.forEach(file => formData.append("files", file))
-    formData.append("title", values.title)
-    formData.append("tags[]", values.tags)
-    formData.append("description", values.description)
+    const data = {
+      id,
+      title: values.title,
+      tags: values.tags,
+      images,
+      description: values.description
+    }
 
     if (values.id) {
-      // 作品を更新する
-      formData.append("images", JSON.stringify(images))
+      // イラストの情報を更新する
       try {
         await callFunction({
           dispatch,
           name: "api-arts-update",
-          data: formData,
-          globals: {}
+          data
         })
         Router.push("/gallery")
         Notification.success("作品を編集しました。")
@@ -51,13 +68,14 @@ const mapDispatchToProps = dispatch => ({
         )
       }
     } else {
-      // 作品を登録する
+      // イラストの情報を登録する
       try {
         await callFunction({
           dispatch,
           name: "api-arts-create",
-          data: formData
+          data
         })
+        initialize(MODULE_NAME, {})
         Router.push("/gallery")
         Notification.success("作品を登録しました。")
       } catch (error) {

@@ -1,5 +1,5 @@
 import React from "react"
-import basePage from "../common/hocs/basePage"
+import defaultPage from "../common/hocs/defaultPage"
 import "../styles/index.scss"
 
 class Component extends React.Component {
@@ -8,4 +8,4 @@ class Component extends React.Component {
   }
 }
 
-export default basePage(Component, {})
+export default defaultPage(Component, {})

@@ -4,8 +4,6 @@ import Head from "next/head"
 import { initializeFirebase } from "../firebase"
 import { Globals } from "../models"
 import { initialize as initializeStore } from "../store"
-import GlobalNav from "../components/GlobalNav"
-import Notification from "../components/Notification"
 
 export default (Component, reducer) => {
   const BasePage = ({ state, isServer, globals, ...props }) => {
@@ -21,10 +19,7 @@ export default (Component, reducer) => {
               content="initial-scale=1.0, width=device-width"
             />
             <meta httpEquiv="x-ua-compatible" content="ie=edge" />
-            <link
-              rel="stylesheet"
-              href="/css/vendor/bootstrap.min.css"
-            />
+            <link rel="stylesheet" href="/css/vendor/bootstrap.min.css" />
             <link
               rel="stylesheet"
               href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
@@ -32,15 +27,7 @@ export default (Component, reducer) => {
               crossOrigin="anonymous"
             />
           </Head>
-          <Notification.Component />
-          <div className="page-wrapper">
-            <div className="sidebar">
-              <GlobalNav />
-            </div>
-            <div className="page-content">
-              <Component {...props} />
-            </div>
-          </div>
+          <Component {...props} />
         </div>
       </Provider>
     )

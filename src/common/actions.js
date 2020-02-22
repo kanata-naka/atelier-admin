@@ -1,9 +1,9 @@
 import { createAction } from "redux-actions"
 
 // ログインした
-export const loggedIn = createAction("loggedIn")
+export const signedIn = createAction("signedIn")
 // ログアウトした
-export const loggedOut = createAction("loggedOut")
+export const signedOut = createAction("signedOut")
 
 // APIの呼び出しを開始する
 export const fetchStart = createAction("api_" + "fetchStart")

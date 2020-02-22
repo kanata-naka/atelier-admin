@@ -1,18 +1,24 @@
 import { handleActions } from "redux-actions"
-import { loggedIn, loggedOut, fetchStart, fetchSucceeded, fetchFailed } from "./actions"
+import {
+  signedIn,
+  signedOut,
+  fetchStart,
+  fetchSucceeded,
+  fetchFailed
+} from "./actions"
 
 const initialState = {
-  user: {},
+  user: null,
   fetching: {}
 }
 
 export default handleActions(
   {
-    [loggedIn]: (state, action) => ({
+    [signedIn]: (state, action) => ({
       ...state,
       ...{ user: action.payload }
     }),
-    [loggedOut]: (state) => ({
+    [signedOut]: state => ({
       ...state,
       ...{ user: {} }
     }),

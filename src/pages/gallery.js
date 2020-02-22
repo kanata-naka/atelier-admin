@@ -1,7 +1,7 @@
 import React from "react"
 import Head from "next/head"
 import { callFunction } from "../common/firebase"
-import basePage from "../common/hocs/basePage"
+import defaultPage from "../common/hocs/defaultPage"
 import { list } from "../modules/gallery/actions"
 import { MODULE_NAME } from "../modules/gallery/models"
 import reducer from "../modules/gallery/reducer"
@@ -18,7 +18,7 @@ class Component extends React.Component {
     })
     dispatch(list(result.data))
     return {
-      items: result
+      items: result.data
     }
   }
 
@@ -38,6 +38,6 @@ class Component extends React.Component {
   }
 }
 
-export default basePage(Component, {
+export default defaultPage(Component, {
   [MODULE_NAME]: reducer
 })
