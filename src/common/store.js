@@ -1,13 +1,13 @@
 import { createStore, combineReducers } from "redux"
 import { reducer as formReducer } from "redux-form"
-import commonReducers from "./reducer"
+import commonReducers from "./reducers"
 
-export const initialize = (reducer, isServer, initialState) => {
+export const initialize = (reducers, isServer, initialState) => {
   const combinedReducers = combineReducers({
     common: commonReducers,
     // redux-formのreducerを追加する
     form: formReducer,
-    ...reducer
+    ...reducers
   })
   const store = createStore(combinedReducers, initialState)
   if (isServer && typeof window === "undefined") {

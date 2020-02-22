@@ -6,7 +6,7 @@ import { callFunction } from "../../../common/firebase"
 import Notification from "../../../common/components/Notification"
 import { select, movePage, edit } from "../actions"
 import { MODULE_NAME } from "../models"
-import { getItemsByPage } from "../reducer"
+import { getItemsByPage } from "../reducers"
 import GalleryGrid from "../components/GalleryGrid"
 
 const mapStateToProps = state => ({

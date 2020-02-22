@@ -4,7 +4,7 @@ import { callFunction } from "../common/firebase"
 import defaultPage from "../common/hocs/defaultPage"
 import { list } from "../modules/gallery/actions"
 import { MODULE_NAME } from "../modules/gallery/models"
-import reducer from "../modules/gallery/reducer"
+import reducers from "../modules/gallery/reducers"
 import GalleryGrid from "../modules/gallery/containers/GalleryGrid"
 import GalleryForm from "../modules/gallery/containers/GalleryForm"
 import "../styles/gallery.scss"
@@ -39,5 +39,5 @@ class Component extends React.Component {
 }
 
 export default defaultPage(Component, {
-  [MODULE_NAME]: reducer
+  [MODULE_NAME]: reducers
 })

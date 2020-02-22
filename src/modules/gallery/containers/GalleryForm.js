@@ -5,7 +5,7 @@ import uuidv4 from "uuid/v4"
 import { callFunction, upload } from "../../../common/firebase"
 import Notification from "../../../common/components/Notification"
 import { MODULE_NAME } from "../models"
-import { getItemById } from "../reducer"
+import { getItemById } from "../reducers"
 import GalleryForm from "../components/GalleryForm"
 
 const mapStateToProps = state => ({

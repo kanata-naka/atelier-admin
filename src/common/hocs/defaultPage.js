@@ -3,7 +3,7 @@ import withAuthentication from "./withAuthentication"
 import GlobalNav from "../components/GlobalNav"
 import Notification from "../components/Notification"
 
-export default (Component, reducer) => {
+export default (Component, reducers) => {
   const DefaultPage = withAuthentication(props => {
     return (
       <div>
@@ -20,5 +20,5 @@ export default (Component, reducer) => {
     )
   })
   DefaultPage.getInitialProps = Component.getInitialProps
-  return basePage(DefaultPage, reducer)
+  return basePage(DefaultPage, reducers)
 }
