@@ -1,0 +1,194 @@
+@import "mixins";
+@import "common";
+
+.gallery-form {
+  label {
+    font-weight: bold;
+    padding-right: 4px;
+  }
+
+  .error-message {
+    color: darkred;
+    padding-left: 8px;
+  }
+
+  .title-input {
+  }
+
+  .image-outer {
+    padding: 8px 0;
+  }
+
+  .image-container {
+    cursor: move;
+    display: inline-block;
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 0 8px 8px 0;
+    border: 1px dotted #ababab;
+    overflow: hidden;
+
+    &.removed {
+      cursor: pointer;
+      .image {
+        opacity: 0.2;
+      }
+    }
+  }
+
+  .image {
+    display: block;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 198px;
+  }
+
+  .image-file {
+    display: block;
+    margin: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+
+    .upload-icon {
+      color: lightgray;
+      display: block;
+      font-size: 64px;
+      margin: auto;
+      width: 64px;
+      height: 64px;
+      line-height: 64px;
+      text-align: center;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      position: absolute;
+    }
+  }
+
+  .image-file-input {
+    display: none;
+  }
+
+  .image-remove-button {
+    cursor: pointer;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+
+    i {
+      font-size: 1.2em;
+      color: darkred;
+    }
+  }
+
+  .tags-container {
+    cursor: text;
+    // extend from "".form-control" class
+    width: 100%;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+  }
+
+  .tags {
+    display: inline;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .tag {
+    cursor: pointer;
+    display: inline;
+    margin-right: 12px;
+    overflow: hidden;
+    padding: 2px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &:hover {
+      text-decoration: line-through;
+    }
+  }
+
+  .tag-input {
+    border: none;
+    flex-grow: 1;
+    outline: none;
+  }
+
+  .description-textarea {
+    height: 12em;
+    resize: vertical;
+  }
+}
+
+.gallery-grid {
+  .column-title {
+    min-width: 200px;
+  }
+
+  .column-images {
+    width: 250px;
+    text-align: center;
+    overflow-x: hidden;
+  }
+
+  .column-description {
+    min-width: 250px;
+  }
+
+  .column-date {
+    width: 200px;
+  }
+
+  .column-operation-area {
+    text-align: center;
+    width: 140px;
+  }
+
+  .image-container {
+    display: inline-block;
+    position: relative;
+    border: 1px solid #dedede;
+    width: 100px;
+    height: 100px;
+    padding: 4px;
+    overflow: hidden;
+  }
+
+  .image {
+    display: block;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 98px;
+  }
+
+  .date-row {
+    padding-bottom: 8px;
+  }
+
+  .date-value {
+    padding-left: 4px;
+  }
+}

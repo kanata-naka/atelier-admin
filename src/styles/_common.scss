@@ -1,0 +1,108 @@
+@import url("https://fonts.googleapis.com/css?family=Montserrat&display=swap");
+@import url("https://fonts.googleapis.com/earlyaccess/roundedmplus1c.css");
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Montserrat", "Rounded Mplus 1c", sans-serif;
+  font-size: 14px;
+  line-height: 1.2em;
+}
+
+.page-wrapper {
+  position: relative;
+}
+
+.sidebar {
+  background-color: black;
+  bottom: 0;
+  color: white;
+  left: 0;
+  padding: 12px;
+  position: fixed;
+  top: 0;
+  width: 240px;
+  z-index: 1;
+}
+
+.page-content {
+  left: 0;
+  margin-left: 240px;
+  padding: 12px;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.global-nav {
+  list-style-type: none;
+  padding-left: 0;
+
+  &-item {
+    p {
+      border-left: solid 2px white;
+      padding: 18px;
+    }
+
+    &.active p {
+      background-color: white;
+      color: black;
+    }
+
+    .global-nav {
+      padding-left: 24px;
+    }
+
+    &__link {
+      color: white;
+      display: block;
+      font-weight: bold;
+      text-decoration: none;
+
+      &:hover {
+        background-color: white;
+        color: black;
+      }
+    }
+  }
+}
+
+.page-heading {
+  color: #2222aa;
+  font-size: 2em;
+  margin: 18px 0;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid #eeeeee;
+  margin: 20px 0;
+}
+
+table {
+  tr.editing {
+    background-color: cornsilk !important;
+  }
+
+  td {
+    vertical-align: middle !important;
+    overflow-y: hidden;
+  }
+
+  .column-checks {
+    width: 32px;
+  }
+}
+
+.operation-area {
+  margin: 24px 12px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin: 0 auto;
+  padding: 0;
+}
