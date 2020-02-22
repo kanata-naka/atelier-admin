@@ -57,7 +57,7 @@ const mapDispatchToProps = dispatch => ({
               await callFunction({
                 dispatch,
                 name: "api-arts-deleteById",
-                globals: {}
+                data: { id: entry[0] }
               })
             }
           })

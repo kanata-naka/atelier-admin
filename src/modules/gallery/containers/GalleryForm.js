@@ -52,7 +52,7 @@ const mapDispatchToProps = dispatch => ({
     }
 
     if (values.id) {
-      // イラストの情報を更新する
+      // イラストを更新する
       try {
         await callFunction({
           dispatch,
@@ -68,7 +68,7 @@ const mapDispatchToProps = dispatch => ({
         )
       }
     } else {
-      // イラストの情報を登録する
+      // イラストを登録する
       try {
         await callFunction({
           dispatch,
