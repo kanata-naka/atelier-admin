@@ -1,64 +1,50 @@
-import React from "react"
-import { Form, Badge } from "react-bootstrap"
+import { Form } from "react-bootstrap"
+import { RequiredLabel } from "./elements"
 
-export class InputField extends React.Component {
-  render() {
-    const {
-      input,
-      type,
-      label,
-      required,
-      placeholder,
-      className,
-      meta: { touched, error }
-    } = this.props
-    return (
-      <Form.Group controlId={input.name}>
-        <Form.Label>{label}</Form.Label>
-        {required && (
-          <Badge pill variant="danger">
-            必須
-          </Badge>
-        )}
-        {touched && error && <span className="error-message">{error}</span>}
-        <Form.Control
-          type={type}
-          className={className}
-          placeholder={placeholder}
-          {...input}
-        />
-      </Form.Group>
-    )
-  }
+export const InputField = ({
+  input,
+  type,
+  label,
+  required,
+  placeholder,
+  className,
+  meta: { touched, error }
+}) => {
+  return (
+    <Form.Group controlId={input.name}>
+      <Form.Label>{label}</Form.Label>
+      {required && <RequiredLabel />}
+      {touched && error && <span className="error-message">{error}</span>}
+      <Form.Control
+        type={type}
+        className={className}
+        placeholder={placeholder}
+        {...input}
+      />
+    </Form.Group>
+  )
 }
 
-export class TextareaField extends React.Component {
-  render() {
-    const {
-      input,
-      label,
-      required,
-      placeholder,
-      className,
-      meta: { touched, error }
-    } = this.props
-    return (
-      <Form.Group controlId={input.name}>
-        <Form.Label>{label}</Form.Label>
-        {required && (
-          <Badge pill variant="danger">
-            必須
-          </Badge>
-        )}
-        {touched && error && <span className="error-message">{error}</span>}
-        <Form.Control
-          as="textarea"
-          className={className}
-          placeholder={placeholder}
-          {...input}>
-          {input.value}
-        </Form.Control>
-      </Form.Group>
-    )
-  }
+export const TextareaField = ({
+  input,
+  label,
+  required,
+  placeholder,
+  className,
+  meta: { touched, error }
+}) => {
+  return (
+    <Form.Group controlId={input.name}>
+      <Form.Label>{label}</Form.Label>
+      {required && <RequiredLabel />}
+      {touched && error && <span className="error-message">{error}</span>}
+      <Form.Control
+        as="textarea"
+        className={className}
+        placeholder={placeholder}
+        {...input}>
+        {input.value}
+      </Form.Control>
+    </Form.Group>
+  )
 }

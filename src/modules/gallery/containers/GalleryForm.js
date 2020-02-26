@@ -18,23 +18,25 @@ const mapDispatchToProps = dispatch => ({
     const id = values.id || uuidv4()
     let images
     try {
-      images = await Promise.all(values.images.map(async _image => {
-        console.log(_image)
-        let name
-        if (_image.newFile) {
-          // 画像をアップロードする
-          const file = _image.newFile
-          name = `arts/${id}/images/${file.name}`
-          await upload(file, name)
-        } else {
-          name = _image.name
-        }
-        return {
-          name,
-          newFile: !!_image.newFile,
-          removed: _image.removed
-        }
-      }))
+      images = await Promise.all(
+        values.images.map(async _image => {
+          console.log(_image)
+          let name
+          if (_image.newFile) {
+            // 画像をアップロードする
+            const file = _image.newFile
+            name = `arts/${id}/images/${file.name}`
+            await upload(file, name)
+          } else {
+            name = _image.name
+          }
+          return {
+            name,
+            newFile: !!_image.newFile,
+            removed: _image.removed
+          }
+        })
+      )
     } catch (error) {
       console.error(error)
       Notification.error(
@@ -75,8 +77,8 @@ const mapDispatchToProps = dispatch => ({
           name: "api-arts-create",
           data
         })
-        initialize(MODULE_NAME, {})
         Router.push("/gallery")
+        initialize(MODULE_NAME, {})
         Notification.success("作品を登録しました。")
       } catch (error) {
         console.error(error)

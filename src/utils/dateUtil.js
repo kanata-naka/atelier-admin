@@ -1,6 +1,6 @@
 import moment from "moment"
 
-const DEFAULT_DATE_TIME_FORMAT = "YYYY/MM/DD HH:mm:ss"
+const DEFAULT_DATE_TIME_FORMAT = "YYYY/MM/DD HH:mm"
 
 export const formatDateTimeFromUnixTimestamp = (
   unixTimestamp,

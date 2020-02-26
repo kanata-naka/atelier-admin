@@ -5,107 +5,110 @@ import { adjust } from "../../../utils/domUtils"
 import Grid from "../../../common/components/Grid"
 import Pagination from "../../../common/components/Pagination"
 
-export default class extends React.Component {
-  render() {
-    const {
-      items,
-      selectedByItemId,
-      pagination,
-      movePage,
-      select,
-      onEdit,
-      onCancelEdit,
-      onDeleteSelected,
-      dirty
-    } = this.props
-    return (
-      <div>
-        <div className="operation-area">
-          <Button
-            variant="danger"
-            type="button"
-            disabled={!Object.keys(selectedByItemId).length}
-            onClick={() => onDeleteSelected(selectedByItemId)}>
-            {"チェックした作品を削除"}
-          </Button>
-        </div>
-        <Grid
-          items={items}
-          selectedByItemId={selectedByItemId}
-          onSelect={select}
-          className="gallery-grid"
-          striped
-          columns={[
-            {
-              title: "タイトル",
-              className: "column-title",
-              render: item => (
-                <span className="title__fixed-label">{item.title}</span>
-              )
-            },
-            {
-              title: "画像",
-              className: "column-images",
-              render: item => {
-                return item.images.map((image, imageIndex) => (
-                  <ThumnailImage key={imageIndex} image={image} />
-                ))
-              }
-            },
-            {
-              title: "説明",
-              className: "column-description",
-              render: item => (
-                <span className="description__fixed-label">
-                  {item.description}
-                </span>
-              )
-            },
-            {
-              className: "column-date",
-              render: item => (
-                <div className="dates">
-                  <div className="date-row">
-                    <Badge variant="secondary">投稿日時</Badge>
-                    <span className="date-value">{formatDateTimeFromUnixTimestamp(item.createdAt)}</span>
-                  </div>
-                  <div className="date-row">
-                    <Badge variant="secondary">更新日時</Badge>
-                    <span className="date-value">{formatDateTimeFromUnixTimestamp(item.updatedAt)}</span>
-                  </div>
-                </div>
-              )
-            },
-            {
-              className: "column-operation-area",
-              render: item => {
-                return item.editing ? (
-                  <Button
-                    variant="outline-danger"
-                    type="button"
-                    onClick={() => onCancelEdit(dirty)}>
-                    {"キャンセル"}
-                  </Button>
-                ) : (
-                  <Button
-                    variant="outline-warning"
-                    type="button"
-                    onClick={() => onEdit(item.id, dirty)}>
-                    {"編集"}
-                  </Button>
-                )
-              }
+export default props => {
+  const {
+    items,
+    selectedByItemId,
+    pagination,
+    movePage,
+    select,
+    onEdit,
+    onCancelEdit,
+    dirty
+  } = props
+  return (
+    <div>
+      <GalleryControl {...props} />
+      <Grid
+        items={items}
+        selectedByItemId={selectedByItemId}
+        onSelect={select}
+        className="gallery-grid"
+        striped
+        columns={[
+          {
+            title: "タイトル",
+            className: "column-title",
+            render: item => (
+              <span className="title__fixed-label">{item.title}</span>
+            )
+          },
+          {
+            title: "画像",
+            className: "column-images",
+            render: item => {
+              return item.images.map((image, imageIndex) => (
+                <ThumnailImage key={imageIndex} image={image} />
+              ))
             }
-          ]}
-        />
-        <Pagination
-          pagination={pagination}
-          items={items}
-          onMovePage={movePage}
-        />
-      </div>
-    )
-  }
+          },
+          {
+            title: "説明",
+            className: "column-description",
+            render: item => (
+              <span className="description__fixed-label">
+                {item.description}
+              </span>
+            )
+          },
+          {
+            className: "column-date",
+            render: item => (
+              <div className="dates">
+                <div className="date-row">
+                  <Badge variant="secondary">投稿日時</Badge>
+                  <span className="date-value">
+                    {formatDateTimeFromUnixTimestamp(item.createdAt)}
+                  </span>
+                </div>
+                <div className="date-row">
+                  <Badge variant="secondary">更新日時</Badge>
+                  <span className="date-value">
+                    {formatDateTimeFromUnixTimestamp(item.updatedAt)}
+                  </span>
+                </div>
+              </div>
+            )
+          },
+          {
+            className: "column-controls",
+            render: item => {
+              return item.editing ? (
+                <Button
+                  variant="outline-danger"
+                  type="button"
+                  onClick={() => onCancelEdit(dirty)}>
+                  {"キャンセル"}
+                </Button>
+              ) : (
+                <Button
+                  variant="outline-warning"
+                  type="button"
+                  onClick={() => onEdit(item.id, dirty)}>
+                  {"編集"}
+                </Button>
+              )
+            }
+          }
+        ]}
+      />
+      <Pagination pagination={pagination} items={items} onMovePage={movePage} />
+    </div>
+  )
+}
+
+const GalleryControl = ({ selectedByItemId, onDeleteSelected }) => {
+  return (
+    <div className="controls">
+      <Button
+        variant="danger"
+        type="button"
+        disabled={!Object.keys(selectedByItemId).length}
+        onClick={() => onDeleteSelected(selectedByItemId)}>
+        {"チェックした作品を削除"}
+      </Button>
+    </div>
+  )
 }
 
 /**

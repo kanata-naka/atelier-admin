@@ -150,19 +150,6 @@
     overflow-x: hidden;
   }
 
-  .column-description {
-    min-width: 250px;
-  }
-
-  .column-date {
-    width: 200px;
-  }
-
-  .column-operation-area {
-    text-align: center;
-    width: 140px;
-  }
-
   .image-container {
     display: inline-block;
     position: relative;
@@ -184,11 +171,24 @@
     width: 98px;
   }
 
+  .column-description {
+    min-width: 250px;
+  }
+
+  .column-date {
+    width: 200px;
+  }
+
   .date-row {
     padding-bottom: 8px;
   }
 
   .date-value {
     padding-left: 4px;
+  }
+
+  .column-controls {
+    text-align: center;
+    width: 140px;
   }
 }

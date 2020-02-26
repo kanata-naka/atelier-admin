@@ -1,6 +1,6 @@
 import basePage from "./basePage"
 import withAuthentication from "./withAuthentication"
-import GlobalNav from "../components/GlobalNav"
+import Sidebar from "../components/Sidebar"
 import Notification from "../components/Notification"
 
 export default (Component, reducers) => {
@@ -9,9 +9,7 @@ export default (Component, reducers) => {
       <div>
         <Notification.Component />
         <div className="page-wrapper">
-          <div className="sidebar">
-            <GlobalNav />
-          </div>
+          <Sidebar />
           <div className="page-content">
             <Component {...props} />
           </div>

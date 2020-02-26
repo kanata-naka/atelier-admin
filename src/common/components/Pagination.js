@@ -36,7 +36,7 @@ export default class extends React.Component {
   /**
    * 各ページのボタンを描画する
    */
-  renderItems() {
+  renderPageNumberButtons() {
     const pages = []
     for (let pageNumber = 1; pageNumber <= this.lastPageNumber; pageNumber++) {
       pages.push(
@@ -59,7 +59,7 @@ export default class extends React.Component {
             onClick={() => this.movePage(this.currentPageNumber - 1)}
             disabled={this.currentPageNumber === 1}
           />
-          {this.renderItems()}
+          {this.renderPageNumberButtons()}
           <Pagination.Next
             onClick={() => this.movePage(this.currentPageNumber + 1)}
             disabled={this.currentPageNumber === this.lastPageNumber}

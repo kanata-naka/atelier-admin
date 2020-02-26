@@ -1,67 +1,71 @@
-import React, { useRef, useEffect, useCallback } from "react"
-import { Form, Badge, ButtonGroup, Button } from "react-bootstrap"
+import React, { useState, useRef, useEffect, useCallback } from "react"
+import { Form, ButtonGroup, Button } from "react-bootstrap"
 import { DndProvider, useDrag, useDrop } from "react-dnd-cjs"
 import HTML5Backend from "react-dnd-html5-backend-cjs"
 import { reduxForm, Field, FieldArray, Fields } from "redux-form"
 import { adjust } from "../../../utils/domUtils"
+import { RequiredLabel } from "../../../common/components/elements"
 import { InputField, TextareaField } from "../../../common/components/fields"
 import { MODULE_NAME } from "../models"
 
-class GalleryForm extends React.Component {
-  componentDidUpdate(prevProps) {
-    if (prevProps.initialValues.id !== this.props.initialValues.id) {
-      // 現在の作品の編集がキャンセルされた、または別の作品が編集中になった場合
-      this.props.initialize(this.props.initialValues)
-    }
-  }
+const GalleryForm = props => {
+  const {
+    initialValues,
+    initialize,
+    handleSubmit,
+    dirty,
+    submitting,
+    reset,
+    change
+  } = props
 
-  render() {
-    const { handleSubmit, dirty, submitting, reset, change } = this.props
-    return (
-      <Form onSubmit={handleSubmit} className="gallery-form">
-        <Field
-          name="title"
-          component={InputField}
-          type="text"
-          label="タイトル"
-          className="title-input"
-          required
-        />
-        <FieldArray name="images" component={ImagesField} change={change} />
-        <FieldArray name="tags" component={TagsField} />
-        <Field
-          name="description"
-          component={TextareaField}
-          label="説明"
-          className="description-textarea"
-        />
-        <ButtonGroup>
-          <Button
-            variant="primary"
-            type="submit"
-            disabled={!dirty || submitting}>
-            {"送信"}
-          </Button>
-          <Button
-            variant="secondary"
-            type="button"
-            disabled={!dirty || submitting}
-            onClick={reset}>
-            {"リセット"}
-          </Button>
-        </ButtonGroup>
-      </Form>
-    )
-  }
+  useEffect(() => {
+    // 現在の作品の編集がキャンセルされた、または別の作品が編集中になった場合
+    initialize(initialValues)
+  }, [initialValues.id])
+
+  return (
+    <Form onSubmit={handleSubmit} className="gallery-form">
+      <Field
+        name="title"
+        component={InputField}
+        type="text"
+        label="タイトル"
+        className="title-input"
+        required
+      />
+      <FieldArray name="images" component={ImagesField} change={change} />
+      <FieldArray name="tags" component={TagsField} />
+      <Field
+        name="description"
+        component={TextareaField}
+        label="説明"
+        className="description-textarea"
+      />
+      <ButtonGroup>
+        <Button variant="primary" type="submit" disabled={!dirty || submitting}>
+          {"送信"}
+        </Button>
+        <Button
+          variant="secondary"
+          type="button"
+          disabled={!dirty || submitting}
+          onClick={reset}>
+          {"リセット"}
+        </Button>
+      </ButtonGroup>
+    </Form>
+  )
 }
 
-class ImagesField extends React.Component {
-  /**
-   * 新しい画像をアップロードする
-   * @param e イベントオブジェクト
-   */
-  uploadNewImage(e) {
-    const { fields } = this.props
+const ImagesField = props => {
+  const {
+    fields,
+    change,
+    meta: { error }
+  } = props
+
+  const handleSelect = useCallback(e => {
     e.preventDefault()
     const file = e.target.files[0]
     fields.push({
@@ -72,65 +76,52 @@ class ImagesField extends React.Component {
     console.log("Image uploaded:", file.name)
     // 同じファイルをアップロードしてもonChangeイベントを走らせるためvalueを空にする
     e.target.value = ""
-  }
+  })
 
-  render() {
-    const {
-      fields,
-      change,
-      meta: { error }
-    } = this.props
-    return (
-      <div className="image-outer">
-        <label>{"画像"}</label>
-        <Badge pill variant="danger">
-          必須
-        </Badge>
-        {error && <span className="error-message">{error}</span>}
-        <div className="image-list">
-          <DndProvider backend={HTML5Backend}>
-            <ImageFields fields={fields} change={change} />
-          </DndProvider>
-          <div className="image-container">
-            <label className="image-file" htmlFor="image">
-              <i className="fas fa-file-upload upload-icon"></i>
-              <input
-                className="image-file-input"
-                type="file"
-                id="image"
-                accept=".gif, .jpg, .jpeg, .png"
-                onChange={e => this.uploadNewImage(e)}
-              />
-            </label>
-          </div>
+  return (
+    <div className="image-outer">
+      <label>{"画像"}</label>
+      <RequiredLabel />
+      {error && <span className="error-message">{error}</span>}
+      <div className="image-list">
+        <DndProvider backend={HTML5Backend}>
+          <ImageFields fields={fields} change={change} />
+        </DndProvider>
+        <div className="image-container">
+          <label className="image-file" htmlFor="image">
+            <i className="fas fa-file-upload upload-icon"></i>
+            <input
+              className="image-file-input"
+              type="file"
+              id="image"
+              accept=".gif, .jpg, .jpeg, .png"
+              onChange={handleSelect}
+            />
+          </label>
         </div>
       </div>
-    )
-  }
+    </div>
+  )
 }
 
-class ImageFields extends React.Component {
-  render() {
-    const { fields, change } = this.props
-
-    return fields.map((field, index) => {
-      return (
-        <Fields
-          key={field}
-          names={[
-            `${field}.name`,
-            `${field}.url`,
-            `${field}.newFile`,
-            `${field}.removed`
-          ]}
-          index={index}
-          component={ImageField}
-          change={change}
-          fields={fields}
-        />
-      )
-    })
-  }
+const ImageFields = ({ fields, change }) => {
+  return fields.map((field, index) => {
+    return (
+      <Fields
+        key={field}
+        names={[
+          `${field}.name`,
+          `${field}.url`,
+          `${field}.newFile`,
+          `${field}.removed`
+        ]}
+        index={index}
+        component={ImageField}
+        change={change}
+        fields={fields}
+      />
+    )
+  })
 }
 
 const ImageField = props => {
@@ -204,89 +195,73 @@ const ImageField = props => {
   )
 }
 
-class TagsField extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      beforeKeyCode: null
-    }
-    this.inputRef = React.createRef()
-  }
+const TagsField = props => {
+  const {
+    fields,
+    meta: { error }
+  } = props
+  const [beforeKeyCode, setBeforeKeyCode] = useState(null)
+  const inputRef = useRef(null)
 
-  /**
-   * タグを削除する
-   * @param index インデックス
-   */
-  removeTag(index) {
-    const { fields } = this.props
+  const handleTagClick = useCallback(index => {
     fields.remove(index)
-  }
+  })
 
-  onKeyUp(e) {
-    const { beforeKeyCode } = this.state
-    // ※for Chrome
-    if (
-      (beforeKeyCode !== 229 && e.keyCode === 32) ||
-      (beforeKeyCode === 229 && e.keyCode === 229) ||
-      e.keyCode === 13
-    ) {
-      // スペースキーorエンターキーが(日本語入力の場合は確定後に)押下された場合、タグを追加する
-      this.addTag(e.target)
-    }
-    this.setState({
-      beforeKeyCode: e.keyCode
-    })
-  }
-
-  addTag(input) {
-    const { fields } = this.props
-    let value = input.value.trim()
+  const handleConfirm = useCallback(() => {
+    let value = inputRef.current.value.trim()
     if (value === "") {
       return
     }
     fields.push(value)
     // 現在の入力内容を削除する
-    input.value = ""
-  }
+    inputRef.current.value = ""
+  })
 
-  render() {
-    const {
-      fields,
-      meta: { error }
-    } = this.props
-    return (
-      <Form.Group controlId={"tags"}>
-        <Form.Label>{"タグ"}</Form.Label>
-        {error && <span className="error-message">{error}</span>}
-        <div
-          className="tags-container"
-          onClick={() => this.inputRef.current.focus()}>
-          <ul className="tags">
-            {fields.map((field, index) => {
-              return (
-                <li
-                  key={field}
-                  className="tag"
-                  onClick={() => this.removeTag(index)}>
-                  {fields.get(index)}
-                </li>
-              )
-            })}
-          </ul>
-          <input
-            className="tag-input"
-            type="text"
-            id="tag"
-            placeholder="タグ"
-            autoComplete="off"
-            ref={this.inputRef}
-            onKeyUp={e => this.onKeyUp(e)}
-            onBlur={e => this.addTag(e.target)}
-          />
-        </div>
-      </Form.Group>
-    )
-  }
+  const handleKeyUp = useCallback(
+    e => {
+      if (
+        (beforeKeyCode !== 229 && e.keyCode === 32) ||
+        (beforeKeyCode === 229 && e.keyCode === 229) ||
+        e.keyCode === 13
+      ) {
+        // スペースキーorエンターキーが(日本語入力の場合は確定後に)押下された場合、タグを追加する
+        handleConfirm()
+      }
+      setBeforeKeyCode(e.keyCode)
+    },
+    [beforeKeyCode]
+  )
+
+  return (
+    <Form.Group controlId={"tags"}>
+      <Form.Label>{"タグ"}</Form.Label>
+      {error && <span className="error-message">{error}</span>}
+      <div className="tags-container" onClick={() => inputRef.current.focus()}>
+        <ul className="tags">
+          {fields.map((field, index) => {
+            return (
+              <li
+                key={field}
+                className="tag"
+                onClick={() => handleTagClick(index)}>
+                {fields.get(index)}
+              </li>
+            )
+          })}
+        </ul>
+        <input
+          className="tag-input"
+          type="text"
+          id="tag"
+          placeholder="タグ"
+          autoComplete="off"
+          ref={inputRef}
+          onKeyUp={handleKeyUp}
+          onBlur={handleConfirm}
+        />
+      </div>
+    </Form.Group>
+  )
 }
 
 const validate = values => {
