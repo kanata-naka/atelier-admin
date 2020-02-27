@@ -1,0 +1,232 @@
+@import "mixins";
+@import "common";
+
+.top-image-upload-form {
+
+  label {
+    font-weight: bold;
+    padding-right: 4px;
+  }
+
+  .error-message {
+    color: darkred;
+    padding-left: 8px;
+  }
+
+  .image-outer {
+    padding: 8px 0;
+  }
+
+  .image-container, .thumbnail-image-container {
+    position: relative;
+    margin: 0 8px 8px 0;
+    border: 1px dotted #ababab;
+    overflow: hidden;
+  }
+
+  .image-container {
+    width: 400px;
+    height: 225px;
+  }
+
+  .thumbnail-image-container {
+    width: 64px;
+    height: 64px;
+  }
+
+  .image-file, .thumbnail-image-file {
+    display: block;
+    margin: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+
+    .upload-icon {
+      color: lightgray;
+      display: block;
+      margin: auto;
+      text-align: center;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      position: absolute;
+    }
+  }
+
+  .image {
+    display: block;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 100%;
+  }
+
+  .image-file .upload-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    line-height: 64px;
+  }
+
+  .thumbnail-image-file .upload-icon {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+  }
+
+  .image-file-input {
+    display: none;
+  }
+
+  .description-textarea {
+    height: 12em;
+    resize: vertical;
+  }
+}
+
+.top-image-controls {
+
+  .delete-button {
+    margin-right: 8px;
+  }
+}
+
+.top-image-grid {
+
+  .image-container, .thumbnail-image-container {
+    display: inline-block;
+    position: relative;
+    border: 1px solid #dedede;
+    padding: 4px;
+    overflow: hidden;
+  }
+
+  .image, .thumbnail-image {
+    display: block;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 100%;
+  }
+
+  .image-file, .thumbnail-image-file {
+    display: block;
+    margin: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+
+    .upload-icon {
+      color: lightgray;
+      display: block;
+      margin: auto;
+      text-align: center;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      position: absolute;
+    }
+  }
+
+  .image-container {
+    width: 200px;
+    height: 113px;
+  }
+
+  .column-image {
+    width: 200px;
+    text-align: center;
+    overflow-x: hidden;
+  }
+
+  .image-file .upload-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    line-height: 48px;
+  }
+
+  .image-file-input {
+    display: none;
+  }
+
+  .image-remove-button {
+    cursor: pointer;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+
+    i {
+      font-size: 1.2em;
+      color: darkred;
+    }
+  }
+
+  .thumbnail-image-container {
+    width: 32px;
+    height: 32px;
+  }
+
+  .column-thumbnail-image {
+    width: 150px;
+    text-align: center;
+    overflow-x: hidden;
+  }
+
+  .thumbnail-image-file .upload-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+  }
+
+  .thumbnail-image-remove-button {
+    cursor: pointer;
+    position: absolute;
+    top: 0px;
+    right: 4px;
+
+    i {
+      font-size: 1em;
+      color: darkred;
+    }
+  }
+
+  .column-description {
+    min-width: 250px;
+  }
+
+  .description-textarea {
+    height: 82px;
+  }
+
+  .column-date {
+    width: 200px;
+  }
+
+  .date-row {
+    padding-bottom: 8px;
+  }
+
+  .date-value {
+    padding-left: 4px;
+  }
+
+  .column-controls {
+    text-align: center;
+    width: 140px;
+  }
+}

@@ -78,7 +78,6 @@ const mapDispatchToProps = dispatch => ({
           data
         })
         Router.push("/gallery")
-        initialize(MODULE_NAME, {})
         Notification.success("作品を登録しました。")
       } catch (error) {
         console.error(error)
@@ -88,7 +87,7 @@ const mapDispatchToProps = dispatch => ({
       }
     }
   },
-  initialize: values => initialize(MODULE_NAME, values)
+  initialize: () => initialize(MODULE_NAME, {})
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(GalleryForm)

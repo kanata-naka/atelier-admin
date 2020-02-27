@@ -1,5 +1,6 @@
 import { handleActions } from "redux-actions"
 import { createSelector } from "reselect"
+import { initializePagination } from "../../common/models"
 import { list, movePage, select, edit } from "./actions"
 import { PER_PAGE } from "./models"
 
@@ -46,17 +47,6 @@ const handlers = {
 }
 
 export default handleActions(handlers, initialState)
-
-/**
- * ページネーションを初期化する
- */
-const initializePagination = (items, perPage) => {
-  return {
-    offset: 0,
-    perPage: perPage,
-    size: items.length
-  }
-}
 
 /**
  * 作品の編集状態を更新する

@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from "react"
 import { Table } from "react-bootstrap"
 
 export default props => {
-  const { items, selectedByItemId, onSelect } = props
+  const { className, items, selectedByItemId, onSelect } = props
   const [checkedAll, setCheckedAll] = useState(false)
 
   useEffect(() => {
@@ -45,7 +45,7 @@ export default props => {
   })
 
   return (
-    <Table {...props}>
+    <Table className={className}>
       <HeaderRow
         checkedAll={checkedAll}
         handleCheckAll={handleCheckAll}
@@ -54,6 +54,7 @@ export default props => {
       <tbody>
         {items.map((item, itemIndex) => (
           <ItemRow
+            key={itemIndex}
             item={item}
             index={itemIndex}
             handleCheck={handleCheck}
@@ -98,7 +99,7 @@ const ItemRow = ({
   handleCheck
 }) => {
   return (
-    <tr key={index} className={item.editing ? "editing" : ""}>
+    <tr className={item.editing ? "editing" : ""}>
       {// 選択したときの処理が設定されている場合のみ左端にチェックボックスを表示する
       onSelect && (
         <td className="column-checks">
