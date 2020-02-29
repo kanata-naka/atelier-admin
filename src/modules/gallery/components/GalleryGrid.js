@@ -38,7 +38,7 @@ export default props => {
             className: "column-images",
             render: item => {
               return item.images.map((image, imageIndex) => (
-                <ThumnailImage key={imageIndex} image={image} />
+                <Image key={imageIndex} image={image} />
               ))
             }
           },
@@ -111,10 +111,7 @@ const GalleryControl = ({ selectedByItemId, onDeleteSelected }) => {
   )
 }
 
-/**
- * サムネイル画像
- */
-const ThumnailImage = props => {
+const Image = props => {
   const { image } = props
   const containerRef = useRef(null)
 
