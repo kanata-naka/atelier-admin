@@ -25,11 +25,13 @@ const GalleryForm = props => {
   }, [initialValues.id])
 
   return (
-    <Form onSubmit={async e => {
+    <Form
+      onSubmit={async e => {
         await handleSubmit(e)
         // フォームを初期化する
         initialize()
-      }} className="gallery-form">
+      }}
+      className="gallery-form">
       <Field
         name="title"
         component={InputField}

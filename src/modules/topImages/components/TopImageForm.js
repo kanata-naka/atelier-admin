@@ -9,11 +9,13 @@ import { MODULE_NAME } from "../models"
 const TopImageForm = props => {
   const { handleSubmit, initialize, dirty, submitting, reset, change } = props
   return (
-    <Form onSubmit={async e => {
+    <Form
+      onSubmit={async e => {
         await handleSubmit(e)
         // フォームを初期化する
         initialize()
-      }} className="top-image-upload-form">
+      }}
+      className="top-image-upload-form">
       <Fields
         names={[`image.url`, `image.file`]}
         component={ImageField}
@@ -31,10 +33,7 @@ const TopImageForm = props => {
         className="description-textarea"
       />
       <ButtonGroup>
-        <Button
-          variant="primary"
-          type="submit"
-          disabled={!dirty || submitting}>
+        <Button variant="primary" type="submit" disabled={!dirty || submitting}>
           {"送信"}
         </Button>
         <Button
