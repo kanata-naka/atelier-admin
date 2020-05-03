@@ -106,7 +106,7 @@ const mapDispatchToProps = dispatch => ({
         )
       }
     }
-  },
+  }
   // initialize: () => initialize(MODULE_NAME, {})
 })
 

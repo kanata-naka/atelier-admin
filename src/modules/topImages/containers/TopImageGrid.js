@@ -43,7 +43,7 @@ const mapDispatchToProps = dispatch => ({
     dispatch(cancelEdit())
   },
   onSubmit: async values => {
-    let data = (await Promise.all(
+    let data = await Promise.all(
       values.topImages.map(async (topImage, index) => {
         let imageName = topImage.image.name
         if (topImage.image.newFile) {
@@ -54,7 +54,8 @@ const mapDispatchToProps = dispatch => ({
           } catch (error) {
             console.log(error)
             Notification.error(
-              `画像 [${imageName}] の削除に失敗しました。\n` + JSON.stringify(error)
+              `画像 [${imageName}] の削除に失敗しました。\n` +
+                JSON.stringify(error)
             )
             hasError = true
           }
@@ -64,7 +65,7 @@ const mapDispatchToProps = dispatch => ({
             try {
               // 画像をアップロードする
               // await saveFile(file, imageName)
-            } catch (error){
+            } catch (error) {
               console.log(error)
               Notification.error(
                 `画像 [${imageName}] のアップロードに失敗しました。\n` +
@@ -83,7 +84,8 @@ const mapDispatchToProps = dispatch => ({
           } catch (error) {
             console.log(error)
             Notification.error(
-              `画像 [${thumbnailImageName}] の削除に失敗しました。\n` + JSON.stringify(error)
+              `画像 [${thumbnailImageName}] の削除に失敗しました。\n` +
+                JSON.stringify(error)
             )
             hasError = true
           }
@@ -93,7 +95,7 @@ const mapDispatchToProps = dispatch => ({
             try {
               // サムネイル画像をアップロードする
               // await upload(file, thumbnailImageName)
-            } catch (error){
+            } catch (error) {
               console.log(error)
               Notification.error(
                 `画像 [${thumbnailImageName}] のアップロードに失敗しました。\n` +
@@ -115,7 +117,7 @@ const mapDispatchToProps = dispatch => ({
           order: index
         }
       })
-    ))
+    )
     // トップ画像を（一括で）更新する
     try {
       console.log(data)
