@@ -2,10 +2,11 @@ import { connect } from "react-redux"
 import { initialize } from "redux-form"
 import Router from "next/router"
 import uuidv4 from "uuid/v4"
-import { callFunction, upload } from "../../../common/firebase"
+import { callFunction, saveFile, deleteFile } from "../../../common/firebase"
+import { Globals } from "../../../common/models"
+import { getItemById } from "../../../common/selectors"
 import Notification from "../../../common/components/Notification"
 import { MODULE_NAME } from "../models"
-import { getItemById } from "../reducers"
 import GalleryForm from "../components/GalleryForm"
 
 const mapStateToProps = state => ({
@@ -16,32 +17,47 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   onSubmit: async values => {
     const id = values.id || uuidv4()
-    let images
-    try {
-      images = await Promise.all(
-        values.images.map(async _image => {
-          console.log(_image)
-          let name
-          if (_image.newFile) {
-            // 画像をアップロードする
-            const file = _image.newFile
-            name = `arts/${id}/images/${file.name}`
-            await upload(file, name)
-          } else {
-            name = _image.name
+    let images = await Promise.all(
+      values.images.map(async imageValue => {
+        console.log(imageValue)
+        // ストレージ上のパス
+        let name = imageValue.name
+        if (imageValue.removed) {
+          try {
+            // 画像を削除する
+            // await deleteFile(name)
+          } catch (error) {
+            console.log(error)
+            Notification.error(
+              `画像 [${name}] の削除に失敗しました。\n` + JSON.stringify(error)
+            )
           }
-          return {
-            name,
-            newFile: !!_image.newFile,
-            removed: _image.removed
+          return
+        }
+        if (imageValue.newFile) {
+          const file = imageValue.newFile
+          name = `arts/${id}/images/${file.name}`
+          try {
+            // 新しい画像をアップロードする
+            // await saveFile(file, name)
+          } catch (error) {
+            console.log(error)
+            Notification.error(
+              `画像 [${name}] のアップロードに失敗しました。\n` +
+                JSON.stringify(error)
+            )
+            return
           }
-        })
-      )
-    } catch (error) {
-      console.error(error)
-      Notification.error(
-        "作品のアップロードに失敗しました。\n" + JSON.stringify(error)
-      )
+        }
+        return {
+          name
+        }
+      })
+    )
+    // 削除された、またはアップロードに失敗した画像を除外する
+    images = images.filter(image => image)
+    if (!images.length) {
+      // 有効な画像が1件もなければ処理を中止する
       return
     }
 
@@ -56,11 +72,13 @@ const mapDispatchToProps = dispatch => ({
     if (values.id) {
       // イラストを更新する
       try {
-        await callFunction({
-          dispatch,
-          name: "api-arts-update",
-          data
-        })
+        console.log(data)
+        // await callFunction({
+        //   dispatch,
+        //   name: "api-arts-update",
+        //   data,
+        //   globals: Globals
+        // })
         Router.push("/gallery")
         Notification.success("作品を編集しました。")
       } catch (error) {
@@ -72,11 +90,13 @@ const mapDispatchToProps = dispatch => ({
     } else {
       // イラストを登録する
       try {
-        await callFunction({
-          dispatch,
-          name: "api-arts-create",
-          data
-        })
+        console.log(data)
+        // await callFunction({
+        //   dispatch,
+        //   name: "api-arts-create",
+        //   data,
+        //   globals: Globals
+        // })
         Router.push("/gallery")
         Notification.success("作品を登録しました。")
       } catch (error) {
@@ -87,7 +107,7 @@ const mapDispatchToProps = dispatch => ({
       }
     }
   },
-  initialize: () => initialize(MODULE_NAME, {})
+  // initialize: () => initialize(MODULE_NAME, {})
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(GalleryForm)

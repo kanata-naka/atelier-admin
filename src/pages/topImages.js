@@ -1,43 +1,52 @@
 import React from "react"
 import Head from "next/head"
 import { callFunction } from "../common/firebase"
-import defaultPage from "../common/hocs/defaultPage"
+import Notification from "../common/components/Notification"
+import Sidebar from "../common/components/Sidebar"
+import withAuthentication from "../common/hocs/withAuthentication"
 import { list } from "../modules/topImages/actions"
 import { MODULE_NAME } from "../modules/topImages/models"
 import reducers from "../modules/topImages/reducers"
 import TopImageGrid from "../modules/topImages/containers/TopImageGrid"
 import TopImageForm from "../modules/topImages/containers/TopImageForm"
-import "../styles/topImages.scss"
 
-class Component extends React.Component {
-  static async getInitialProps({ store: { dispatch }, globals }) {
-    const result = await callFunction({
-      dispatch,
-      name: "api-topImages-get",
-      globals
-    })
-    dispatch(list(result.data))
-    return {
-      items: result.data
-    }
-  }
-
-  render() {
-    return (
-      <div>
-        <Head>
-          <title>{"トップ画像 - カナタノアトリエ (admin)"}</title>
-        </Head>
+const Component = withAuthentication(() => {
+  return (
+    <div>
+      <Head>
+        <title>{"トップ画像 - カナタノアトリエ (admin)"}</title>
+      </Head>
+      <Sidebar />
+      <div className="page-content">
         <h1 className="page-heading">{"トップ画像 "}</h1>
         <hr />
         <TopImageForm />
         <hr />
         <TopImageGrid />
       </div>
-    )
+    </div>
+  )
+})
+
+Component.getInitialProps = async ({ store: { dispatch }, globals }) => {
+  let items = []
+  try {
+    const response = await callFunction({
+      dispatch,
+      name: "api-topImages-get",
+      data: {},
+      globals
+    })
+    items = response.data.result
+    dispatch(list(items))
+  } catch (error) {
+    console.error(error)
+    Notification.error("読み込みに失敗しました。\n" + JSON.stringify(error))
   }
 }
 
-export default defaultPage(Component, {
+Component.reducers = {
   [MODULE_NAME]: reducers
-})
+}
+
+export default Component

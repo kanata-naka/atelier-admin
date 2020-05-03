@@ -1,32 +1,62 @@
 import React, { useRef, useEffect, useCallback } from "react"
 import { Form, ButtonGroup, Button, Badge } from "react-bootstrap"
 import { reduxForm, Field, Fields, FieldArray } from "redux-form"
-import Router from "next/router"
 import { formatDateTimeFromUnixTimestamp } from "../../../utils/dateUtil"
-import { adjust } from "../../../utils/domUtils"
+import { adjustElementWidth } from "../../../utils/domUtils"
 import { TextareaField } from "../../../common/components/fields"
 import Grid from "../../../common/components/Grid"
 import { MODULE_NAME } from "../models"
 
-const TopImageGrid = props => {
-  const { topImages, handleSubmit, initialize } = props
-
+const TopImageGrid = ({
+  topImages,
+  selectedByItemId,
+  editing,
+  initialize,
+  onEdit,
+  onCancelEdit,
+  onDeleteSelected,
+  // -- actions --
+  select,
+  // -- Redux Form --
+  handleSubmit,
+  dirty,
+  submitting,
+  reset,
+  change
+}) => {
   useEffect(() => {
-    initialize({topImages})
+    initialize({ topImages })
   }, [topImages])
 
   return (
     <Form onSubmit={handleSubmit}>
-      <TopImageControl {...props} />
-      <FieldArray name="topImages" component={_TopImageGrid} {...props} />
+      <TopImageControl
+        selectedByItemId={selectedByItemId}
+        editing={editing}
+        onEdit={onEdit}
+        onCancelEdit={onCancelEdit}
+        onDeleteSelected={onDeleteSelected}
+        dirty={dirty}
+        submitting={submitting}
+        reset={reset}
+      />
+      <FieldArray
+        name="topImages"
+        component={_TopImageGrid}
+        topImages={topImages}
+        selectedByItemId={selectedByItemId}
+        editing={editing}
+        select={select}
+        change={change}
+      />
     </Form>
   )
 }
 
 const TopImageControl = ({
   selectedByItemId,
-  onEdit,
   editing,
+  onEdit,
   onCancelEdit,
   onDeleteSelected,
   dirty,
@@ -62,10 +92,7 @@ const TopImageControl = ({
           </Button>
         </ButtonGroup>
       ) : (
-        <Button
-          variant="outline-secondary"
-          type="button"
-          onClick={onEdit}>
+        <Button variant="outline-secondary" type="button" onClick={onEdit}>
           {"編集"}
         </Button>
       )}
@@ -73,9 +100,16 @@ const TopImageControl = ({
   )
 }
 
-const _TopImageGrid = props => {
-  const { topImages, fields, selectedByItemId, select, editing, change } = props
-
+const _TopImageGrid = ({
+  topImages,
+  selectedByItemId,
+  editing,
+  change,
+  // -- actions --
+  select,
+  // -- Redux Form --
+  fields
+}) => {
   // 「上へ移動」ボタンをクリックした際の処理
   const handleMoveUpButtonClick = useCallback(currentIndex => {
     if (currentIndex == 0) {
@@ -109,7 +143,7 @@ const _TopImageGrid = props => {
                 names={[
                   `topImages[${index}].image.name`,
                   `topImages[${index}].image.url`,
-                  `topImages[${index}].image.file`,
+                  `topImages[${index}].image.newFile`,
                   `topImages[${index}].image.originalUrl`
                 ]}
                 component={ImageField}
@@ -129,7 +163,7 @@ const _TopImageGrid = props => {
                 names={[
                   `topImages[${index}].thumbnailImage.name`,
                   `topImages[${index}].thumbnailImage.url`,
-                  `topImages[${index}].thumbnailImage.file`,
+                  `topImages[${index}].thumbnailImage.newFile`,
                   `topImages[${index}].thumbnailImage.originalUrl`
                 ]}
                 component={ThumbnailImageField}
@@ -158,7 +192,7 @@ const _TopImageGrid = props => {
         },
         {
           className: "column-date",
-          render: (item) => (
+          render: item => (
             <div className="dates">
               <div className="date-row">
                 <Badge variant="secondary">投稿日時</Badge>
@@ -206,19 +240,24 @@ const _TopImageGrid = props => {
   )
 }
 
-const ImageField = props => {
-  const { topImages, index, editing, change, names } = props
+const ImageField = ({
+  topImages,
+  editing,
+  index,
+  change,
+  // -- Redux Form --
+  names
+}) => {
   const topImage = topImages[index]
   const containerRef = useRef(null)
 
   useEffect(() => {
-    // componentDidMount と同じタイミングで実行する
     const containerElement = containerRef.current
     const innerElement = containerElement.children[0]
     innerElement.onload = () => {
-      adjust(containerElement, innerElement)
+      adjustElementWidth(containerElement, innerElement)
     }
-  }, [])
+  }, [index])
 
   const handleSelect = useCallback(
     e => {
@@ -235,11 +274,14 @@ const ImageField = props => {
   )
 
   // 取り消しボタンをクリックした際の処理
-  const handleRemoveButtonClick = useCallback(e => {
-    e.preventDefault()
-    change(names[1], topImage.image.originalUrl.input.value)
-    change(names[2], null)
-  })
+  const handleRemoveButtonClick = useCallback(
+    e => {
+      e.preventDefault()
+      change(names[1], topImage.image.originalUrl.input.value)
+      change(names[2], null)
+    },
+    [change]
+  )
 
   const dirty =
     topImage.image.originalUrl.input.value &&
@@ -265,9 +307,7 @@ const ImageField = props => {
         </label>
       )}
       {editing && dirty && (
-        <div
-          className="image-remove-button"
-          onClick={handleRemoveButtonClick}>
+        <div className="image-remove-button" onClick={handleRemoveButtonClick}>
           <i className="fas fa-times"></i>
         </div>
       )}
@@ -275,19 +315,24 @@ const ImageField = props => {
   )
 }
 
-const ThumbnailImageField = props => {
-  const { topImages, index, editing, change, names } = props
+const ThumbnailImageField = ({
+  topImages,
+  editing,
+  index,
+  change,
+  // -- Redux Form --
+  names
+}) => {
   const topImage = topImages[index]
   const containerRef = useRef(null)
 
   useEffect(() => {
-    // componentDidMount と同じタイミングで実行する
     const containerElement = containerRef.current
     const innerElement = containerElement.children[0]
     innerElement.onload = () => {
-      adjust(containerElement, innerElement)
+      adjustElementWidth(containerElement, innerElement)
     }
-  }, [])
+  }, [index])
 
   const handleSelect = useCallback(
     e => {
@@ -304,11 +349,14 @@ const ThumbnailImageField = props => {
   )
 
   // 取り消しボタンをクリックした際の処理
-  const handleRemoveButtonClick = useCallback(e => {
-    e.preventDefault()
-    change(names[1], topImage.thumbnailImage.originalUrl.input.value)
-    change(names[2], null)
-  })
+  const handleRemoveButtonClick = useCallback(
+    e => {
+      e.preventDefault()
+      change(names[1], topImage.thumbnailImage.originalUrl.input.value)
+      change(names[2], null)
+    },
+    [change]
+  )
 
   const dirty =
     topImage.thumbnailImage.originalUrl.input.value &&

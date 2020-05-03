@@ -3,6 +3,7 @@ import { connect } from "react-redux"
 import { signedIn, signedOut } from "../actions"
 import { onAuthStateChanged } from "../firebase"
 
+// TODO
 export default Component => {
   const WithAuthentication = ({
     user,
@@ -15,7 +16,9 @@ export default Component => {
       onAuthStateChanged(onSignedIn, onSignInFailed, onSignedOut)
     }, [])
     if (!user) {
-      return <div></div>
+      return (
+        <div></div>
+      )
     }
     return <Component {...props} />
   }

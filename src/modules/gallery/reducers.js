@@ -1,11 +1,9 @@
 import { handleActions } from "redux-actions"
-import { createSelector } from "reselect"
-import { initializePagination } from "../../common/models"
+import { createPagination } from "../../common/models"
 import { list, movePage, select, edit } from "./actions"
 import { PER_PAGE } from "./models"
 
 const initialState = {
-  // 作品一覧
   items: [],
   // ページネーション
   pagination: {},
@@ -20,7 +18,7 @@ const handlers = {
     ...state,
     ...{
       items: action.payload,
-      pagination: initializePagination(action.payload, PER_PAGE),
+      pagination: createPagination(PER_PAGE, action.payload.length),
       selectedByItemId: {},
       editingItemId: null
     }
@@ -46,11 +44,6 @@ const handlers = {
   })
 }
 
-export default handleActions(handlers, initialState)
-
-/**
- * 作品の編集状態を更新する
- */
 const updateEditing = (items, editingItemId) => {
   for (let item of items) {
     if (item.editing) {
@@ -63,21 +56,4 @@ const updateEditing = (items, editingItemId) => {
   return [...items]
 }
 
-export const getItemsByPage = createSelector(
-  [state => state.items, state => state.pagination],
-  (items, pagination) => {
-    const itemsByPage = items.slice(
-      pagination.offset,
-      pagination.offset + pagination.perPage
-    )
-    return [...itemsByPage]
-  }
-)
-
-export const getItemById = createSelector(
-  [state => state.items, state => state.editingItemId],
-  (items, editingItemId) => {
-    const item = items.find(_item => _item.id === editingItemId)
-    return item || {}
-  }
-)
+export default handleActions(handlers, initialState)

@@ -2,7 +2,8 @@ import { connect } from "react-redux"
 import { bindActionCreators } from "redux"
 import { initialize } from "redux-form"
 import Router from "next/router"
-import { callFunction } from "../../../common/firebase"
+import { callFunction, saveFile, deleteFile } from "../../../common/firebase"
+import { Globals } from "../../../common/models"
 import Notification from "../../../common/components/Notification"
 import { select, edit, cancelEdit } from "../actions"
 import { MODULE_NAME } from "../models"
@@ -24,59 +25,7 @@ const mapDispatchToProps = dispatch => ({
     },
     dispatch
   ),
-  onSubmit: async values => {
-    console.log(values)
-    try {
-      const data = await Promise.all(
-        values.topImages.map(async (topImage, index) => {
-          let imageName
-          if (topImage.image.file) {
-            // 画像をアップロードする
-            const file = topImage.image.file
-            imageName = `topImages/${topImage.id}/images/${topImage.image.file.name}`
-            await upload(file, imageName)
-          } else {
-            imageName = topImage.image.name
-          }
-
-          let thumbnailImageName
-          if (topImage.thumbnailImage.file) {
-            // 画像をアップロードする
-            const file = topImage.thumbnailImage.file
-            thumbnailImageName = `topImages/${topImage.id}/images/${topImage.thumbnailImage.file.name}`
-            await upload(file, thumbnailImageName)
-          } else {
-            thumbnailImageName = topImage.thumbnailImage.name
-          }
-
-          return {
-            image: {
-              imageName
-            },
-            thumbnailImage: {
-              thumbnailImageName
-            },
-            description: topImage.description,
-            // 表示順を設定し直す
-            order: index
-          }
-        })
-      )
-
-      await callFunction({
-        dispatch,
-        name: "api-topImages-update",
-        data
-      })
-      Router.push("/topImages")
-      Notification.success("トップ画像を更新しました。")
-    } catch (error) {
-      console.error(error)
-      Notification.error(
-        "トップ画像の更新に失敗しました。\n" + JSON.stringify(error)
-      )
-    }
-  },
+  initialize: values => initialize(`${MODULE_NAME}_list`, values),
   /**
    * 編集ボタンを押下した際の処理
    */
@@ -93,34 +42,131 @@ const mapDispatchToProps = dispatch => ({
     }
     dispatch(cancelEdit())
   },
+  onSubmit: async values => {
+    let data = (await Promise.all(
+      values.topImages.map(async (topImage, index) => {
+        let imageName = topImage.image.name
+        if (topImage.image.newFile) {
+          const hasError = false
+          try {
+            // 画像を削除する
+            // await deleteFile(imageName)
+          } catch (error) {
+            console.log(error)
+            Notification.error(
+              `画像 [${imageName}] の削除に失敗しました。\n` + JSON.stringify(error)
+            )
+            hasError = true
+          }
+          if (!hasError) {
+            const file = topImage.image.newFile
+            imageName = `topImages/${topImage.id}/images/${file.name}`
+            try {
+              // 画像をアップロードする
+              // await saveFile(file, imageName)
+            } catch (error){
+              console.log(error)
+              Notification.error(
+                `画像 [${imageName}] のアップロードに失敗しました。\n` +
+                  JSON.stringify(error)
+              )
+              imageName = topImage.image.name
+            }
+          }
+        }
+        let thumbnailImageName = topImage.thumbnailImage.name
+        if (topImage.thumbnailImage.newFile) {
+          const hasError = false
+          try {
+            // 画像を削除する
+            // await deleteFile(thumbnailImageName)
+          } catch (error) {
+            console.log(error)
+            Notification.error(
+              `画像 [${thumbnailImageName}] の削除に失敗しました。\n` + JSON.stringify(error)
+            )
+            hasError = true
+          }
+          if (!hasError) {
+            const file = topImage.thumbnailImage.newFile
+            thumbnailImageName = `topImages/${topImage.id}/thumbnailImages/${file.name}`
+            try {
+              // サムネイル画像をアップロードする
+              // await upload(file, thumbnailImageName)
+            } catch (error){
+              console.log(error)
+              Notification.error(
+                `画像 [${thumbnailImageName}] のアップロードに失敗しました。\n` +
+                  JSON.stringify(error)
+              )
+              thumbnailImageName = topImage.thumbnailImage.name
+            }
+          }
+        }
+        return {
+          image: {
+            name: imageName
+          },
+          thumbnailImage: {
+            name: thumbnailImageName
+          },
+          description: topImage.description,
+          // 表示順を設定し直す
+          order: index
+        }
+      })
+    ))
+    // トップ画像を（一括で）更新する
+    try {
+      console.log(data)
+      // await callFunction({
+      //   dispatch,
+      //   name: "api-topImages-bulkUpdate",
+      //   data,
+      //   globals: Globals
+      // })
+      Router.push("/topImages")
+      Notification.success("トップ画像を更新しました。")
+    } catch (error) {
+      console.error(error)
+      Notification.error(
+        "トップ画像の更新に失敗しました。\n" + JSON.stringify(error)
+      )
+    }
+  },
   /**
    * チェックした作品を削除ボタンを押下した際の処理
    */
   onDeleteSelected: async selectedByItemId => {
-    if (confirm("チェックしたトップ画像を削除します。本当によろしいですか？")) {
-      try {
-        await Promise.all(
-          Object.entries(selectedByItemId).map(async entry => {
-            if (entry[1]) {
-              await callFunction({
-                dispatch,
-                name: "api-topImages-deleteById",
-                data: { id: entry[0] }
-              })
-            }
-          })
-        )
-        Router.push("/topImages")
-        Notification.success("トップ画像を削除しました。")
-      } catch (error) {
-        console.error(error)
-        Notification.error(
-          "トップ画像の削除に失敗しました。\n" + JSON.stringify(error)
-        )
-      }
+    if (
+      !confirm("チェックしたトップ画像を削除します。本当によろしいですか？")
+    ) {
+      return
     }
-  },
-  initialize: values => initialize(`${MODULE_NAME}_list`, values)
+    await Promise.all(
+      Object.entries(selectedByItemId).map(async entry => {
+        if (!entry[1]) {
+          return
+        }
+        try {
+          await callFunction({
+            dispatch,
+            name: "api-topImages-deleteById",
+            data: { id: entry[0] },
+            globals: Globals
+          })
+        } catch (error) {
+          console.error(error)
+          Notification.error(
+            `トップ画像 [${entry[0]}] の削除に失敗しました。\n` +
+              JSON.stringify(error)
+          )
+        }
+      })
+    )
+    Router.push("/topImages")
+    Notification.success("トップ画像を削除しました。")
+  }
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(TopImageGrid)

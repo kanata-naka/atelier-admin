@@ -1,13 +1,20 @@
 import React, { useRef, useEffect, useCallback } from "react"
 import { Form, ButtonGroup, Button } from "react-bootstrap"
 import { reduxForm, Field, Fields } from "redux-form"
-import { adjust } from "../../../utils/domUtils"
+import { adjustElementWidth } from "../../../utils/domUtils"
 import { RequiredLabel } from "../../../common/components/elements"
 import { TextareaField } from "../../../common/components/fields"
 import { MODULE_NAME } from "../models"
 
-const TopImageForm = props => {
-  const { handleSubmit, initialize, dirty, submitting, reset, change } = props
+const TopImageForm = ({
+  // -- Redux Form --
+  handleSubmit,
+  initialize,
+  dirty,
+  submitting,
+  reset,
+  change
+}) => {
   return (
     <Form
       onSubmit={async e => {
@@ -48,8 +55,7 @@ const TopImageForm = props => {
   )
 }
 
-const ImageField = props => {
-  const { image, names, change } = props
+const ImageField = ({ image, names, change }) => {
   const containerRef = useRef(null)
   const error = null
 
@@ -58,7 +64,7 @@ const ImageField = props => {
     const containerElement = containerRef.current
     const innerElement = containerElement.children[0]
     innerElement.onload = () => {
-      adjust(containerElement, innerElement)
+      adjustElementWidth(containerElement, innerElement)
     }
   }, [])
 
@@ -96,8 +102,7 @@ const ImageField = props => {
   )
 }
 
-const ThumbnailImageField = props => {
-  const { thumbnailImage, names, change } = props
+const ThumbnailImageField = ({ thumbnailImage, names, change }) => {
   const containerRef = useRef(null)
   const error = null
 
@@ -106,7 +111,7 @@ const ThumbnailImageField = props => {
     const containerElement = containerRef.current
     const innerElement = containerElement.children[0]
     innerElement.onload = () => {
-      adjust(containerElement, innerElement)
+      adjustElementWidth(containerElement, innerElement)
     }
   }, [])
 
@@ -145,6 +150,7 @@ const ThumbnailImageField = props => {
 }
 
 const validate = values => {
+  // TODO
   return {}
 }
 

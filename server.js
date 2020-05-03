@@ -4,7 +4,9 @@ const express = require("express")
 
 const dev = process.env.NODE_ENV !== "production"
 const app = next({dev})
-const handle = (req, res) => {
+const server = express()
+server.use(function (req, res, next) {
+  console.log('Current path: ' + req.path)
   // 環境設定
   req.env = {
     ENVIRONMENT: process.env.NODE_ENV,
@@ -15,17 +17,14 @@ const handle = (req, res) => {
     FIREBASE_STORAGE_BUCKET: config.get("firebase.storageBucket"),
     FIREBASE_REGION: config.get("firebase.region")
   }
+  next()
+})
+
+server.get('*', (req, res) => {
   return app.getRequestHandler()(req, res)
-}
+})
 
 app.prepare().then(() => {
-  const server = express()
-
-  server.get('*', (req, res) => {
-    console.log('Current path: ' + req.path)
-    return handle(req, res)
-  })
-
   server.listen(3000, error => {
     if (error) {
       throw error

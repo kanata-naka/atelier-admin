@@ -2,16 +2,6 @@ import React, { useRef, useEffect } from "react"
 import Router from "next/router"
 import NotificationSystem from "react-notification-system"
 
-Router.events.on("routeChangeStart", () => (Component.routing = true))
-Router.events.on("routeChangeComplete", () => {
-  Component.routing = false
-  processQueue()
-})
-Router.events.on("routeChangeError", () => {
-  Component.routing = false
-  processQueue()
-})
-
 const Component = () => {
   const notificationSystemRef = useRef(null)
 
@@ -29,7 +19,7 @@ Component.queue = []
  * キューを処理する
  */
 const processQueue = () => {
-  if (Component.queue) {
+  if (Component.notificationSystem) {
     Component.queue.forEach(notification => {
       Component.notificationSystem.addNotification(notification)
     })
@@ -59,5 +49,15 @@ const Notification = {
     Notification.add({ message, level: "error" })
   }
 }
+
+Router.events.on("routeChangeStart", () => (Component.routing = true))
+Router.events.on("routeChangeComplete", () => {
+  Component.routing = false
+  processQueue()
+})
+Router.events.on("routeChangeError", () => {
+  Component.routing = false
+  processQueue()
+})
 
 export default Notification

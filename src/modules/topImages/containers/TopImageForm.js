@@ -2,14 +2,14 @@ import { connect } from "react-redux"
 import { initialize } from "redux-form"
 import Router from "next/router"
 import uuidv4 from "uuid/v4"
-import { callFunction, upload } from "../../../common/firebase"
+import { callFunction, saveFile } from "../../../common/firebase"
+import { Globals } from "../../../common/models"
 import Notification from "../../../common/components/Notification"
 import { MODULE_NAME } from "../models"
-import { getLastOrder } from "../reducers"
+import { getLastOrder } from "../selectors"
 import TopImageForm from "../components/TopImageForm"
 
 const mapStateToProps = state => ({
-  lastOrder: getLastOrder(state[MODULE_NAME]),
   initialValues: {}
 })
 
@@ -23,30 +23,51 @@ const mapDispatchToProps = dispatch => ({
 const mergeProps = (state, { dispatch }) => ({
   onSubmit: async values => {
     const id = uuidv4()
+    const image = {}
     try {
-      const image = {
-        name: `topImages/${id}/images/${values.image.file.name}`
-      }
-      await upload(values.image.file, image.name)
+      // 画像をアップロードする
+      image.name = `topImages/${id}/images/${values.image.file.name}`
+      // await saveFile(values.image.file, image.name)
+    } catch (error) {
+      console.log(error)
+      Notification.error(
+        `画像 [${image.name}] のアップロードに失敗しました。\n` +
+          JSON.stringify(error)
+      )
+      return
+    }
 
-      const thumbnailImage = {
-        name: `topImages/${id}/images/${values.thumbnailImage.file.name}`
-      }
-      await upload(values.thumbnailImage.file, thumbnailImage.name)
+    const thumbnailImage = {}
+    try {
+      // サムネイル画像をアップロードする
+      thumbnailImage.name = `topImages/${id}/thumbnailImages/${values.thumbnailImage.file.name}`
+      // await saveFile(values.thumbnailImage.file, thumbnailImage.name)
+    } catch (error) {
+      console.log(error)
+      Notification.error(
+        `サムネイル画像 [${thumbnailImage.name}] のアップロードに失敗しました。\n` +
+          JSON.stringify(error)
+      )
+      return
+    }
 
-      const data = {
-        id,
-        image,
-        thumbnailImage,
-        description: values.description,
-        order: state.lastOrder + 1
-      }
+    const data = {
+      id,
+      image,
+      thumbnailImage,
+      description: values.description,
+      order: getLastOrder(state[MODULE_NAME]) + 1
+    }
 
-      await callFunction({
-        dispatch,
-        name: "api-topImages-create",
-        data
-      })
+    try {
+      console.log(data)
+      // トップ画像を登録する
+      // await callFunction({
+      //   dispatch,
+      //   name: "api-topImages-create",
+      //   data,
+      //   globals: Globals
+      // })
       Router.push("/topImages")
       Notification.success("トップ画像を登録しました。")
     } catch (error) {

@@ -1,11 +1,20 @@
 import React from "react"
-import defaultPage from "../common/hocs/defaultPage"
-import "../styles/index.scss"
+import Head from "next/head"
+import Sidebar from "../common/components/Sidebar"
+import withAuthentication from "../common/hocs/withAuthentication"
 
-class Component extends React.Component {
-  render() {
-    return <div>{"test"}</div>
-  }
-}
+const Component = withAuthentication(() => {
+  return (
+    <div>
+      <Head>
+        <title>{"ダッシュボード - カナタノアトリエ (admin)"}</title>
+      </Head>
+      <Sidebar />
+      <div className="page-content">
+        <h1 className="page-heading">{"ダッシュボード"}</h1>
+      </div>
+    </div>
+  )
+})
 
-export default defaultPage(Component, {})
+export default Component

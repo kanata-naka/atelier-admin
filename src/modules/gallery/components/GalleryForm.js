@@ -3,26 +3,26 @@ import { Form, ButtonGroup, Button } from "react-bootstrap"
 import { DndProvider, useDrag, useDrop } from "react-dnd-cjs"
 import HTML5Backend from "react-dnd-html5-backend-cjs"
 import { reduxForm, Field, FieldArray, Fields } from "redux-form"
-import { adjust } from "../../../utils/domUtils"
+import { adjustElementWidth } from "../../../utils/domUtils"
 import { RequiredLabel } from "../../../common/components/elements"
 import { InputField, TextareaField } from "../../../common/components/fields"
 import { MODULE_NAME } from "../models"
 
-const GalleryForm = props => {
-  const {
-    initialValues,
-    initialize,
-    handleSubmit,
-    dirty,
-    submitting,
-    reset,
-    change
-  } = props
-
+const GalleryForm = ({
+  id,
+  initialValues,
+  // -- Redux Form --
+  initialize,
+  handleSubmit,
+  dirty,
+  submitting,
+  reset,
+  change
+}) => {
   useEffect(() => {
     // 現在の作品の編集がキャンセルされた、または別の作品が編集中になった場合
     initialize(initialValues)
-  }, [initialValues.id])
+  }, [id])
 
   return (
     <Form
@@ -64,25 +64,22 @@ const GalleryForm = props => {
   )
 }
 
-const ImagesField = props => {
-  const {
-    fields,
-    change,
-    meta: { error }
-  } = props
-
-  const handleSelect = useCallback(e => {
-    e.preventDefault()
-    const file = e.target.files[0]
-    fields.push({
-      name: file.name,
-      url: URL.createObjectURL(file),
-      newFile: file
-    })
-    console.log("Image uploaded:", file.name)
-    // 同じファイルをアップロードしてもonChangeイベントを走らせるためvalueを空にする
-    e.target.value = ""
-  })
+const ImagesField = ({ fields, change, meta: { error } }) => {
+  const handleSelect = useCallback(
+    e => {
+      e.preventDefault()
+      const file = e.target.files[0]
+      fields.push({
+        name: file.name,
+        url: URL.createObjectURL(file),
+        newFile: file
+      })
+      console.log("Image uploaded:", file.name)
+      // 同じファイルをアップロードしてもonChangeイベントを走らせるためvalueを空にする
+      e.target.value = ""
+    },
+    [fields]
+  )
 
   return (
     <div className="image-outer">
@@ -130,20 +127,18 @@ const ImageFields = ({ fields, change }) => {
   })
 }
 
-const ImageField = props => {
-  const { images, change, index, fields } = props
+const ImageField = ({ images, change, index, fields }) => {
   const image = images[index]
   const containerRef = useRef(null)
   const removed = image.removed.input.value
 
   useEffect(() => {
-    // componentDidMount と同じタイミングで実行する
     const containerElement = containerRef.current
     const innerElement = containerElement.children[0]
     innerElement.onload = () => {
-      adjust(containerElement, innerElement)
+      adjustElementWidth(containerElement, innerElement)
     }
-  }, [])
+  }, [index])
 
   // ドラッグの設定
   const [{ isDragging }, drag] = useDrag({
@@ -170,7 +165,8 @@ const ImageField = props => {
     if (removed) {
       change(`images[${index}].removed`, false)
     }
-  })
+  }, [index])
+
   // 削除ボタンをクリックした際の処理
   const handleRemoveButtonClick = useCallback(() => {
     if (image.newFile.input.value) {
@@ -180,7 +176,7 @@ const ImageField = props => {
       // 削除フラグをオンにする
       change(`images[${index}].removed`, true)
     }
-  })
+  }, [index])
 
   return (
     <div
@@ -201,11 +197,7 @@ const ImageField = props => {
   )
 }
 
-const TagsField = props => {
-  const {
-    fields,
-    meta: { error }
-  } = props
+const TagsField = ({ fields, meta: { error } }) => {
   const [beforeKeyCode, setBeforeKeyCode] = useState(null)
   const inputRef = useRef(null)
 
@@ -271,6 +263,7 @@ const TagsField = props => {
 }
 
 const validate = values => {
+  // TODO
   return {
     title: !values.title ? "タイトルは必須です" : undefined
   }

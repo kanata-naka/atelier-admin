@@ -3,7 +3,7 @@
  * @param containerElement 外枠のHTMLElement
  * @param innerElement 内側のHTMLElement
  */
-export const adjust = (containerElement, innerElement) => {
+export const adjustElementWidth = (containerElement, innerElement) => {
   const containerWidth = containerElement.clientWidth
   const containerHeight = containerElement.clientHeight
   const magnificationX = containerWidth / innerElement.width

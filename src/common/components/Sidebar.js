@@ -17,21 +17,19 @@ export default () => {
 const GlobalNav = () => {
   return (
     <ul className="global-nav">
-      <GlobalNavItem id="home" title="ホーム" url="/" />
-      <GlobalNavItem id="topImages" title="トップ画像" url="/topImages" />
+      <GlobalNavItem key="home" title="ホーム" url="/" />
+      <GlobalNavItem key="topImages" title="トップ画像" url="/topImages" />
       <GlobalNavItem title="投稿管理">
-        <GlobalNavItem id="works" title="WORKS" url="/works" />
-        <GlobalNavItem id="gallery" title="GALLERY" url="/gallery" />
+        <GlobalNavItem key="works" title="WORKS" url="/works" />
+        <GlobalNavItem key="gallery" title="GALLERY" url="/gallery" />
       </GlobalNavItem>
     </ul>
   )
 }
 
-const GlobalNavItem = ({ id, title, url, children }) => {
+const GlobalNavItem = ({ title, url, children }) => {
   return (
-    <li
-      key={id}
-      className={"global-nav-item" + (children ? " has-children" : "")}>
+    <li className={"global-nav-item" + (children ? " has-children" : "")}>
       {url ? (
         <Link href={url}>
           <a className="global-nav-item__link">
@@ -41,7 +39,7 @@ const GlobalNavItem = ({ id, title, url, children }) => {
       ) : (
         <p>{title}</p>
       )}
-      <ul className="global-nav">{children}</ul>
+      {children && <ul className="global-nav">{children}</ul>}
     </li>
   )
 }

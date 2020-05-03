@@ -26,12 +26,17 @@ export const initializeFirebase = ({
     storageBucket: FIREBASE_STORAGE_BUCKET
   })
   if (ENVIRONMENT !== "production") {
+    // ローカル環境の場合
     firebase.functions().useFunctionsEmulator(API_BASE_URL)
   }
   return firebase
 }
 
+/**
+ * 認証状態を監視する
+ */
 export const onAuthStateChanged = (onSignedIn, onSignInFailed, onSignedOut) => {
+  // TODO
   firebase.auth().onAuthStateChanged(user => {
     if (user) {
       onSignedIn(user)
@@ -42,7 +47,11 @@ export const onAuthStateChanged = (onSignedIn, onSignInFailed, onSignedOut) => {
   })
 }
 
+/**
+ * ログインを行う
+ */
 export const signIn = async (onSignedIn, onSignInFailed) => {
+  // TODO
   const provider = new firebase.auth.GoogleAuthProvider()
   firebase
     .auth()
@@ -63,38 +72,43 @@ export const callFunction = async ({
   dispatch,
   name,
   data,
-  globals = null
+  globals: { env }
 }) => {
-  dispatch(fetchStart({ config: { name, data } }))
+  dispatch(fetchStart({ name }))
   try {
     let callable
-    if (
-      (globals ? globals.env.ENVIRONMENT : Globals.env.ENVIRONMENT) !==
-      "production"
-    ) {
+    if ((env ? env.ENVIRONMENT : Globals.env.ENVIRONMENT) !== "production") {
+      // ローカル環境の場合
       callable = firebase.functions().httpsCallable(name)
     } else {
       callable = firebase
         .app()
-        .functions(
-          globals ? globals.env.FIREBASE_REGION : Globals.env.FIREBASE_REGION
-        )
+        .functions(env ? env.FIREBASE_REGION : Globals.env.FIREBASE_REGION)
         .httpsCallable(name)
     }
     const result = await callable(data)
-    dispatch(fetchSucceeded({ config: { name, data } }))
+    dispatch(fetchSucceeded({ name }))
     return result
   } catch (error) {
-    dispatch(fetchFailed({ config: { name, data } }))
+    dispatch(fetchFailed({ name }))
     throw error
   }
 }
 
 /**
- * ファイルをアップロードする
+ * ストレージにファイルを保存する
  */
-export const upload = async (file, name) => {
+export const saveFile = async (file, name) => {
   const storageRef = firebase.storage().ref()
   const imageRef = storageRef.child(name)
   return await imageRef.put(file)
+}
+
+/**
+ * ストレージからファイルを削除する
+ */
+export const deleteFile = async name => {
+  const storageRef = firebase.storage().ref()
+  const imageRef = storageRef.child(name)
+  await imageRef.delete()
 }

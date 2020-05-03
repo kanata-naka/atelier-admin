@@ -45,6 +45,7 @@
     "react-dnd-html5-backend-cjs": "^9.5.1",
     "react-dom": "^16.12.0",
     "react-form": "^4.0.1",
+    "react-hook-form": "^4.10.1",
     "react-notification-system": "^0.3.0",
     "react-redux": "^7.2.0",
     "redux": "^4.0.5",

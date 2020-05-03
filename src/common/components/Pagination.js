@@ -1,71 +1,53 @@
-import React from "react"
+import React, { useCallback } from "react"
 import { Pagination } from "react-bootstrap"
 
 /**
  * ページネーション
  */
-export default class extends React.Component {
-  /**
-   * 現在のページ番号
-   */
-  get currentPageNumber() {
-    const { pagination } = this.props
-    return pagination.offset / pagination.perPage + 1
-  }
+export default ({ pagination, onMovePage }) => {
+  // 現在のページ
+  const currentPage = pagination.offset / pagination.perPage + 1
+  // 最後のページ
+  const lastPage = Math.ceil(pagination.total / pagination.perPage)
 
-  /**
-   * 最後のページ番号
-   */
-  get lastPageNumber() {
-    const { pagination } = this.props
-    return Math.ceil(pagination.size / pagination.perPage)
-  }
+  const handlePageNumberButtonClick = useCallback(
+    page => {
+      onMovePage({
+        ...pagination,
+        offset: pagination.perPage * (page - 1)
+      })
+    },
+    [pagination]
+  )
 
-  /**
-   * 指定したページに切り替える
-   * @param pageNumber ページ番号
-   */
-  movePage(pageNumber) {
-    const { pagination, onMovePage } = this.props
-    onMovePage({
-      ...pagination,
-      offset: pagination.perPage * (pageNumber - 1)
-    })
-  }
-
-  /**
-   * 各ページのボタンを描画する
-   */
-  renderPageNumberButtons() {
-    const pages = []
-    for (let pageNumber = 1; pageNumber <= this.lastPageNumber; pageNumber++) {
-      pages.push(
+  const renderPageNumberButtons = () => {
+    const pageNumberButtons = []
+    for (let page = 1; page <= lastPage; page++) {
+      pageNumberButtons.push(
         <Pagination.Item
-          key={pageNumber}
-          onClick={() => this.movePage(pageNumber)}
-          active={pageNumber === this.currentPageNumber}>
-          {pageNumber}
+          key={page}
+          onClick={() => handlePageNumberButtonClick(page)}
+          active={page === currentPage}>
+          {page}
         </Pagination.Item>
       )
     }
-    return pages
+    return pageNumberButtons
   }
 
-  render() {
-    return (
-      <div>
-        <Pagination>
-          <Pagination.Prev
-            onClick={() => this.movePage(this.currentPageNumber - 1)}
-            disabled={this.currentPageNumber === 1}
-          />
-          {this.renderPageNumberButtons()}
-          <Pagination.Next
-            onClick={() => this.movePage(this.currentPageNumber + 1)}
-            disabled={this.currentPageNumber === this.lastPageNumber}
-          />
-        </Pagination>
-      </div>
-    )
-  }
+  return (
+    <div>
+      <Pagination>
+        <Pagination.Prev
+          onClick={() => handlePageNumberButtonClick(currentPage - 1)}
+          disabled={currentPage === 1}
+        />
+        {renderPageNumberButtons()}
+        <Pagination.Next
+          onClick={() => handlePageNumberButtonClick(currentPage + 1)}
+          disabled={currentPage === lastPage}
+        />
+      </Pagination>
+    </div>
+  )
 }

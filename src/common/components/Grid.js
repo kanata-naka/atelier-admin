@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import { Table } from "react-bootstrap"
 
 export default props => {
@@ -18,16 +18,19 @@ export default props => {
   }, [selectedByItemId])
 
   // 各項目のチェックボックスを押下した際の処理
-  const handleCheck = useCallback(id => {
-    let _selectedByItemId
-    if (id in selectedByItemId) {
-      _selectedByItemId = { ...selectedByItemId }
-      delete _selectedByItemId[id]
-    } else {
-      _selectedByItemId = { ...selectedByItemId, [id]: true }
-    }
-    onSelect(_selectedByItemId)
-  })
+  const handleCheck = useCallback(
+    id => {
+      let nextSelectedByItemId
+      if (id in selectedByItemId) {
+        nextSelectedByItemId = { ...selectedByItemId }
+        delete nextSelectedByItemId[id]
+      } else {
+        nextSelectedByItemId = { ...selectedByItemId, [id]: true }
+      }
+      onSelect(nextSelectedByItemId)
+    },
+    [selectedByItemId]
+  )
 
   // 一番上のチェックボックスを押下した際の処理
   const handleCheckAll = useCallback(() => {
@@ -36,13 +39,13 @@ export default props => {
       onSelect({})
     } else {
       // 1つ以上チェックされていない状態なら全てチェックする
-      const selectedByItemId = {}
+      const nextSelectedByItemId = {}
       items.forEach(item => {
-        selectedByItemId[item.id] = true
+        nextSelectedByItemId[item.id] = true
       })
-      onSelect(selectedByItemId)
+      onSelect(nextSelectedByItemId)
     }
-  })
+  }, [checkedAll])
 
   return (
     <Table className={className}>
@@ -100,7 +103,7 @@ const ItemRow = ({
 }) => {
   return (
     <tr className={item.editing ? "editing" : ""}>
-      {// 選択したときの処理が設定されている場合のみ左端にチェックボックスを表示する
+      {// 選択した際の処理が設定されている場合のみ左端にチェックボックスを表示する
       onSelect && (
         <td className="column-checks">
           <input

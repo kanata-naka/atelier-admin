@@ -1,24 +1,29 @@
 import React, { useRef, useEffect } from "react"
 import { Button, Badge } from "react-bootstrap"
 import { formatDateTimeFromUnixTimestamp } from "../../../utils/dateUtil"
-import { adjust } from "../../../utils/domUtils"
+import { adjustElementWidth } from "../../../utils/domUtils"
 import Grid from "../../../common/components/Grid"
 import Pagination from "../../../common/components/Pagination"
 
-export default props => {
-  const {
-    items,
-    selectedByItemId,
-    pagination,
-    movePage,
-    select,
-    onEdit,
-    onCancelEdit,
-    dirty
-  } = props
+export default ({
+  items,
+  pagination,
+  selectedByItemId,
+  onEdit,
+  onCancelEdit,
+  onDeleteSelected,
+  // -- actions --
+  select,
+  movePage,
+  // -- Redux Form --
+  dirty
+}) => {
   return (
     <div>
-      <GalleryControl {...props} />
+      <GalleryGridControl
+        selectedByItemId={selectedByItemId}
+        onDeleteSelected={onDeleteSelected}
+      />
       <Grid
         items={items}
         selectedByItemId={selectedByItemId}
@@ -38,7 +43,7 @@ export default props => {
             className: "column-images",
             render: item => {
               return item.images.map((image, imageIndex) => (
-                <Image key={imageIndex} image={image} />
+                <GalleryGridColumnImage key={imageIndex} image={image} />
               ))
             }
           },
@@ -97,7 +102,7 @@ export default props => {
   )
 }
 
-const GalleryControl = ({ selectedByItemId, onDeleteSelected }) => {
+const GalleryGridControl = ({ selectedByItemId, onDeleteSelected }) => {
   return (
     <div className="controls">
       <Button
@@ -111,18 +116,16 @@ const GalleryControl = ({ selectedByItemId, onDeleteSelected }) => {
   )
 }
 
-const Image = props => {
-  const { image } = props
+const GalleryGridColumnImage = ({ image }) => {
   const containerRef = useRef(null)
 
   useEffect(() => {
-    // componentDidMount と同じタイミングで実行する
     const containerElement = containerRef.current
     const innerElement = containerElement.children[0]
     innerElement.onload = () => {
-      adjust(containerElement, innerElement)
+      adjustElementWidth(containerElement, innerElement)
     }
-  }, [])
+  }, [image])
 
   return (
     <a href={image.url} target="_blank">

@@ -1,13 +1,8 @@
 import { createAction } from "redux-actions"
 
-// ログインした
-export const signedIn = createAction("signedIn")
-// ログアウトした
-export const signedOut = createAction("signedOut")
+export const signedIn = createAction("auth_signedIn")
+export const signedOut = createAction("auth_signedOut")
 
-// APIの呼び出しを開始する
-export const fetchStart = createAction("api_" + "fetchStart")
-// APIの呼び出しに成功した
-export const fetchSucceeded = createAction("api_" + "fetchSucceded")
-// APIの呼び出しに失敗した
-export const fetchFailed = createAction("api_" + "fetchFailed")
+export const fetchStart = createAction("api_fetchStart")
+export const fetchSucceeded = createAction("api_fetchSucceded")
+export const fetchFailed = createAction("api_fetchFailed")
