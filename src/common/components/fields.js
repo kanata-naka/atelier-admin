@@ -97,7 +97,7 @@ export const MarkdownTextareaField = ({
         </div>
         <div className="markdown-textarea-column--right">
           <div className="markdown-textarea-preview">
-            { renderMarkdown(input.value) }
+            {renderMarkdown(input.value)}
           </div>
         </div>
       </div>

@@ -67,7 +67,7 @@ const mapDispatchToProps = dispatch => ({
       images,
       description: values.description,
       pickupFlag: values.pickupFlag,
-      createdAt: values.createdAt || getNowUnixTimestamp(),
+      createdAt: values.createdAt || getNowUnixTimestamp()
     }
 
     if (values.id) {

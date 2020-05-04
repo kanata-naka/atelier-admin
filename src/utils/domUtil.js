@@ -19,12 +19,15 @@ export const adjustElementWidth = (containerElement, innerElement) => {
   }
 }
 
-export const renderMarkdown = (src) => {
+export const renderMarkdown = src => {
   if (!src) {
     return <span />
   }
-  return <span
-    dangerouslySetInnerHTML={{
-      __html: marked(src, { breaks: true })
-    }}></span>
+  return (
+    <span
+      className="markdown-body"
+      dangerouslySetInnerHTML={{
+        __html: marked(src, { breaks: true })
+      }}></span>
+  )
 }
