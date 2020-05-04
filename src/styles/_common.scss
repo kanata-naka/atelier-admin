@@ -96,6 +96,12 @@ form {
     .use-current-date-time-checkbox {
       margin-right: 12px;
     }
+
+    input {
+      &.hidden {
+        visibility: hidden;
+      }
+    }
   }
 
   .markdown-textarea {

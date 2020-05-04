@@ -133,7 +133,7 @@
   }
 
   .description-textarea {
-    height: 12em;
+    height: 512px;
     resize: vertical;
   }
 }
@@ -173,6 +173,11 @@
   .column-description {
     min-width: 250px;
     white-space: pre-wrap;
+    overflow-y: auto;
+  }
+
+  .description__fixed-label {
+    max-height: 152px;
   }
 
   .column-date {

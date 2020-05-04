@@ -16,12 +16,13 @@ ja.options.weekStartsOn = 0
 registerLocale("ja", ja)
 
 export const InputField = ({
-  input,
   type,
   label,
   required,
   placeholder,
   className,
+  // -- Redux Form --
+  input,
   meta: { touched, error }
 }) => {
   return (
@@ -43,11 +44,12 @@ export const InputField = ({
  * テキストエリア
  */
 export const TextareaField = ({
-  input,
   label,
   required,
   placeholder,
   className,
+  // -- Redux Form --
+  input,
   meta: { touched, error }
 }) => {
   return (
@@ -70,11 +72,12 @@ export const TextareaField = ({
  * テキストエリア（Markdown用）
  */
 export const MarkdownTextareaField = ({
-  input,
   label,
   required,
   placeholder,
   className,
+  // -- Redux Form --
+  input,
   meta: { touched, error }
 }) => {
   return (
@@ -106,9 +109,10 @@ export const MarkdownTextareaField = ({
  * チェックボックス
  */
 export const CheckboxField = ({
-  input,
   label,
   className,
+  // -- Redux Form --
+  input,
   meta: { touched, error }
 }) => {
   return (
@@ -128,14 +132,16 @@ export const CheckboxField = ({
  * ※ value: UNIXタイムスタンプ
  */
 export const DateTimeField = ({
-  input,
   name,
   label,
   required,
   className,
   dateFormat,
+  showTimeInput,
   useCurrentDateTimeCheckbox = false,
   useCurrentDateTimeCheckboxLabel = "現在日時を使用する",
+  // -- Redux Form --
+  input,
   meta: { initial, dirty, touched, error }
 }) => {
   const [useCurrentDateTime, setUseCurrentDateTime] = useState(
@@ -144,9 +150,11 @@ export const DateTimeField = ({
 
   const toggleUseCurrentDateTime = value => {
     setUseCurrentDateTime(value)
+    // 初期化する
     if (value) {
-      // 初期化する
       input.onChange("")
+    } else {
+      input.onChange(initial)
     }
   }
 
@@ -189,10 +197,11 @@ export const DateTimeField = ({
           selected={getDateFromUnixTimestamp(input.value, getNowDate())}
           onChange={handleChange}
           wrapperClassName={className}
-          className="form-control"
+          className={`form-control ${useCurrentDateTime ? "hidden" : ""}`}
           locale="ja"
           dateFormat={dateFormat || "yyyy/MM/dd"}
           disabled={useCurrentDateTime}
+          showTimeInput={showTimeInput}
         />
       </div>
     </Form.Group>

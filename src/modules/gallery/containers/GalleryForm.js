@@ -5,6 +5,7 @@ import { callFunction, saveFile, deleteFile } from "../../../common/firebase"
 import { Globals } from "../../../common/models"
 import { getItemById } from "../../../common/selectors"
 import Notification from "../../../common/components/Notification"
+import { getNowUnixTimestamp } from "../../../utils/dateUtil"
 import { MODULE_NAME } from "../models"
 import GalleryForm from "../components/GalleryForm"
 
@@ -65,7 +66,8 @@ const mapDispatchToProps = dispatch => ({
       tags: values.tags,
       images,
       description: values.description,
-      pickupFlag: values.pickupFlag
+      pickupFlag: values.pickupFlag,
+      createdAt: values.createdAt || getNowUnixTimestamp(),
     }
 
     if (values.id) {

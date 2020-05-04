@@ -7,8 +7,9 @@ import { adjustElementWidth } from "../../../utils/domUtil"
 import { RequiredLabel } from "../../../common/components/elements"
 import {
   InputField,
-  TextareaField,
-  CheckboxField
+  MarkdownTextareaField,
+  CheckboxField,
+  DateTimeField
 } from "../../../common/components/fields"
 import { MODULE_NAME } from "../models"
 
@@ -44,11 +45,21 @@ const GalleryForm = ({
         className="title-input"
         required
       />
+      <Field
+        name="createdAt"
+        component={DateTimeField}
+        label="投稿日時"
+        className="created-at-datepicker"
+        required
+        useCurrentDateTimeCheckbox={true}
+        dateFormat="yyyy/MM/dd HH:mm:ss"
+        showTimeInput
+      />
       <FieldArray name="images" component={ImagesField} change={change} />
       <FieldArray name="tags" component={TagsField} />
       <Field
         name="description"
-        component={TextareaField}
+        component={MarkdownTextareaField}
         label="説明"
         className="description-textarea"
       />
