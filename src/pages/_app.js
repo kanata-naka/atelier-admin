@@ -59,6 +59,7 @@ export default class extends App {
           />
           <meta httpEquiv="x-ua-compatible" content="ie=edge" />
           <link rel="stylesheet" href="/css/vendor/bootstrap.min.css" />
+          <link rel="stylesheet" href="/css/vendor/react-datepicker.min.css" />
           <link
             rel="stylesheet"
             href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"

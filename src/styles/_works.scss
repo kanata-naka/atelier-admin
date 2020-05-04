@@ -1,0 +1,164 @@
+@import "mixins";
+
+.work-form {
+  label {
+    font-weight: bold;
+    padding-right: 4px;
+  }
+
+  .error-message {
+    color: darkred;
+    padding-left: 8px;
+  }
+
+  .title-input {
+  }
+
+  .created-at-datepicker {
+    display: block;
+
+    input {
+      width: 200px;
+    }
+  }
+
+  .image-outer {
+    padding: 8px 0;
+  }
+
+  .image-container {
+    cursor: move;
+    display: inline-block;
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 0 8px 8px 0;
+    border: 1px dotted #ababab;
+    overflow: hidden;
+
+    &.removed {
+      cursor: pointer;
+      .image {
+        opacity: 0.2;
+      }
+    }
+  }
+
+  .image {
+    display: block;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 198px;
+  }
+
+  .image-file {
+    display: block;
+    margin: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+
+    .upload-icon {
+      color: lightgray;
+      display: block;
+      font-size: 64px;
+      margin: auto;
+      width: 64px;
+      height: 64px;
+      line-height: 64px;
+      text-align: center;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      position: absolute;
+    }
+  }
+
+  .image-file-input {
+    display: none;
+  }
+
+  .image-remove-button {
+    cursor: pointer;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+
+    i {
+      font-size: 1.2em;
+      color: darkred;
+    }
+  }
+
+  .description-textarea {
+    height: 512px;
+    resize: none;
+  }
+}
+
+.work-grid {
+  .column-title {
+    min-width: 200px;
+  }
+
+  .column-images {
+    width: 250px;
+    text-align: center;
+    overflow-x: hidden;
+  }
+
+  .image-container {
+    display: inline-block;
+    position: relative;
+    border: 1px solid #dedede;
+    width: 100px;
+    height: 100px;
+    padding: 4px;
+    overflow: hidden;
+  }
+
+  .image {
+    display: block;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 98px;
+  }
+
+  .column-description {
+    min-width: 250px;
+    white-space: pre-wrap;
+    overflow-y: auto;
+  }
+
+  .description__fixed-label {
+    max-height: 152px;
+  }
+
+  .column-date {
+    width: 200px;
+  }
+
+  .date-row {
+    padding-bottom: 8px;
+  }
+
+  .date-value {
+    padding-left: 4px;
+  }
+
+  .column-controls {
+    text-align: center;
+    width: 140px;
+  }
+}

@@ -45,9 +45,9 @@ const GlobalNav = ({ currentKey }) => {
           url: "/gallery",
           text: <span>{"GALLERY"}</span>
         }
-      ].map(item => {
+      ].map((item, index) => {
         if (item.type === "separator") {
-          return <hr />
+          return <hr key={index} />
         }
         switch (item.type) {
           case "separator":
@@ -55,7 +55,7 @@ const GlobalNav = ({ currentKey }) => {
           default:
             return (
               <GlobalNavItem
-                key={item.key}
+                key={index}
                 isActive={item.key === currentKey}
                 url={item.url}>
                 {item.text}

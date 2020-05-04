@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useCallback } from "react"
 import { Form, ButtonGroup, Button } from "react-bootstrap"
 import { reduxForm, Field, Fields } from "redux-form"
-import { adjustElementWidth } from "../../../utils/domUtils"
+import { adjustElementWidth } from "../../../utils/domUtil"
 import { RequiredLabel } from "../../../common/components/elements"
 import { TextareaField } from "../../../common/components/fields"
 import { MODULE_NAME } from "../models"

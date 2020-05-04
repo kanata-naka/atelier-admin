@@ -23,7 +23,7 @@ const mapDispatchToProps = dispatch => ({
         if (imageValue.removed) {
           try {
             // 画像を削除する
-            // await deleteFile(name)
+            await deleteFile(name)
           } catch (error) {
             console.error(error)
             Notification.error(

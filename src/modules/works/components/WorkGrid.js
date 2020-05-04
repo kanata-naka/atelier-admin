@@ -20,7 +20,7 @@ export default ({
 }) => {
   return (
     <div>
-      <GalleryGridControl
+      <WorkGridControl
         selectedByItemId={selectedByItemId}
         onDeleteSelected={onDeleteSelected}
       />
@@ -28,7 +28,7 @@ export default ({
         items={items}
         selectedByItemId={selectedByItemId}
         onSelect={select}
-        className="gallery-grid"
+        className="work-grid"
         striped
         rowClassName={item =>
           `${!item.editing && item.pickupFlag ? "pickup" : ""} ${
@@ -44,11 +44,23 @@ export default ({
             )
           },
           {
+            title: "出版日",
+            className: "column-published-date",
+            render: item => (
+              <span className="published-date__fixed-label">
+                {formatDateTimeFromUnixTimestamp(
+                  item.publishedDate,
+                  "YYYY/MM/DD"
+                )}
+              </span>
+            )
+          },
+          {
             title: "画像",
             className: "column-images",
             render: item => {
               return item.images.map((image, imageIndex) => (
-                <GalleryGridColumnImage key={imageIndex} image={image} />
+                <WorkGridColumnImage key={imageIndex} image={image} />
               ))
             }
           },
@@ -56,9 +68,7 @@ export default ({
             title: "説明",
             className: "column-description",
             render: item => (
-              <span className="description__fixed-label">
-                {item.description}
-              </span>
+              <div className="description__fixed-label">{item.description}</div>
             )
           },
           {
@@ -107,7 +117,7 @@ export default ({
   )
 }
 
-const GalleryGridControl = ({ selectedByItemId, onDeleteSelected }) => {
+const WorkGridControl = ({ selectedByItemId, onDeleteSelected }) => {
   return (
     <div className="controls">
       <Button
@@ -121,7 +131,7 @@ const GalleryGridControl = ({ selectedByItemId, onDeleteSelected }) => {
   )
 }
 
-const GalleryGridColumnImage = ({ image }) => {
+const WorkGridColumnImage = ({ image }) => {
   const containerRef = useRef(null)
 
   useEffect(() => {

@@ -76,6 +76,49 @@ form {
     font-size: 0.9em;
     margin-left: 3px;
   }
+
+  .checkbox-container {
+    input {
+      position: relative;
+      top: 2px;
+    }
+
+    label {
+      margin-left: 4px;
+      font-weight: normal;
+    }
+  }
+
+  .datepicker-container {
+    display: flex;
+    align-items: baseline;
+
+    .use-current-date-time-checkbox {
+      margin-right: 12px;
+    }
+  }
+
+  .markdown-textarea {
+    &-container {
+      display: flex;
+    }
+
+    &-column--left {
+      flex:1;
+    }
+
+    &-column--right {
+      flex:1;
+      padding: 0 8px;
+    }
+
+    &-preview {
+      border: 1px dotted #cdcdcd;
+      height: 512px;
+      padding: 8px;
+      overflow: scroll;
+    }
+  }
 }
 
 hr {

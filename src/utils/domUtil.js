@@ -1,3 +1,5 @@
+import * as marked from "marked"
+
 /**
  * 要素の大きさを外枠に合わせて調整する
  * @param containerElement 外枠のHTMLElement
@@ -15,4 +17,11 @@ export const adjustElementWidth = (containerElement, innerElement) => {
     innerElement.style.width = "auto"
     innerElement.style.height = containerHeight + "px"
   }
+}
+
+export const renderMarkdown = (src) => {
+  return <span
+    dangerouslySetInnerHTML={{
+      __html: marked(src, { breaks: true })
+    }}></span>
 }

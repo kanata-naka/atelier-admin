@@ -4,15 +4,15 @@ import { DndProvider, useDrag, useDrop } from "react-dnd-cjs"
 import HTML5Backend from "react-dnd-html5-backend-cjs"
 import { reduxForm, Field, FieldArray, Fields } from "redux-form"
 import { adjustElementWidth } from "../../../utils/domUtil"
-import { RequiredLabel } from "../../../common/components/elements"
 import {
   InputField,
-  TextareaField,
-  CheckboxField
+  MarkdownTextareaField,
+  CheckboxField,
+  DateTimeField
 } from "../../../common/components/fields"
 import { MODULE_NAME } from "../models"
 
-const GalleryForm = ({
+const WorkForm = ({
   id,
   initialValues,
   // -- Redux Form --
@@ -35,7 +35,7 @@ const GalleryForm = ({
         // フォームを初期化する
         initialize()
       }}
-      className="gallery-form">
+      className="work-form">
       <Field
         name="title"
         component={InputField}
@@ -44,11 +44,19 @@ const GalleryForm = ({
         className="title-input"
         required
       />
+      <Field
+        name="publishedDate"
+        component={DateTimeField}
+        label="出版日"
+        className="created-at-datepicker"
+        required
+        useCurrentDateTimeCheckbox={true}
+        useCurrentDateTimeCheckboxLabel="現在日を使用する"
+      />
       <FieldArray name="images" component={ImagesField} change={change} />
-      <FieldArray name="tags" component={TagsField} />
       <Field
         name="description"
-        component={TextareaField}
+        component={MarkdownTextareaField}
         label="説明"
         className="description-textarea"
       />
@@ -93,7 +101,6 @@ const ImagesField = ({ fields, change, meta: { error } }) => {
   return (
     <div className="image-outer">
       <label>{"画像"}</label>
-      <RequiredLabel />
       {error && <span className="error-message">{error}</span>}
       <div className="image-list">
         <DndProvider backend={HTML5Backend}>
@@ -205,71 +212,6 @@ const ImageField = ({ images, change, index, fields }) => {
   )
 }
 
-const TagsField = ({ fields, meta: { error } }) => {
-  const inputRef = useRef(null)
-
-  const handleTagClick = useCallback(index => {
-    fields.remove(index)
-  })
-
-  const handleConfirm = useCallback(() => {
-    let value = inputRef.current.value.trim()
-    if (value === "") {
-      return
-    }
-    fields.push(value)
-    // 現在の入力内容を削除する
-    inputRef.current.value = ""
-  }, [])
-
-  const handleKeyUp = useCallback(e => {
-    if (
-      e.keyCode === 13 ||
-      (e.keyCode === 32 &&
-        inputRef.current.value !== inputRef.current.value.trimEnd())
-    ) {
-      // スペースキーorエンターキーが(日本語入力の場合は確定後に)押下された場合、タグを追加する
-      handleConfirm()
-    }
-  }, [])
-
-  return (
-    <Form.Group controlId={"tags"}>
-      <Form.Label>{"タグ"}</Form.Label>
-      {error && <span className="error-message">{error}</span>}
-      <div className="tags-container" onClick={() => inputRef.current.focus()}>
-        <ul className="tags">
-          {fields.map((field, index) => {
-            return (
-              <li
-                key={field}
-                className="tag"
-                onClick={() => handleTagClick(index)}>
-                {fields.get(index)}
-              </li>
-            )
-          })}
-        </ul>
-        <input
-          className="tag-input"
-          type="text"
-          id="tag"
-          placeholder="タグ"
-          autoComplete="off"
-          ref={inputRef}
-          onKeyDown={e => {
-            if (e.keyCode === 13) {
-              e.preventDefault()
-            }
-          }}
-          onKeyUp={handleKeyUp}
-          onBlur={handleConfirm}
-        />
-      </div>
-    </Form.Group>
-  )
-}
-
 const validate = values => {
   // TODO
   return {
@@ -280,4 +222,4 @@ const validate = values => {
 export default reduxForm({
   form: MODULE_NAME,
   validate: validate
-})(GalleryForm)
+})(WorkForm)
