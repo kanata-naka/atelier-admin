@@ -16,7 +16,7 @@ body {
 }
 
 .sidebar {
-  background-color: black;
+  background-color: rgb(31, 31, 31);
   bottom: 0;
   color: white;
   left: 0;
@@ -42,17 +42,12 @@ body {
 
   &-item {
     p {
-      border-left: solid 2px white;
       padding: 18px;
     }
 
     &.active p {
       background-color: white;
       color: black;
-    }
-
-    .global-nav {
-      padding-left: 24px;
     }
 
     &__link {
@@ -62,8 +57,9 @@ body {
       text-decoration: none;
 
       &:hover {
-        background-color: white;
+        background-color: gray;
         color: black;
+        text-decoration: none;
       }
     }
   }
@@ -73,6 +69,13 @@ body {
   color: #2222aa;
   font-size: 2em;
   margin: 18px 0;
+}
+
+form {
+  .annotation {
+    font-size: 0.9em;
+    margin-left: 3px;
+  }
 }
 
 hr {

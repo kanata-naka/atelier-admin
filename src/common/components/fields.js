@@ -65,8 +65,7 @@ export const CheckboxField = ({
         className={className}
         checked={input.value}
         label={label}
-        {...input}>
-      </Form.Check>
+        {...input}></Form.Check>
     </Form.Group>
   )
 }

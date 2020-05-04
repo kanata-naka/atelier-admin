@@ -9,10 +9,8 @@ const Component = withAuthentication(() => {
       <Head>
         <title>{"ダッシュボード - カナタノアトリエ (admin)"}</title>
       </Head>
-      <Sidebar />
-      <div className="page-content">
-        <h1 className="page-heading">{"ダッシュボード"}</h1>
-      </div>
+      <Sidebar currentKey={"home"} />
+      <div className="page-content"></div>
     </div>
   )
 })

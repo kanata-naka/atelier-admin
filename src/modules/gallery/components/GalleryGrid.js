@@ -30,7 +30,11 @@ export default ({
         onSelect={select}
         className="gallery-grid"
         striped
-        rowClassName={(item) => `${!item.editing && item.pickupFlag ? "pickup" : ""} ${item.editing ? "editing" : ""}`}
+        rowClassName={item =>
+          `${!item.editing && item.pickupFlag ? "pickup" : ""} ${
+            item.editing ? "editing" : ""
+          }`
+        }
         columns={[
           {
             title: "タイトル",

@@ -3,10 +3,10 @@ import Link from "next/link"
 /**
  * サイドバー
  */
-export default () => {
+export default ({ currentKey }) => {
   return (
     <div className="sidebar">
-      <GlobalNav />
+      <GlobalNav currentKey={currentKey} />
     </div>
   )
 }
@@ -14,32 +14,71 @@ export default () => {
 /**
  * グローバルナビゲーション
  */
-const GlobalNav = () => {
+const GlobalNav = ({ currentKey }) => {
   return (
     <ul className="global-nav">
-      <GlobalNavItem key="home" title="ホーム" url="/" />
-      <GlobalNavItem key="topImages" title="トップ画像" url="/topImages" />
-      <GlobalNavItem title="投稿管理">
-        <GlobalNavItem key="works" title="WORKS" url="/works" />
-        <GlobalNavItem key="gallery" title="GALLERY" url="/gallery" />
-      </GlobalNavItem>
+      {[
+        {
+          type: "item",
+          key: "home",
+          url: "/",
+          text: <span>{"ダッシュボード"}</span>
+        },
+        {
+          type: "item",
+          key: "topImages",
+          url: "/topImages",
+          text: <span>{"トップ画像"}</span>
+        },
+        {
+          type: "separator"
+        },
+        {
+          type: "item",
+          key: "works",
+          url: "/works",
+          text: <span>{"WORKS"}</span>
+        },
+        {
+          type: "item",
+          key: "gallery",
+          url: "/gallery",
+          text: <span>{"GALLERY"}</span>
+        }
+      ].map(item => {
+        if (item.type === "separator") {
+          return <hr />
+        }
+        switch (item.type) {
+          case "separator":
+            return <hr />
+          default:
+            return (
+              <GlobalNavItem
+                key={item.key}
+                isActive={item.key === currentKey}
+                url={item.url}>
+                {item.text}
+              </GlobalNavItem>
+            )
+        }
+      })}
     </ul>
   )
 }
 
-const GlobalNavItem = ({ title, url, children }) => {
+const GlobalNavItem = ({ url, isActive, children }) => {
   return (
-    <li className={"global-nav-item" + (children ? " has-children" : "")}>
+    <li className={`global-nav-item ${isActive ? "active" : ""}`}>
       {url ? (
         <Link href={url}>
           <a className="global-nav-item__link">
-            <p>{title}</p>
+            <p>{children}</p>
           </a>
         </Link>
       ) : (
-        <p>{title}</p>
+        <p>{children}</p>
       )}
-      {children && <ul className="global-nav">{children}</ul>}
     </li>
   )
 }

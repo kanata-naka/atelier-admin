@@ -13,7 +13,7 @@
   }
 
   .image-outer {
-    padding: 8px 0;
+    padding: 4px 0 8px;
   }
 
   .image-container, .thumbnail-image-container {
@@ -206,6 +206,7 @@
 
   .column-description {
     min-width: 250px;
+    white-space: pre-wrap;
   }
 
   .description-textarea {

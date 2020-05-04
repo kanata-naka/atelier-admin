@@ -16,7 +16,7 @@ const Component = withAuthentication(() => {
       <Head>
         <title>{"トップ画像 - カナタノアトリエ (admin)"}</title>
       </Head>
-      <Sidebar />
+      <Sidebar currentKey={"topImages"} />
       <div className="page-content">
         <h1 className="page-heading">{"トップ画像 "}</h1>
         <hr />

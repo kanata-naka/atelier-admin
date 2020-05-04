@@ -1,11 +1,15 @@
-import React, { useState, useRef, useEffect, useCallback } from "react"
+import React, { useRef, useEffect, useCallback } from "react"
 import { Form, ButtonGroup, Button } from "react-bootstrap"
 import { DndProvider, useDrag, useDrop } from "react-dnd-cjs"
 import HTML5Backend from "react-dnd-html5-backend-cjs"
 import { reduxForm, Field, FieldArray, Fields } from "redux-form"
 import { adjustElementWidth } from "../../../utils/domUtils"
 import { RequiredLabel } from "../../../common/components/elements"
-import { InputField, TextareaField, CheckboxField } from "../../../common/components/fields"
+import {
+  InputField,
+  TextareaField,
+  CheckboxField
+} from "../../../common/components/fields"
 import { MODULE_NAME } from "../models"
 
 const GalleryForm = ({
@@ -202,7 +206,6 @@ const ImageField = ({ images, change, index, fields }) => {
 }
 
 const TagsField = ({ fields, meta: { error } }) => {
-  const [beforeKeyCode, setBeforeKeyCode] = useState(null)
   const inputRef = useRef(null)
 
   const handleTagClick = useCallback(index => {
@@ -217,21 +220,20 @@ const TagsField = ({ fields, meta: { error } }) => {
     fields.push(value)
     // 現在の入力内容を削除する
     inputRef.current.value = ""
-  })
+  }, [])
 
   const handleKeyUp = useCallback(
     e => {
       if (
-        (beforeKeyCode !== 229 && e.keyCode === 32) ||
-        (beforeKeyCode === 229 && e.keyCode === 229) ||
-        e.keyCode === 13
+        e.keyCode === 13 ||
+        (e.keyCode === 32 &&
+          inputRef.current.value !== inputRef.current.value.trimEnd())
       ) {
         // スペースキーorエンターキーが(日本語入力の場合は確定後に)押下された場合、タグを追加する
         handleConfirm()
       }
-      setBeforeKeyCode(e.keyCode)
     },
-    [beforeKeyCode]
+    []
   )
 
   return (
@@ -258,6 +260,11 @@ const TagsField = ({ fields, meta: { error } }) => {
           placeholder="タグ"
           autoComplete="off"
           ref={inputRef}
+          onKeyDown={e => {
+            if (e.keyCode === 13) {
+              e.preventDefault()
+            }
+          }}
           onKeyUp={handleKeyUp}
           onBlur={handleConfirm}
         />
