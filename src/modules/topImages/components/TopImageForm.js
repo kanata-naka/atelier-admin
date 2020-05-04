@@ -73,7 +73,6 @@ const ImageField = ({ image, names, change }) => {
     const file = e.target.files[0]
     change(names[0], URL.createObjectURL(file))
     change(names[1], file)
-    console.log("Image uploaded:", file.name)
     // 同じファイルをアップロードしてもonChangeイベントを走らせるためvalueを空にする
     e.target.value = ""
   })
@@ -120,7 +119,6 @@ const ThumbnailImageField = ({ thumbnailImage, names, change }) => {
     const file = e.target.files[0]
     change(names[0], URL.createObjectURL(file))
     change(names[1], file)
-    console.log("Image uploaded:", file.name)
     // 同じファイルをアップロードしてもonChangeイベントを走らせるためvalueを空にする
     e.target.value = ""
   })

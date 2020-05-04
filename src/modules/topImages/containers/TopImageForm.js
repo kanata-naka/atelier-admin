@@ -10,6 +10,7 @@ import { getLastOrder } from "../selectors"
 import TopImageForm from "../components/TopImageForm"
 
 const mapStateToProps = state => ({
+  lastOrder: getLastOrder(state[MODULE_NAME]),
   initialValues: {}
 })
 
@@ -27,9 +28,9 @@ const mergeProps = (state, { dispatch }) => ({
     try {
       // 画像をアップロードする
       image.name = `topImages/${id}/images/${values.image.file.name}`
-      // await saveFile(values.image.file, image.name)
+      await saveFile(values.image.file, image.name)
     } catch (error) {
-      console.log(error)
+      console.error(error)
       Notification.error(
         `画像 [${image.name}] のアップロードに失敗しました。\n` +
           JSON.stringify(error)
@@ -41,9 +42,9 @@ const mergeProps = (state, { dispatch }) => ({
     try {
       // サムネイル画像をアップロードする
       thumbnailImage.name = `topImages/${id}/thumbnailImages/${values.thumbnailImage.file.name}`
-      // await saveFile(values.thumbnailImage.file, thumbnailImage.name)
+      await saveFile(values.thumbnailImage.file, thumbnailImage.name)
     } catch (error) {
-      console.log(error)
+      console.error(error)
       Notification.error(
         `サムネイル画像 [${thumbnailImage.name}] のアップロードに失敗しました。\n` +
           JSON.stringify(error)
@@ -56,18 +57,18 @@ const mergeProps = (state, { dispatch }) => ({
       image,
       thumbnailImage,
       description: values.description,
-      order: getLastOrder(state[MODULE_NAME]) + 1
+      order: state.lastOrder + 1
     }
 
     try {
-      console.log(data)
+      console.error(data)
       // トップ画像を登録する
-      // await callFunction({
-      //   dispatch,
-      //   name: "api-topImages-create",
-      //   data,
-      //   globals: Globals
-      // })
+      await callFunction({
+        dispatch,
+        name: "api-topImages-create",
+        data,
+        globals: Globals
+      })
       Router.push("/topImages")
       Notification.success("トップ画像を登録しました。")
     } catch (error) {

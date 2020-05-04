@@ -47,12 +47,12 @@ const mapDispatchToProps = dispatch => ({
       values.topImages.map(async (topImage, index) => {
         let imageName = topImage.image.name
         if (topImage.image.newFile) {
-          const hasError = false
+          let hasError = false
           try {
             // 画像を削除する
-            // await deleteFile(imageName)
+            await deleteFile(imageName)
           } catch (error) {
-            console.log(error)
+            console.error(error)
             Notification.error(
               `画像 [${imageName}] の削除に失敗しました。\n` +
                 JSON.stringify(error)
@@ -64,9 +64,9 @@ const mapDispatchToProps = dispatch => ({
             imageName = `topImages/${topImage.id}/images/${file.name}`
             try {
               // 画像をアップロードする
-              // await saveFile(file, imageName)
+              await saveFile(file, imageName)
             } catch (error) {
-              console.log(error)
+              console.error(error)
               Notification.error(
                 `画像 [${imageName}] のアップロードに失敗しました。\n` +
                   JSON.stringify(error)
@@ -77,12 +77,12 @@ const mapDispatchToProps = dispatch => ({
         }
         let thumbnailImageName = topImage.thumbnailImage.name
         if (topImage.thumbnailImage.newFile) {
-          const hasError = false
+          let hasError = false
           try {
             // 画像を削除する
-            // await deleteFile(thumbnailImageName)
+            await deleteFile(thumbnailImageName)
           } catch (error) {
-            console.log(error)
+            console.error(error)
             Notification.error(
               `画像 [${thumbnailImageName}] の削除に失敗しました。\n` +
                 JSON.stringify(error)
@@ -94,9 +94,9 @@ const mapDispatchToProps = dispatch => ({
             thumbnailImageName = `topImages/${topImage.id}/thumbnailImages/${file.name}`
             try {
               // サムネイル画像をアップロードする
-              // await upload(file, thumbnailImageName)
+              await saveFile(file, thumbnailImageName)
             } catch (error) {
-              console.log(error)
+              console.error(error)
               Notification.error(
                 `画像 [${thumbnailImageName}] のアップロードに失敗しました。\n` +
                   JSON.stringify(error)
@@ -106,6 +106,7 @@ const mapDispatchToProps = dispatch => ({
           }
         }
         return {
+          id: topImage.id,
           image: {
             name: imageName
           },
@@ -118,15 +119,14 @@ const mapDispatchToProps = dispatch => ({
         }
       })
     )
-    // トップ画像を（一括で）更新する
+    // トップ画像を一括で更新する
     try {
-      console.log(data)
-      // await callFunction({
-      //   dispatch,
-      //   name: "api-topImages-bulkUpdate",
-      //   data,
-      //   globals: Globals
-      // })
+      await callFunction({
+        dispatch,
+        name: "api-topImages-bulkUpdate",
+        data,
+        globals: Globals
+      })
       Router.push("/topImages")
       Notification.success("トップ画像を更新しました。")
     } catch (error) {

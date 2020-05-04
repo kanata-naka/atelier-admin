@@ -26,6 +26,7 @@ const TopImageGrid = ({
 }) => {
   useEffect(() => {
     initialize({ topImages })
+    onCancelEdit()
   }, [topImages])
 
   return (
@@ -266,7 +267,6 @@ const ImageField = ({
       change(names[1], URL.createObjectURL(file))
       change(names[2], file)
       change(names[3], topImage.image.url.input.value)
-      console.log("Image uploaded:", file.name)
       // 同じファイルをアップロードしてもonChangeイベントを走らせるためvalueを空にする
       e.target.value = ""
     },
@@ -341,7 +341,6 @@ const ThumbnailImageField = ({
       change(names[1], URL.createObjectURL(file))
       change(names[2], file)
       change(names[3], topImage.thumbnailImage.url.input.value)
-      console.log("Image uploaded:", file.name)
       // 同じファイルをアップロードしてもonChangeイベントを走らせるためvalueを空にする
       e.target.value = ""
     },

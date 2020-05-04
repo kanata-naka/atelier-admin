@@ -5,7 +5,7 @@ import HTML5Backend from "react-dnd-html5-backend-cjs"
 import { reduxForm, Field, FieldArray, Fields } from "redux-form"
 import { adjustElementWidth } from "../../../utils/domUtils"
 import { RequiredLabel } from "../../../common/components/elements"
-import { InputField, TextareaField } from "../../../common/components/fields"
+import { InputField, TextareaField, CheckboxField } from "../../../common/components/fields"
 import { MODULE_NAME } from "../models"
 
 const GalleryForm = ({
@@ -48,6 +48,12 @@ const GalleryForm = ({
         label="説明"
         className="description-textarea"
       />
+      <Field
+        name="pickupFlag"
+        component={CheckboxField}
+        label="トップページに表示する"
+        className="pickup-flag-checkbox"
+      />
       <ButtonGroup>
         <Button variant="primary" type="submit" disabled={!dirty || submitting}>
           {"送信"}
@@ -74,7 +80,6 @@ const ImagesField = ({ fields, change, meta: { error } }) => {
         url: URL.createObjectURL(file),
         newFile: file
       })
-      console.log("Image uploaded:", file.name)
       // 同じファイルをアップロードしてもonChangeイベントを走らせるためvalueを空にする
       e.target.value = ""
     },
@@ -153,7 +158,6 @@ const ImageField = ({ images, change, index, fields }) => {
     drop(item) {
       const dragIndex = item.index
       const hoverIndex = index
-      console.log("moved", dragIndex, "to", hoverIndex)
       // 要素を入れ替える
       fields.move(dragIndex, hoverIndex)
     }

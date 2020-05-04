@@ -51,3 +51,22 @@ export const TextareaField = ({
     </Form.Group>
   )
 }
+
+export const CheckboxField = ({
+  input,
+  label,
+  className,
+  meta: { touched, error }
+}) => {
+  return (
+    <Form.Group controlId={input.name}>
+      {touched && error && <span className="error-message">{error}</span>}
+      <Form.Check
+        className={className}
+        checked={input.value}
+        label={label}
+        {...input}>
+      </Form.Check>
+    </Form.Group>
+  )
+}

@@ -1,5 +1,4 @@
 import { connect } from "react-redux"
-import { initialize } from "redux-form"
 import Router from "next/router"
 import uuidv4 from "uuid/v4"
 import { callFunction, saveFile, deleteFile } from "../../../common/firebase"
@@ -19,7 +18,6 @@ const mapDispatchToProps = dispatch => ({
     const id = values.id || uuidv4()
     let images = await Promise.all(
       values.images.map(async imageValue => {
-        console.log(imageValue)
         // ストレージ上のパス
         let name = imageValue.name
         if (imageValue.removed) {
@@ -27,7 +25,7 @@ const mapDispatchToProps = dispatch => ({
             // 画像を削除する
             // await deleteFile(name)
           } catch (error) {
-            console.log(error)
+            console.error(error)
             Notification.error(
               `画像 [${name}] の削除に失敗しました。\n` + JSON.stringify(error)
             )
@@ -39,9 +37,9 @@ const mapDispatchToProps = dispatch => ({
           name = `arts/${id}/images/${file.name}`
           try {
             // 新しい画像をアップロードする
-            // await saveFile(file, name)
+            await saveFile(file, name)
           } catch (error) {
-            console.log(error)
+            console.error(error)
             Notification.error(
               `画像 [${name}] のアップロードに失敗しました。\n` +
                 JSON.stringify(error)
@@ -66,19 +64,19 @@ const mapDispatchToProps = dispatch => ({
       title: values.title,
       tags: values.tags,
       images,
-      description: values.description
+      description: values.description,
+      pickupFlag: values.pickupFlag
     }
 
     if (values.id) {
       // イラストを更新する
       try {
-        console.log(data)
-        // await callFunction({
-        //   dispatch,
-        //   name: "api-arts-update",
-        //   data,
-        //   globals: Globals
-        // })
+        await callFunction({
+          dispatch,
+          name: "api-arts-update",
+          data,
+          globals: Globals
+        })
         Router.push("/gallery")
         Notification.success("作品を編集しました。")
       } catch (error) {
@@ -90,13 +88,12 @@ const mapDispatchToProps = dispatch => ({
     } else {
       // イラストを登録する
       try {
-        console.log(data)
-        // await callFunction({
-        //   dispatch,
-        //   name: "api-arts-create",
-        //   data,
-        //   globals: Globals
-        // })
+        await callFunction({
+          dispatch,
+          name: "api-arts-create",
+          data,
+          globals: Globals
+        })
         Router.push("/gallery")
         Notification.success("作品を登録しました。")
       } catch (error) {
@@ -107,7 +104,6 @@ const mapDispatchToProps = dispatch => ({
       }
     }
   }
-  // initialize: () => initialize(MODULE_NAME, {})
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(GalleryForm)

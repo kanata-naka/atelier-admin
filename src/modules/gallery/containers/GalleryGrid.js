@@ -3,6 +3,7 @@ import { bindActionCreators } from "redux"
 import { isDirty } from "redux-form"
 import Router from "next/router"
 import { callFunction } from "../../../common/firebase"
+import { Globals } from "../../../common/models"
 import { getItemsByPage } from "../../../common/selectors"
 import Notification from "../../../common/components/Notification"
 import { select, movePage, edit } from "../actions"
@@ -61,7 +62,8 @@ const mapDispatchToProps = dispatch => ({
           await callFunction({
             dispatch,
             name: "api-arts-deleteById",
-            data: { id: entry[0] }
+            data: { id: entry[0] },
+            globals: Globals
           })
           dispatch(edit(null))
           Router.push("/gallery")
