@@ -12,76 +12,34 @@
     padding-left: 8px;
   }
 
-  .image-outer {
-    padding: 4px 0 8px;
-  }
+  .image-field-wrapper {
+    .image-field {
+      width: 400px;
+      height: 225px;
 
-  .image-container, .thumbnail-image-container {
-    position: relative;
-    margin: 0 8px 8px 0;
-    border: 1px dotted #ababab;
-    overflow: hidden;
-  }
-
-  .image-container {
-    width: 400px;
-    height: 225px;
-  }
-
-  .thumbnail-image-container {
-    width: 64px;
-    height: 64px;
-  }
-
-  .image-file, .thumbnail-image-file {
-    display: block;
-    margin: 0;
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-
-    .upload-icon {
-      color: lightgray;
-      display: block;
-      margin: auto;
-      text-align: center;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      position: absolute;
+      .image-file-input-label {
+        .image-file-upload-icon {
+          font-size: 64px;
+          width: 64px;
+          height: 64px;
+          line-height: 64px;
+        }
+      }
     }
-  }
 
-  .image {
-    display: block;
-    bottom: 0;
-    left: 0;
-    margin: auto;
-    position: absolute;
-    right: 0;
-    top: 0;
-    width: 100%;
-  }
+    .thumbnail-image-field {
+      width: 64px;
+      height: 64px;
 
-  .image-file .upload-icon {
-    font-size: 64px;
-    width: 64px;
-    height: 64px;
-    line-height: 64px;
-  }
-
-  .thumbnail-image-file .upload-icon {
-    font-size: 32px;
-    width: 32px;
-    height: 32px;
-    line-height: 32px;
-  }
-
-  .image-file-input {
-    display: none;
+      .image-file-input-label {
+        .image-file-upload-icon {
+          font-size: 32px;
+          width: 32px;
+          height: 32px;
+          line-height: 32px;
+        }
+      }
+    }
   }
 
   .description-textarea {
@@ -99,50 +57,58 @@
 
 .top-image-grid {
 
-  .image-container, .thumbnail-image-container {
+  .image-field {
     display: inline-block;
     position: relative;
     border: 1px solid #dedede;
     padding: 4px;
     overflow: hidden;
-  }
 
-  .image, .thumbnail-image {
-    display: block;
-    bottom: 0;
-    left: 0;
-    margin: auto;
-    position: absolute;
-    right: 0;
-    top: 0;
-    width: 100%;
-  }
-
-  .image-file, .thumbnail-image-file {
-    display: block;
-    margin: 0;
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-
-    .upload-icon {
-      color: lightgray;
+    .preview-image {
       display: block;
-      margin: auto;
-      text-align: center;
-      top: 0;
       bottom: 0;
       left: 0;
-      right: 0;
+      margin: auto;
       position: absolute;
+      right: 0;
+      top: 0;
+      width: 100%;
     }
-  }
 
-  .image-container {
-    width: 200px;
-    height: 113px;
+    &-remove-button {
+      cursor: pointer;
+      position: absolute;
+
+      i {
+        color: darkred;
+      }
+    }
+
+    .image-file-input-label {
+      display: block;
+      margin: 0;
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+
+      .image-file-input {
+        display: none;
+      }
+
+      .image-file-upload-icon {
+        color: lightgray;
+        display: block;
+        margin: auto;
+        text-align: center;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        position: absolute;
+      }
+    }
   }
 
   .column-image {
@@ -151,32 +117,27 @@
     overflow-x: hidden;
   }
 
-  .image-file .upload-icon {
-    font-size: 48px;
-    width: 48px;
-    height: 48px;
-    line-height: 48px;
-  }
+  .image-field {
+    width: 200px;
+    height: 113px;
 
-  .image-file-input {
-    display: none;
-  }
+    .image-field-remove-button {
+      top: 8px;
+      right: 8px;
 
-  .image-remove-button {
-    cursor: pointer;
-    position: absolute;
-    top: 8px;
-    right: 8px;
-
-    i {
-      font-size: 1.2em;
-      color: darkred;
+      i {
+        font-size: 1.2em;
+      }
     }
-  }
 
-  .thumbnail-image-container {
-    width: 32px;
-    height: 32px;
+    .image-file-input-label {
+      .image-file-upload-icon {
+        font-size: 48px;
+        width: 48px;
+        height: 48px;
+        line-height: 48px;
+      }
+    }
   }
 
   .column-thumbnail-image {
@@ -185,22 +146,26 @@
     overflow-x: hidden;
   }
 
-  .thumbnail-image-file .upload-icon {
-    font-size: 16px;
-    width: 16px;
-    height: 16px;
-    line-height: 16px;
-  }
+  .thumbnail-image-field {
+    width: 32px;
+    height: 32px;
 
-  .thumbnail-image-remove-button {
-    cursor: pointer;
-    position: absolute;
-    top: 0px;
-    right: 4px;
+    .image-field-remove-button {
+      top: 0px;
+      right: 4px;
 
-    i {
-      font-size: 1em;
-      color: darkred;
+      i {
+        font-size: 1em;
+      }
+    }
+
+    .image-file-input-label {
+      .image-file-upload-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+        line-height: 16px;
+      }
     }
   }
 

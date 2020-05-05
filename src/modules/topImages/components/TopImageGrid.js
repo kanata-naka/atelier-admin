@@ -140,14 +140,9 @@ const _TopImageGrid = ({
           className: "column-image",
           render: (unused, index) => {
             return (
-              <Fields
-                names={[
-                  `topImages[${index}].image.name`,
-                  `topImages[${index}].image.url`,
-                  `topImages[${index}].image.newFile`,
-                  `topImages[${index}].image.originalUrl`
-                ]}
-                component={ImageField}
+              <ImageField
+                name="image"
+                classNamePrefix="image"
                 index={index}
                 change={change}
                 editing={editing}
@@ -160,14 +155,9 @@ const _TopImageGrid = ({
           className: "column-thumbnail-image",
           render: (unused, index) => {
             return (
-              <Fields
-                names={[
-                  `topImages[${index}].thumbnailImage.name`,
-                  `topImages[${index}].thumbnailImage.url`,
-                  `topImages[${index}].thumbnailImage.newFile`,
-                  `topImages[${index}].thumbnailImage.originalUrl`
-                ]}
-                component={ThumbnailImageField}
+              <ImageField
+                name="thumbnailImage"
+                classNamePrefix="thumbnail-image"
                 index={index}
                 change={change}
                 editing={editing}
@@ -241,89 +231,52 @@ const _TopImageGrid = ({
   )
 }
 
-const ImageField = ({
-  topImages,
-  editing,
+export const ImageField = ({
+  name,
+  classNamePrefix,
   index,
   change,
-  // -- Redux Form --
-  names
+  editing
 }) => {
-  const topImage = topImages[index]
-  const containerRef = useRef(null)
-
-  useEffect(() => {
-    const containerElement = containerRef.current
-    const innerElement = containerElement.children[0]
-    innerElement.onload = () => {
-      adjustElementWidth(containerElement, innerElement)
-    }
-  }, [index])
-
-  const handleSelect = useCallback(
-    e => {
-      e.preventDefault()
-      const file = e.target.files[0]
-      change(names[1], URL.createObjectURL(file))
-      change(names[2], file)
-      change(names[3], topImage.image.url.input.value)
-      // 同じファイルをアップロードしてもonChangeイベントを走らせるためvalueを空にする
-      e.target.value = ""
-    },
-    [change]
-  )
-
-  // 取り消しボタンをクリックした際の処理
-  const handleRemoveButtonClick = useCallback(
-    e => {
-      e.preventDefault()
-      change(names[1], topImage.image.originalUrl.input.value)
-      change(names[2], null)
-    },
-    [change]
-  )
-
-  const dirty =
-    topImage.image.originalUrl.input.value &&
-    topImage.image.url.input.value !== topImage.image.originalUrl.input.value
-
   return (
-    <div className="image-container" ref={containerRef}>
-      <img
-        className="image"
-        src={topImage.image.url.input.value}
-        style={{ opacity: editing && !dirty ? 0.5 : 1 }}
-      />
-      {editing && (
-        <label className="image-file" htmlFor={`topImages[${index}].image`}>
-          {!dirty && <i className="fas fa-file-upload upload-icon"></i>}
-          <input
-            className="image-file-input"
-            type="file"
-            id={`topImages[${index}].image`}
-            accept=".gif, .jpg, .jpeg, .png"
-            onChange={handleSelect}
-          />
-        </label>
-      )}
-      {editing && dirty && (
-        <div className="image-remove-button" onClick={handleRemoveButtonClick}>
-          <i className="fas fa-times"></i>
-        </div>
-      )}
-    </div>
+    <Fields
+      names={[
+        `topImages[${index}].${name}.name`,
+        `topImages[${index}].${name}.url`,
+        `topImages[${index}].${name}.newFile`,
+        `topImages[${index}].${name}.originalUrl`
+      ]}
+      component={_ImageField}
+      name={name}
+      classNamePrefix={classNamePrefix}
+      index={index}
+      change={change}
+      editing={editing}
+    />
   )
 }
 
-const ThumbnailImageField = ({
-  topImages,
-  editing,
+const _ImageField = ({
+  name,
+  classNamePrefix,
   index,
   change,
+  editing,
   // -- Redux Form --
-  names
+  names,
+  topImages: {
+    [index]: {
+      [name]: {
+        url: {
+          input: { value: url }
+        },
+        originalUrl: {
+          input: { value: originalUrl }
+        }
+      }
+    }
+  }
 }) => {
-  const topImage = topImages[index]
   const containerRef = useRef(null)
 
   useEffect(() => {
@@ -332,52 +285,45 @@ const ThumbnailImageField = ({
     innerElement.onload = () => {
       adjustElementWidth(containerElement, innerElement)
     }
-  }, [index])
+  }, [url])
 
-  const handleSelect = useCallback(
-    e => {
-      e.preventDefault()
-      const file = e.target.files[0]
-      change(names[1], URL.createObjectURL(file))
-      change(names[2], file)
-      change(names[3], topImage.thumbnailImage.url.input.value)
-      // 同じファイルをアップロードしてもonChangeイベントを走らせるためvalueを空にする
-      e.target.value = ""
-    },
-    [change]
-  )
+  const handleSelect = e => {
+    e.preventDefault()
+    const file = e.target.files[0]
+    change(names[1], URL.createObjectURL(file))
+    change(names[2], file)
+    change(names[3], url)
+    // 同じファイルをアップロードしてもonChangeイベントを走らせるためvalueを空にする
+    e.target.value = ""
+  }
 
   // 取り消しボタンをクリックした際の処理
-  const handleRemoveButtonClick = useCallback(
-    e => {
-      e.preventDefault()
-      change(names[1], topImage.thumbnailImage.originalUrl.input.value)
-      change(names[2], null)
-    },
-    [change]
-  )
+  const handleRemoveButtonClick = e => {
+    e.preventDefault()
+    change(names[1], originalUrl)
+    change(names[2], null)
+  }
 
-  const dirty =
-    topImage.thumbnailImage.originalUrl.input.value &&
-    topImage.thumbnailImage.url.input.value !==
-      topImage.thumbnailImage.originalUrl.input.value
+  const dirty = originalUrl && url !== originalUrl
 
   return (
-    <div className="thumbnail-image-container" ref={containerRef}>
+    <div className={`image-field ${classNamePrefix}-field`} ref={containerRef}>
       <img
-        className="thumbnail-image"
-        src={topImage.thumbnailImage.url.input.value}
+        className="preview-image"
+        src={url}
         style={{ opacity: editing && !dirty ? 0.5 : 1 }}
       />
       {editing && (
         <label
-          className="thumbnail-image-file"
-          htmlFor={`topImages[${index}].thumbnailImage`}>
-          {!dirty && <i className="fas fa-file-upload upload-icon"></i>}
+          className="image-file-input-label"
+          htmlFor={`topImages[${index}].${name}`}>
+          {!dirty && (
+            <i className="fas fa-file-upload image-file-upload-icon"></i>
+          )}
           <input
             className="image-file-input"
             type="file"
-            id={`topImages[${index}].thumbnailImage`}
+            id={`topImages[${index}].${name}`}
             accept=".gif, .jpg, .jpeg, .png"
             onChange={handleSelect}
           />
@@ -385,7 +331,7 @@ const ThumbnailImageField = ({
       )}
       {editing && dirty && (
         <div
-          className="thumbnail-image-remove-button"
+          className="image-field-remove-button"
           onClick={handleRemoveButtonClick}>
           <i className="fas fa-times"></i>
         </div>

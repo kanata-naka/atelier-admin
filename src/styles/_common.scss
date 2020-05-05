@@ -89,7 +89,7 @@ form {
     }
   }
 
-  .datepicker-container {
+  .datepicker-wrapper {
     display: flex;
     align-items: baseline;
 
@@ -97,9 +97,15 @@ form {
       margin-right: 12px;
     }
 
-    input {
-      &.hidden {
-        visibility: hidden;
+    .datepicker-container {
+      display: block;
+
+      input {
+        width: 200px;
+
+        &.hidden {
+          visibility: hidden;
+        }
       }
     }
   }
@@ -123,6 +129,129 @@ form {
       height: 512px;
       padding: 8px;
       overflow: scroll;
+    }
+  }
+
+  .image-field-wrapper {
+    padding: 4px 0 8px;
+
+    .image-field {
+      position: relative;
+      margin: 0 8px 8px 0;
+      border: 1px dotted #ababab;
+      overflow: hidden;
+
+      .preview-image {
+        display: block;
+        bottom: 0;
+        left: 0;
+        margin: auto;
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 100%;
+      }
+
+      .image-file-input-label {
+        display: block;
+        margin: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+
+        .image-file-input {
+          display: none;
+        }
+
+        .image-file-upload-icon {
+          color: lightgray;
+          display: block;
+          margin: auto;
+          text-align: center;
+          top: 0;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          position: absolute;
+        }
+      }
+    }
+  }
+
+  .images-field-wrapper {
+    padding: 8px 0;
+
+    .image-field {
+      cursor: move;
+      display: inline-block;
+      position: relative;
+      width: 200px;
+      height: 200px;
+      margin: 0 8px 8px 0;
+      border: 1px dotted #ababab;
+      overflow: hidden;
+
+      &.removed {
+        cursor: pointer;
+        .preview-image {
+          opacity: 0.2;
+        }
+      }
+
+      .preview-image {
+        display: block;
+        bottom: 0;
+        left: 0;
+        margin: auto;
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 198px;
+      }
+
+      &-remove-button {
+        cursor: pointer;
+        position: absolute;
+        top: 8px;
+        right: 8px;
+
+        i {
+          font-size: 1.2em;
+          color: darkred;
+        }
+      }
+
+      .image-file-input-label {
+        display: block;
+        margin: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+
+        .image-file-input {
+          display: none;
+        }
+
+        .image-file-upload-icon {
+          color: lightgray;
+          display: block;
+          font-size: 64px;
+          margin: auto;
+          width: 64px;
+          height: 64px;
+          line-height: 64px;
+          text-align: center;
+          top: 0;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          position: absolute;
+        }
+      }
     }
   }
 }
