@@ -148,10 +148,10 @@ export const DateTimeField = ({
     useCurrentDateTimeCheckbox
   )
 
-  const toggleUseCurrentDateTime = value => {
-    setUseCurrentDateTime(value)
+  const toggleUseCurrentDateTime = _useCurrentDateTime => {
+    setUseCurrentDateTime(_useCurrentDateTime)
     // 初期化する
-    if (value) {
+    if (_useCurrentDateTime) {
       input.onChange("")
     } else {
       input.onChange(initial)
