@@ -262,22 +262,24 @@ hr {
   margin: 20px 0;
 }
 
-table {
-  tr.editing {
-    background-color: cornsilk !important;
+.grid {
+  &-row {
+    &.editing {
+      background-color: cornsilk !important;
+    }
+
+    &.pickup {
+      background-color: aliceblue !important;
+    }
   }
 
-  tr.pickup {
-    background-color: aliceblue !important;
-  }
-
-  td {
+  &-cell {
     vertical-align: middle !important;
     overflow-y: hidden;
-  }
 
-  .column-checks {
-    width: 32px;
+    &.column-checks {
+      width: 32px;
+    }
   }
 }
 

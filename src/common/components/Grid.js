@@ -48,7 +48,7 @@ export default props => {
   }, [checkedAll])
 
   return (
-    <Table className={className}>
+    <Table className={`grid ${className}`}>
       <HeaderRow
         checkedAll={checkedAll}
         handleCheckAll={handleCheckAll}
@@ -74,7 +74,7 @@ export default props => {
 const HeaderRow = ({ columns, checkedAll, onSelect, handleCheckAll }) => {
   return (
     <thead>
-      <tr>
+      <tr className="grid-row">
         {onSelect && (
           <th>
             <input
@@ -104,10 +104,10 @@ const ItemRow = ({
   className
 }) => {
   return (
-    <tr className={className}>
+    <tr className={`grid-row ${className}`}>
       {// 選択した際の処理が設定されている場合のみ左端にチェックボックスを表示する
       onSelect && (
-        <td className="column-checks">
+        <td className="grid-cell column-checks">
           <input
             type="checkbox"
             className="checkbox"
@@ -118,7 +118,7 @@ const ItemRow = ({
       )}
       {columns.map((column, columnIndex) => {
         return (
-          <td key={columnIndex} className={column.className}>
+          <td key={columnIndex} className={`grid-cell ${column.className}`}>
             {column.render(item, index)}
           </td>
         )
