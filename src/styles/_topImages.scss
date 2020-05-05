@@ -1,7 +1,6 @@
 @import "mixins";
 
 .top-image-upload-form {
-
   label {
     font-weight: bold;
     padding-right: 4px;
@@ -49,14 +48,12 @@
 }
 
 .top-image-controls {
-
   .delete-button {
     margin-right: 8px;
   }
 }
 
 .top-image-grid {
-
   .image-field {
     display: inline-block;
     position: relative;
