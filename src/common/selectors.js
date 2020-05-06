@@ -14,7 +14,6 @@ export const getItemsByPage = createSelector(
 export const getItemById = createSelector(
   [state => state.items, state => state.editingItemId],
   (items, editingItemId) => {
-    const item = items.find(_item => _item.id === editingItemId)
-    return item || {}
+    return items.find(_item => _item.id === editingItemId)
   }
 )

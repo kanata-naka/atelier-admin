@@ -8,11 +8,11 @@ import {
   DateTimeField,
   ImageFieldArray
 } from "../../../common/components/fields"
-import { MODULE_NAME } from "../models"
+import { MODULE_NAME, initialValues } from "../models"
 
 const GalleryForm = ({
   id,
-  initialValues,
+  initialValues: values,
   // -- Redux Form --
   initialize,
   handleSubmit,
@@ -23,7 +23,7 @@ const GalleryForm = ({
 }) => {
   useEffect(() => {
     // 現在の作品の編集がキャンセルされた、または別の作品が編集中になった場合
-    initialize(initialValues)
+    initialize(values)
   }, [id])
 
   return (
@@ -31,7 +31,7 @@ const GalleryForm = ({
       onSubmit={async e => {
         await handleSubmit(e)
         // フォームを初期化する
-        initialize()
+        initialize(initialValues)
       }}
       className="gallery-form">
       <Field

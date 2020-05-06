@@ -6,12 +6,12 @@ import { Globals } from "../../../common/models"
 import { getItemById } from "../../../common/selectors"
 import Notification from "../../../common/components/Notification"
 import { getNowUnixTimestamp } from "../../../utils/dateUtil"
-import { MODULE_NAME } from "../models"
+import { MODULE_NAME, initialValues } from "../models"
 import WorkForm from "../components/WorkForm"
 
 const mapStateToProps = state => ({
   id: state[MODULE_NAME].editingItemId,
-  initialValues: getItemById(state[MODULE_NAME])
+  initialValues: getItemById(state[MODULE_NAME]) || initialValues
 })
 
 const mapDispatchToProps = dispatch => ({
