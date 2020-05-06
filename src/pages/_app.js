@@ -1,16 +1,13 @@
-import { Provider } from "react-redux"
 import App from "next/app"
 import Head from "next/head"
 import { initializeFirebase } from "../common/firebase"
 import { Globals } from "../common/models"
-import { initializeStore } from "../common/store"
 import Notification from "../common/components/Notification"
 import "../styles/style.scss"
 
 export default class extends App {
   static async getInitialProps({ Component, ctx }) {
     const isServer = !!ctx.req
-    const store = initializeStore(Component.reducers, isServer)
     // グローバル変数を初期化する
     let globals
     if (isServer) {
@@ -26,14 +23,10 @@ export default class extends App {
     if (Component.getInitialProps) {
       pageProps = await Component.getInitialProps({
         ...ctx,
-        store,
-        isServer,
         globals
       })
     }
     return {
-      initialState: store.getState(),
-      isServer,
       globals,
       pageProps
     }
@@ -41,17 +34,16 @@ export default class extends App {
 
   constructor(props) {
     super(props)
-    const { Component, initialState, isServer, globals } = props
-    this.store = initializeStore(Component.reducers, isServer, initialState)
+    const { globals } = props
     // グローバル変数をマージする
     Object.assign(Globals, globals)
     initializeFirebase(Globals.env)
   }
 
   render() {
-    const { Component, globals, pageProps } = this.props
+    const { Component, pageProps } = this.props
     return (
-      <Provider store={this.store}>
+      <div>
         <Head>
           <meta
             name="viewport"
@@ -72,10 +64,10 @@ export default class extends App {
           />
         </Head>
         <div className="page-wrapper">
-          <Component {...{ globals, ...pageProps }} />
+          <Component {...pageProps} />
         </div>
         <Notification.Component />
-      </Provider>
+      </div>
     )
   }
 }

@@ -4,6 +4,7 @@ import { callFunction } from "../common/firebase"
 import Notification from "../common/components/Notification"
 import Sidebar from "../common/components/Sidebar"
 import withAuthentication from "../common/hocs/withAuthentication"
+import withRedux from "../common/hocs/withRedux"
 import { list } from "../modules/gallery/actions"
 import { MODULE_NAME } from "../modules/gallery/models"
 import reducers from "../modules/gallery/reducers"
@@ -45,8 +46,6 @@ Component.getInitialProps = async ({ store: { dispatch }, globals }) => {
   }
 }
 
-Component.reducers = {
+export default withRedux(Component, {
   [MODULE_NAME]: reducers
-}
-
-export default Component
+})

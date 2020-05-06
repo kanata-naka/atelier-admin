@@ -16,7 +16,7 @@ export default Component => {
       onAuthStateChanged(onSignedIn, onSignInFailed, onSignedOut)
     }, [])
     if (!user) {
-      return <div></div>
+      return <div>{"Logging in..."}</div>
     }
     return <Component {...props} />
   }
