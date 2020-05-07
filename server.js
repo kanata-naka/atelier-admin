@@ -25,10 +25,11 @@ server.get('*', (req, res) => {
 })
 
 app.prepare().then(() => {
-  server.listen(3000, error => {
+  const port = dev ? 3000 : 80
+  server.listen(port, error => {
     if (error) {
       throw error
     }
-    console.log("> Ready on http://localhost:3000")
+    console.log(`> Ready on http://localhost:${port}`)
   })
 })

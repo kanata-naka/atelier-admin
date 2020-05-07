@@ -2,29 +2,18 @@
   "name": "atelier-admin",
   "version": "1.0.0",
   "description": "",
-  "engines": {
-    "node": "10"
-  },
+  "main": "server.js",
   "scripts": {
     "dev": "node server.js",
-    "clean": "rimraf \"dist/functions/**\" && rimraf \"dist/public/**\"",
-    "build": "cpx \"functions/index.js\" \"dist/functions\" -C && next build",
-    "copy-resources": "cpx \"public/**/*.*\" \"dist/public\" -C && cpx \"dist/functions/build/static/**/*.*\" \"dist/public/_next/static\" && cpx \"config/**/*.*\" \"dist/functions/config\"",
-    "install-dependencies": "cpx \"*{package.json,package-lock.json}\" \"dist/functions\" && cd \"dist/functions\" && npm install",
-    "preserve": "npm run build && npm run copy-resources && npm run install-dependencies",
-    "serve": "cross-env NODE_ENV=production firebase serve",
-    "deploy": "firebase deploy --only functions:app,hosting",
+    "build": "next build",
+    "start": "cross-env NODE_ENV=production node server.js",
     "prettier": "prettier src/**/*.{js,scss} --write"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "cpx": "^1.5.0",
     "cross-env": "^7.0.2",
-    "firebase-functions-test": "^0.1.7",
-    "firebase-tools": "^7.16.2",
-    "prettier": "^1.19.1",
-    "rimraf": "^3.0.2"
+    "prettier": "^1.19.1"
   },
   "prettier": {
     "semi": false,
