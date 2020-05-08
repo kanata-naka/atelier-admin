@@ -32,42 +32,27 @@ export const initializeFirebase = ({
   return firebase
 }
 
-/**
- * 認証状態を監視する
- */
 export const onAuthStateChanged = (onSignedIn, onSignInFailed, onSignedOut) => {
   firebase.auth().onAuthStateChanged(user => {
     if (user) {
-      user.getIdTokenResult(true).then(idTokenResult => {
-        if (idTokenResult.claims.admin) {
-          onSignedIn(user)
-        } else {
-          onSignInFailed()
-        }
-      })
+      signIn(user, onSignedIn, onSignInFailed)
     } else {
       onSignedOut()
-      signIn(onSignedIn, onSignInFailed)
+      // ログインページにリダイレクトする
+      const provider = new firebase.auth.GoogleAuthProvider()
+      firebase.auth().signInWithRedirect(provider)
     }
   })
 }
 
-/**
- * ログインを行う
- */
-export const signIn = async (onSignedIn, onSignInFailed) => {
-  const provider = new firebase.auth.GoogleAuthProvider()
+export const signInWithRedirect = (onSignedIn, onSignInFailed) => {
   firebase
     .auth()
-    .signInWithPopup(provider)
+    .getRedirectResult()
     .then(({ user }) => {
-      user.getIdTokenResult(true).then(idTokenResult => {
-        if (idTokenResult.claims.admin) {
-          onSignedIn(user)
-        } else {
-          onSignInFailed()
-        }
-      })
+      if (user) {
+        signIn(user, onSignedIn, onSignInFailed)
+      }
     })
     .catch(error => {
       console.error(error)
@@ -75,9 +60,16 @@ export const signIn = async (onSignedIn, onSignInFailed) => {
     })
 }
 
-/**
- * ログアウトを行う
- */
+const signIn = (user, onSignedIn, onSignInFailed) => {
+  user.getIdTokenResult(true).then(idTokenResult => {
+    if (idTokenResult.claims.admin) {
+      onSignedIn(user)
+    } else {
+      onSignInFailed()
+    }
+  })
+}
+
 export const signOut = async onSignedOut => {
   firebase
     .auth()
