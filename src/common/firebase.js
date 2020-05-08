@@ -36,10 +36,15 @@ export const initializeFirebase = ({
  * 認証状態を監視する
  */
 export const onAuthStateChanged = (onSignedIn, onSignInFailed, onSignedOut) => {
-  // TODO
   firebase.auth().onAuthStateChanged(user => {
     if (user) {
-      onSignedIn(user)
+      user.getIdTokenResult(true).then(idTokenResult => {
+        if (idTokenResult.claims.admin) {
+          onSignedIn(user)
+        } else {
+          onSignInFailed()
+        }
+      })
     } else {
       onSignedOut()
       signIn(onSignedIn, onSignInFailed)
@@ -51,17 +56,37 @@ export const onAuthStateChanged = (onSignedIn, onSignInFailed, onSignedOut) => {
  * ログインを行う
  */
 export const signIn = async (onSignedIn, onSignInFailed) => {
-  // TODO
   const provider = new firebase.auth.GoogleAuthProvider()
   firebase
     .auth()
     .signInWithPopup(provider)
-    .then(result => {
-      onSignedIn(result)
+    .then(({ user }) => {
+      user.getIdTokenResult(true).then(idTokenResult => {
+        if (idTokenResult.claims.admin) {
+          onSignedIn(user)
+        } else {
+          onSignInFailed()
+        }
+      })
     })
     .catch(error => {
       console.error(error)
       onSignInFailed()
+    })
+}
+
+/**
+ * ログアウトを行う
+ */
+export const signOut = async onSignedOut => {
+  firebase
+    .auth()
+    .signOut()
+    .then(result => {
+      onSignedOut(result)
+    })
+    .catch(error => {
+      console.error(error)
     })
 }
 

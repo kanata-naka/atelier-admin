@@ -11,6 +11,10 @@ body {
   line-height: 1.2em;
 }
 
+.logging-in {
+  padding: 12px;
+}
+
 .page-wrapper {
   position: relative;
 }
@@ -25,6 +29,44 @@ body {
   top: 0;
   width: 240px;
   z-index: 1;
+
+  &-header {
+    &-profile {
+      align-items: center;
+      display: flex;
+      padding: 6px 4px;
+
+      .profile-column--left {
+        margin-right: 12px;
+
+        .profile-image {
+          border-radius: 50%;
+          width: 48px;
+        }
+      }
+
+      .profile-column--right {
+        flex-grow: 3;
+
+        .display-name {
+          font-weight: bold;
+          margin-bottom: 3px;
+        }
+
+        .email {
+          color: lightgray;
+          font-size: 0.8em;
+        }
+      }
+    }
+  }
+
+  &-footer {
+    bottom: 12px;
+    position: absolute;
+    right: 12px;
+    text-align: right;
+  }
 }
 
 .page-content {

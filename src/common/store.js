@@ -14,7 +14,7 @@ const createStore = (reducers, initialState) => {
     ...reducers
   }
   const middlewares = []
-  if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
+  if (process.env.NODE_ENV === "development" && typeof window !== "undefined") {
     middlewares.push(logger)
   }
   const enhancer = applyMiddleware.apply({}, middlewares)

@@ -1,12 +1,13 @@
 import React, { useEffect } from "react"
 import { connect } from "react-redux"
-import { signedIn, signedOut } from "../actions"
+import { signedIn, signedOut, signInFailed } from "../actions"
+import { SIGNED_IN, SIGN_IN_FAILED } from "../models"
 import { onAuthStateChanged } from "../firebase"
+import Error from "../../pages/_error"
 
-// TODO
 export default Component => {
   const WithAuthentication = ({
-    user,
+    status,
     onSignedIn,
     onSignInFailed,
     onSignedOut,
@@ -15,12 +16,17 @@ export default Component => {
     useEffect(() => {
       onAuthStateChanged(onSignedIn, onSignInFailed, onSignedOut)
     }, [])
-    if (!user) {
-      return <div>{"Logging in..."}</div>
+    switch (status) {
+      case SIGNED_IN:
+        return <Component {...props} />
+      case SIGN_IN_FAILED:
+        return <Error statusCode={401} />
+      default:
+        return <div className="logging-in">{"Logging in..."}</div>
     }
-    return <Component {...props} />
   }
   const mapStateToProps = state => ({
+    status: state["common"].status,
     user: state["common"].user
   })
   const mapDispatchToProps = dispatch => ({
@@ -28,7 +34,7 @@ export default Component => {
       dispatch(signedIn(user))
     },
     onSignInFailed: async () => {
-      // TODO
+      dispatch(signInFailed())
     },
     onSignedOut: async () => {
       dispatch(signedOut())
