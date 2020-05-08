@@ -145,7 +145,7 @@ const mapDispatchToProps = dispatch => ({
     ) {
       return
     }
-    await Promise.all(
+    const result = await Promise.allSettled(
       Object.entries(selectedByItemId).map(async entry => {
         if (!entry[1]) {
           return
@@ -166,8 +166,10 @@ const mapDispatchToProps = dispatch => ({
         }
       })
     )
-    Router.push("/topImages")
-    Notification.success("トップ画像を削除しました。")
+    if (result.find(item => item.status === "fulfilled")) {
+      Router.push("/topImages")
+      Notification.success("トップ画像を削除しました。")
+    }
   }
 })
 
