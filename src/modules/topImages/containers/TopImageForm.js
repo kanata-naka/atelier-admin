@@ -61,7 +61,6 @@ const mergeProps = (state, { dispatch }) => ({
     }
 
     try {
-      console.error(data)
       // トップ画像を登録する
       await callFunction({
         dispatch,

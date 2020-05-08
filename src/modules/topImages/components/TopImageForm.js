@@ -60,8 +60,12 @@ const TopImageForm = ({
 }
 
 const validate = values => {
-  // TODO
-  return {}
+  return {
+    image: !values.image ? "画像は必須です" : undefined,
+    thumbnailImage: !values.thumbnailImage
+      ? "サムネイル画像は必須です"
+      : undefined
+  }
 }
 
 export default reduxForm({

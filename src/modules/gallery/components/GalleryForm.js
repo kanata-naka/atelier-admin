@@ -153,9 +153,10 @@ const TagFieldArray = ({ fields, meta: { error } }) => {
 }
 
 const validate = values => {
-  // TODO
   return {
-    title: !values.title ? "タイトルは必須です" : undefined
+    title: !values.title ? "タイトルは必須です" : undefined,
+    images:
+      !values.images || !values.images.length ? "画像は必須です" : undefined
   }
 }
 

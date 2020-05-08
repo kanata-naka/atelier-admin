@@ -53,7 +53,7 @@ const mapDispatchToProps = dispatch => ({
     if (!confirm("チェックした作品を削除します。本当によろしいですか？")) {
       return
     }
-    await Promise.all(
+    const result = await Promise.allSettled(
       Object.entries(selectedByItemId).map(async entry => {
         if (!entry[1]) {
           return
@@ -65,9 +65,6 @@ const mapDispatchToProps = dispatch => ({
             data: { id: entry[0] },
             globals: Globals
           })
-          dispatch(edit(null))
-          Router.push("/gallery")
-          Notification.success("作品を削除しました。")
         } catch (error) {
           console.error(error)
           Notification.error(
@@ -77,6 +74,10 @@ const mapDispatchToProps = dispatch => ({
         }
       })
     )
+    if (result.find(item => item.status === "fulfilled")) {
+      Router.push("/gallery")
+      Notification.success("作品を削除しました。")
+    }
   }
 })
 

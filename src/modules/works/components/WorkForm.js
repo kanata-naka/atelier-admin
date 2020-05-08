@@ -85,7 +85,6 @@ const WorkForm = ({
 }
 
 const validate = values => {
-  // TODO
   return {
     title: !values.title ? "タイトルは必須です" : undefined
   }

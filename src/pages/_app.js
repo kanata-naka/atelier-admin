@@ -51,17 +51,28 @@ export default class extends App {
             content="initial-scale=1.0, width=device-width"
           />
           <meta httpEquiv="x-ua-compatible" content="ie=edge" />
-          <link rel="stylesheet" href="/css/vendor/bootstrap.min.css" />
-          <link rel="stylesheet" href="/css/vendor/react-datepicker.min.css" />
           <link
             rel="stylesheet"
-            href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
-            integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf"
+            href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+            integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+            crossOrigin="anonymous"
+          />
+          <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/react-datepicker/2.15.0/react-datepicker.min.css"
+            integrity="sha256-XkzLSJ4RlCseZJn744vYhvposTXK0sUAXVmbpsLd/Fs="
             crossOrigin="anonymous"
           />
           <link
             href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/4.0.0/github-markdown.min.css"
             rel="stylesheet"
+            crossOrigin="anonymous"
+          />
+          <link
+            rel="stylesheet"
+            href="https://use.fontawesome.com/releases/v5.13.0/css/all.css"
+            integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V"
+            crossOrigin="anonymous"
           />
         </Head>
         <div className="page-wrapper">
