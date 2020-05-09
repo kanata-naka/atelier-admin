@@ -93,7 +93,7 @@ export const callFunction = async ({ name, data, globals: { env } }) => {
         .functions(env ? env.FIREBASE_REGION : Globals.env.FIREBASE_REGION)
         .httpsCallable(name)
     }
-    return await callable({ ...data })
+    return await callable(data)
   } catch (error) {
     throw error
   }
