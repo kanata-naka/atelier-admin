@@ -1,6 +1,5 @@
 import { useSelector, useDispatch } from "react-redux"
 import { Button } from "react-bootstrap"
-import { signedOut } from "../actions"
 import { signOut } from "../firebase"
 import GlobalNav from "./GlobalNav"
 
@@ -48,7 +47,7 @@ const Footer = () => {
         type="button"
         className="logout-button"
         onClick={() => {
-          signOut(dispatch(signedOut()))
+          signOut()
         }}>
         {"ログアウト"}
       </Button>

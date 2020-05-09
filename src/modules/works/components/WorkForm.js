@@ -29,7 +29,7 @@ const WorkForm = ({
   return (
     <Form
       onSubmit={async e => {
-        if (!await handleSubmit(e)) {
+        if (!(await handleSubmit(e))) {
           // フォームを初期化する
           initialize(initialValues)
         }

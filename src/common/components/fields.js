@@ -232,7 +232,7 @@ const _ImageField = ({
     },
     file: {
       meta: { submitFailed, error }
-    },
+    }
   }
 }) => {
   const containerRef = useRef(null)

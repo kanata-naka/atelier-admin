@@ -1,9 +1,5 @@
 import { handleActions } from "redux-actions"
-import {
-  signedIn,
-  signedOut,
-  signInFailed
-} from "./actions"
+import { signedIn, signedOut, signInFailed } from "./actions"
 import {
   AUTH_STATE_NOT_SIGNED_IN,
   AUTH_STATE_SIGNED_IN,

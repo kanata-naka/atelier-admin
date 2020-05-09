@@ -1,0 +1,27 @@
+@import "mixins";
+
+.login-page {
+  align-items: center;
+  background-color: lavender;
+  display: flex;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+}
+
+.login-form {
+  align-items: center;
+  background-color: white;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto 24px;
+  padding: 24px;
+  width: 320px;
+
+  .site-logo {
+    display: block;
+    margin: 12px 0 48px 0;
+    width: 256px;
+  }
+}

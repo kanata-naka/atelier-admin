@@ -18,7 +18,7 @@ export default class Error extends React.Component {
         break
     }
     return (
-      <div>
+      <div className="error-page">
         <h1>{message}</h1>
       </div>
     )

@@ -1,8 +1,10 @@
 import React, { useEffect } from "react"
 import { connect } from "react-redux"
+import { useRouter } from "next/router"
 import { signedIn, signedOut, signInFailed } from "../actions"
 import { AUTH_STATE_SIGNED_IN, AUTH_STATE_SIGN_IN_FAILED } from "../models"
-import { signInWithRedirect, onAuthStateChanged } from "../firebase"
+import { onAuthStateChanged } from "../firebase"
+import LoadingEffect from "../components/LoadingEffect"
 import Error from "../../pages/_error"
 
 export default Component => {
@@ -13,11 +15,14 @@ export default Component => {
     onSignedOut,
     ...props
   }) => {
+    const router = useRouter()
+    const handleSignedOut = () => {
+      onSignedOut()
+      // ログインページにリダイレクトする
+      router.push("/login")
+    }
     useEffect(() => {
-      if (!authState) {
-        signInWithRedirect(onSignedIn, onSignInFailed)
-      }
-      onAuthStateChanged(onSignedIn, onSignInFailed, onSignedOut)
+      onAuthStateChanged(onSignedIn, onSignInFailed, handleSignedOut)
     }, [])
     switch (authState) {
       case AUTH_STATE_SIGNED_IN:
@@ -25,7 +30,7 @@ export default Component => {
       case AUTH_STATE_SIGN_IN_FAILED:
         return <Error statusCode={401} />
       default:
-        return <div>{"Logging in..."}</div>
+        return <LoadingEffect />
     }
   }
   const mapStateToProps = state => ({
@@ -33,13 +38,13 @@ export default Component => {
     user: state["common"].user
   })
   const mapDispatchToProps = dispatch => ({
-    onSignedIn: async user => {
+    onSignedIn: user => {
       dispatch(signedIn(user))
     },
-    onSignInFailed: async () => {
+    onSignInFailed: () => {
       dispatch(signInFailed())
     },
-    onSignedOut: async () => {
+    onSignedOut: () => {
       dispatch(signedOut())
     }
   })
