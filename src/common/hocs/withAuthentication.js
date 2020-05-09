@@ -15,10 +15,8 @@ export default Component => {
   }) => {
     useEffect(() => {
       if (!authState) {
-        // リダイレクトを経由してログインする
         signInWithRedirect(onSignedIn, onSignInFailed)
       }
-      // 認証状態を監視する
       onAuthStateChanged(onSignedIn, onSignInFailed, onSignedOut)
     }, [])
     switch (authState) {
@@ -27,7 +25,7 @@ export default Component => {
       case AUTH_STATE_SIGN_IN_FAILED:
         return <Error statusCode={401} />
       default:
-        return <div className="logging-in">{"Logging in..."}</div>
+        return <div>{"Logging in..."}</div>
     }
   }
   const mapStateToProps = state => ({
