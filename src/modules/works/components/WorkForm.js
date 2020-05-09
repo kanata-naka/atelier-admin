@@ -29,9 +29,10 @@ const WorkForm = ({
   return (
     <Form
       onSubmit={async e => {
-        await handleSubmit(e)
-        // フォームを初期化する
-        initialize(initialValues)
+        if (!await handleSubmit(e)) {
+          // フォームを初期化する
+          initialize(initialValues)
+        }
       }}
       className="work-form">
       <Field
@@ -85,9 +86,11 @@ const WorkForm = ({
 }
 
 const validate = values => {
-  return {
-    title: !values.title ? "タイトルは必須です" : undefined
+  const errors = {}
+  if (!values.title) {
+    errors.title = "タイトルは必須です"
   }
+  return errors
 }
 
 export default reduxForm({

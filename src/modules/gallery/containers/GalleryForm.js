@@ -63,7 +63,7 @@ const mapDispatchToProps = dispatch => ({
     const data = {
       id,
       title: values.title,
-      tags: [...values.tags],
+      tags: values.tags || [],
       images,
       description: values.description,
       pickupFlag: values.pickupFlag,

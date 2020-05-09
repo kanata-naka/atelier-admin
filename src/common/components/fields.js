@@ -229,11 +229,13 @@ const _ImageField = ({
   [name]: {
     url: {
       input: { value: url }
-    }
+    },
+    file: {
+      meta: { submitFailed, error }
+    },
   }
 }) => {
   const containerRef = useRef(null)
-  const error = null
 
   useEffect(() => {
     // componentDidMount と同じタイミングで実行する
@@ -257,7 +259,7 @@ const _ImageField = ({
     <div className="image-field-wrapper">
       <label>{label}</label>
       {required && <RequiredLabel />}
-      {error && <span className="error-message">{error}</span>}
+      {submitFailed && error && <span className="error-message">{error}</span>}
       <div
         className={`image-field ${classNamePrefix}-field`}
         ref={containerRef}>
@@ -282,10 +284,10 @@ const _ImageField = ({
 export const ImageFieldArray = ({
   label,
   required,
+  change,
   // -- Redux Form --
   fields,
-  change,
-  meta: { error }
+  meta: { submitFailed, error }
 }) => {
   const handleSelect = useCallback(
     e => {
@@ -306,7 +308,7 @@ export const ImageFieldArray = ({
     <div className="images-field-wrapper">
       <label>{label}</label>
       {required && <RequiredLabel />}
-      {error && <span className="error-message">{error}</span>}
+      {submitFailed && error && <span className="error-message">{error}</span>}
       <div className="images-field">
         <DndProvider backend={HTML5Backend}>
           {fields.map((field, index) => {

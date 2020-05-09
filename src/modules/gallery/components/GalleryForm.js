@@ -16,9 +16,9 @@ const GalleryForm = ({
   // -- Redux Form --
   initialize,
   handleSubmit,
-  dirty,
   submitting,
   reset,
+  dirty,
   change
 }) => {
   useEffect(() => {
@@ -29,9 +29,10 @@ const GalleryForm = ({
   return (
     <Form
       onSubmit={async e => {
-        await handleSubmit(e)
-        // フォームを初期化する
-        initialize(initialValues)
+        if (!await handleSubmit(e)) {
+          // フォームを初期化する
+          initialize(initialValues)
+        }
       }}
       className="gallery-form">
       <Field
@@ -153,11 +154,14 @@ const TagFieldArray = ({ fields, meta: { error } }) => {
 }
 
 const validate = values => {
-  return {
-    title: !values.title ? "タイトルは必須です" : undefined,
-    images:
-      !values.images || !values.images.length ? "画像は必須です" : undefined
+  const errors = {}
+  if (!values.title) {
+    errors.title = "タイトルは必須です"
   }
+  if (!values.images || !values.images.length) {
+    errors.images = { _error: "画像は必須です" }
+  }
+  return errors
 }
 
 export default reduxForm({

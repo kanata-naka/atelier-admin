@@ -16,9 +16,10 @@ const TopImageForm = ({
   return (
     <Form
       onSubmit={async e => {
-        await handleSubmit(e)
-        // フォームを初期化する
-        initialize()
+        if (!await handleSubmit(e)) {
+          // フォームを初期化する
+          initialize()
+        }
       }}
       className="top-image-upload-form">
       <ImageField
@@ -60,12 +61,14 @@ const TopImageForm = ({
 }
 
 const validate = values => {
-  return {
-    image: !values.image ? "画像は必須です" : undefined,
-    thumbnailImage: !values.thumbnailImage
-      ? "サムネイル画像は必須です"
-      : undefined
+  const errors = {}
+  if (!values.image || !values.image.file) {
+    errors.image = { file: "画像は必須です" }
   }
+  if (!values.thumbnailImage || !values.thumbnailImage.file) {
+    errors.thumbnailImage = { file: "サムネイル画像は必須です" }
+  }
+  return errors
 }
 
 export default reduxForm({
