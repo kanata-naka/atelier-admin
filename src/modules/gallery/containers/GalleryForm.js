@@ -74,7 +74,6 @@ const mapDispatchToProps = dispatch => ({
       // イラストを更新する
       try {
         await callFunction({
-          dispatch,
           name: "api-arts-update",
           data,
           globals: Globals
@@ -91,7 +90,6 @@ const mapDispatchToProps = dispatch => ({
       // イラストを登録する
       try {
         await callFunction({
-          dispatch,
           name: "api-arts-create",
           data,
           globals: Globals

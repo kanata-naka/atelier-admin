@@ -122,7 +122,6 @@ const mapDispatchToProps = dispatch => ({
     // トップ画像を一括で更新する
     try {
       await callFunction({
-        dispatch,
         name: "api-topImages-bulkUpdate",
         data,
         globals: Globals
@@ -152,7 +151,6 @@ const mapDispatchToProps = dispatch => ({
         }
         try {
           await callFunction({
-            dispatch,
             name: "api-topImages-deleteById",
             data: { id: entry[0] },
             globals: Globals

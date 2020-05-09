@@ -73,7 +73,6 @@ const mapDispatchToProps = dispatch => ({
       // 作品を更新する
       try {
         await callFunction({
-          dispatch,
           name: "api-works-update",
           data,
           globals: Globals
@@ -90,7 +89,6 @@ const mapDispatchToProps = dispatch => ({
       // 作品を登録する
       try {
         await callFunction({
-          dispatch,
           name: "api-works-create",
           data,
           globals: Globals

@@ -33,7 +33,6 @@ Component.getInitialProps = async ({ store: { dispatch }, globals }) => {
   let items = []
   try {
     const response = await callFunction({
-      dispatch,
       name: "api-works-get",
       data: {},
       globals

@@ -2,7 +2,6 @@ import firebase from "firebase/app"
 import "firebase/auth"
 import "firebase/functions"
 import "firebase/storage"
-import { fetchStart, fetchSucceeded, fetchFailed } from "./actions"
 import { Globals } from "./models"
 
 /**
@@ -86,12 +85,10 @@ export const signOut = async onSignedOut => {
  * Firebase functionsの関数を実行する
  */
 export const callFunction = async ({
-  dispatch,
   name,
   data,
   globals: { env }
 }) => {
-  dispatch(fetchStart({ name }))
   try {
     let callable
     if ((env ? env.ENVIRONMENT : Globals.env.ENVIRONMENT) !== "production") {
@@ -103,11 +100,8 @@ export const callFunction = async ({
         .functions(env ? env.FIREBASE_REGION : Globals.env.FIREBASE_REGION)
         .httpsCallable(name)
     }
-    const result = await callable(data)
-    dispatch(fetchSucceeded({ name }))
-    return result
+    return await callable({ ...data })
   } catch (error) {
-    dispatch(fetchFailed({ name }))
     throw error
   }
 }

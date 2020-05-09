@@ -60,7 +60,6 @@ const mapDispatchToProps = dispatch => ({
         }
         try {
           await callFunction({
-            dispatch,
             name: "api-works-deleteById",
             data: { id: entry[0] },
             globals: Globals

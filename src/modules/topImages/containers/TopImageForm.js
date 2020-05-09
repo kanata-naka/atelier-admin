@@ -63,7 +63,6 @@ const mergeProps = (state, { dispatch }) => ({
     try {
       // トップ画像を登録する
       await callFunction({
-        dispatch,
         name: "api-topImages-create",
         data,
         globals: Globals
