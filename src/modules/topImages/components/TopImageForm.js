@@ -29,7 +29,7 @@ const TopImageForm = ({
         required
         change={change}
       />
-      <p className="annotation">{"※縦横比は 5:3 です"}</p>
+    <p className="annotation">{"※縦横比は 5:3 です"}</p>
       <ImageField
         name="thumbnailImage"
         classNamePrefix="thumbnail-image"
@@ -37,7 +37,7 @@ const TopImageForm = ({
         required
         change={change}
       />
-      <p className="annotation">{"※縦横比は 1:1 (正方形)です"}</p>
+    <p className="annotation">{"※縦横比は 1:1 (正方形)です"}</p>
       <Field
         name="description"
         component={TextareaField}

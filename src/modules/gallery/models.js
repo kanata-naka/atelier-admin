@@ -7,3 +7,5 @@ export const PER_PAGE = 10
 export const initialValues = {
   pickupFlag: true
 }
+
+export const IMAGE_MAX_WIDTH = 1600

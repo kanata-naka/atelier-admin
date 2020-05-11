@@ -5,7 +5,13 @@ import uuidv4 from "uuid/v4"
 import { callFunction, saveFile } from "../../../common/firebase"
 import { Globals } from "../../../common/models"
 import Notification from "../../../common/components/Notification"
-import { MODULE_NAME } from "../models"
+import { resize } from "../../../utils/imageUtil"
+import {
+  MODULE_NAME,
+  IMAGE_MAX_WIDTH,
+  IMAGE_MAX_HEIGHT,
+  THUMBNAIL_IMAGE_MAX_WIDTH
+} from "../models"
 import { getLastOrder } from "../selectors"
 import TopImageForm from "../components/TopImageForm"
 
@@ -27,8 +33,11 @@ const mergeProps = (state, { dispatch }) => ({
     const image = {}
     try {
       // 画像をアップロードする
-      image.name = `topImages/${id}/images/${values.image.file.name}`
-      await saveFile(values.image.file, image.name)
+      let file = values.image.file
+      image.name = `topImages/${id}/images/${file.name}`
+      // 画像をリサイズする
+      file = await resize(file, IMAGE_MAX_WIDTH, IMAGE_MAX_HEIGHT)
+      await saveFile(file, image.name)
     } catch (error) {
       console.error(error)
       Notification.error(
@@ -41,8 +50,15 @@ const mergeProps = (state, { dispatch }) => ({
     const thumbnailImage = {}
     try {
       // サムネイル画像をアップロードする
-      thumbnailImage.name = `topImages/${id}/thumbnailImages/${values.thumbnailImage.file.name}`
-      await saveFile(values.thumbnailImage.file, thumbnailImage.name)
+      let file = values.thumbnailImage.file
+      thumbnailImage.name = `topImages/${id}/thumbnailImages/${file.name}`
+      // 画像をリサイズする
+      file = await resize(
+        file,
+        THUMBNAIL_IMAGE_MAX_WIDTH,
+        THUMBNAIL_IMAGE_MAX_WIDTH
+      )
+      await saveFile(file, thumbnailImage.name)
     } catch (error) {
       console.error(error)
       Notification.error(
