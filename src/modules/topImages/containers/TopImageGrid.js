@@ -61,7 +61,7 @@ const mapDispatchToProps = dispatch => ({
           }
           if (!hasError) {
             const file = topImage.image.newFile
-            imageName = `topImages/${topImage.id}/images/${file.name}`
+            imageName = `topImages/${topImage.id}/image/${file.name}`
             try {
               // 画像をアップロードする
               await saveFile(file, imageName)
@@ -91,7 +91,7 @@ const mapDispatchToProps = dispatch => ({
           }
           if (!hasError) {
             const file = topImage.thumbnailImage.newFile
-            thumbnailImageName = `topImages/${topImage.id}/thumbnailImages/${file.name}`
+            thumbnailImageName = `topImages/${topImage.id}/thumbnailImage/${file.name}`
             try {
               // サムネイル画像をアップロードする
               await saveFile(file, thumbnailImageName)

@@ -27,7 +27,7 @@ const mergeProps = (state, { dispatch }) => ({
     const image = {}
     try {
       // 画像をアップロードする
-      image.name = `topImages/${id}/images/${values.image.file.name}`
+      image.name = `topImages/${id}/image/${values.image.file.name}`
       await saveFile(values.image.file, image.name)
     } catch (error) {
       console.error(error)
@@ -41,7 +41,7 @@ const mergeProps = (state, { dispatch }) => ({
     const thumbnailImage = {}
     try {
       // サムネイル画像をアップロードする
-      thumbnailImage.name = `topImages/${id}/thumbnailImages/${values.thumbnailImage.file.name}`
+      thumbnailImage.name = `topImages/${id}/thumbnailImage/${values.thumbnailImage.file.name}`
       await saveFile(values.thumbnailImage.file, thumbnailImage.name)
     } catch (error) {
       console.error(error)
