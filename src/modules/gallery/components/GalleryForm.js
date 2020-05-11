@@ -49,7 +49,7 @@ const GalleryForm = ({
         label="投稿日時"
         required
         useCurrentDateTimeCheckbox={true}
-        dateFormat="yyyy/MM/dd HH:mm:ss"
+        dateFormat={["yyyy/MM/dd HH:mm", "yyyy年MM月dd日 HH:mm"]}
         showTimeInput
       />
       <FieldArray

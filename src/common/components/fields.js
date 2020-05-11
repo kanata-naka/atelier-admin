@@ -5,12 +5,14 @@ import { DndProvider, useDrag, useDrop } from "react-dnd-cjs"
 import HTML5Backend from "react-dnd-html5-backend-cjs"
 import { Fields } from "redux-form"
 import ja from "date-fns/locale/ja"
+import { useAdjustElementWidth, useDropFile } from "../hooks"
+import { IMAGE_FILE_ACCEPTABLE_EXTENTIONS } from "../models"
 import {
   getNowDate,
   getDateFromUnixTimestamp,
   getUnixTimestampFromDate
 } from "../../utils/dateUtil"
-import { adjustElementWidth, renderMarkdown } from "../../utils/domUtil"
+import { renderMarkdown } from "../../utils/domUtil"
 import { RequiredLabel } from "./elements"
 
 // ※date-fns/local/ja はデフォルトで月曜日始まり
@@ -126,7 +128,7 @@ export const DateTimeField = ({
   label,
   required,
   className,
-  dateFormat,
+  dateFormat = "yyyy/MM/dd",
   showTimeInput,
   useCurrentDateTimeCheckbox = false,
   useCurrentDateTimeCheckboxLabel = "現在日時を使用する",
@@ -189,7 +191,7 @@ export const DateTimeField = ({
           wrapperClassName={`datepicker-container ${className || ""}`}
           className={`form-control ${useCurrentDateTime ? "hidden" : ""}`}
           locale="ja"
-          dateFormat={dateFormat || "yyyy/MM/dd"}
+          dateFormat={dateFormat}
           disabled={useCurrentDateTime}
           showTimeInput={showTimeInput}
         />
@@ -235,22 +237,20 @@ const _ImageField = ({
     }
   }
 }) => {
-  const containerRef = useRef(null)
+  const fieldRef = useRef(null)
+  const previewImageRef = useRef(null)
+  useAdjustElementWidth(fieldRef, previewImageRef, [url])
 
-  useEffect(() => {
-    // componentDidMount と同じタイミングで実行する
-    const containerElement = containerRef.current
-    const innerElement = containerElement.children[0]
-    innerElement.onload = () => {
-      adjustElementWidth(containerElement, innerElement)
-    }
-  }, [url])
-
-  const handleSelect = useCallback(e => {
-    e.preventDefault()
-    const file = e.target.files[0]
+  const fileInputLabelRef = useRef(null)
+  const changeFile = file => {
     change(names[0], URL.createObjectURL(file))
     change(names[1], file)
+  }
+  useDropFile(fileInputLabelRef, changeFile, IMAGE_FILE_ACCEPTABLE_EXTENTIONS)
+
+  const handleChange = useCallback(e => {
+    e.preventDefault()
+    changeFile(e.target.files[0])
     // 同じファイルをアップロードしてもonChangeイベントを走らせるためvalueを空にする
     e.target.value = ""
   })
@@ -260,11 +260,12 @@ const _ImageField = ({
       <label>{label}</label>
       {required && <RequiredLabel />}
       {submitFailed && error && <span className="error-message">{error}</span>}
-      <div
-        className={`image-field ${classNamePrefix}-field`}
-        ref={containerRef}>
-        <img className="preview-image" src={url} />
-        <label className={`image-file-input-label`} htmlFor={name}>
+      <div className={`image-field ${classNamePrefix}-field`} ref={fieldRef}>
+        <img className="preview-image" src={url} ref={previewImageRef} />
+        <label
+          className={`image-file-input-label`}
+          htmlFor={name}
+          ref={fileInputLabelRef}>
           {!url && (
             <i className="fas fa-file-upload image-file-upload-icon"></i>
           )}
@@ -272,8 +273,8 @@ const _ImageField = ({
             className="image-file-input"
             type="file"
             id={name}
-            accept=".gif, .jpg, .jpeg, .png"
-            onChange={handleSelect}
+            accept={IMAGE_FILE_ACCEPTABLE_EXTENTIONS.join(", ")}
+            onChange={handleChange}
           />
         </label>
       </div>
@@ -289,15 +290,20 @@ export const ImageFieldArray = ({
   fields,
   meta: { submitFailed, error }
 }) => {
-  const handleSelect = useCallback(
+  const fileInputLabelRef = useRef(null)
+  const addFile = file => {
+    fields.push({
+      name: file.name,
+      url: URL.createObjectURL(file),
+      newFile: file
+    })
+  }
+  useDropFile(fileInputLabelRef, addFile, IMAGE_FILE_ACCEPTABLE_EXTENTIONS)
+
+  const handleChange = useCallback(
     e => {
       e.preventDefault()
-      const file = e.target.files[0]
-      fields.push({
-        name: file.name,
-        url: URL.createObjectURL(file),
-        newFile: file
-      })
+      addFile(e.target.files[0])
       // 同じファイルをアップロードしてもonChangeイベントを走らせるためvalueを空にする
       e.target.value = ""
     },
@@ -330,14 +336,17 @@ export const ImageFieldArray = ({
           })}
         </DndProvider>
         <div className="image-field">
-          <label className="image-file-input-label" htmlFor="image">
+          <label
+            className="image-file-input-label"
+            htmlFor="image"
+            ref={fileInputLabelRef}>
             <i className="fas fa-file-upload image-file-upload-icon"></i>
             <input
               className="image-file-input"
               type="file"
               id="image"
-              accept=".gif, .jpg, .jpeg, .png"
-              onChange={handleSelect}
+              accept={IMAGE_FILE_ACCEPTABLE_EXTENTIONS.join(", ")}
+              onChange={handleChange}
             />
           </label>
         </div>
@@ -354,7 +363,6 @@ const ImageFieldArrayItem = ({
   // -- Redux Form --
   [name]: { [index]: values }
 }) => {
-  const containerRef = useRef(null)
   const {
     url: {
       input: { value: url }
@@ -367,13 +375,9 @@ const ImageFieldArrayItem = ({
     }
   } = values
 
-  useEffect(() => {
-    const containerElement = containerRef.current
-    const innerElement = containerElement.children[0]
-    innerElement.onload = () => {
-      adjustElementWidth(containerElement, innerElement)
-    }
-  }, [url])
+  const fieldRef = useRef(null)
+  const previewImageRef = useRef(null)
+  useAdjustElementWidth(fieldRef, previewImageRef, [url])
 
   // ドラッグの設定
   const [{ isDragging }, drag] = useDrag({
@@ -392,7 +396,7 @@ const ImageFieldArrayItem = ({
       move(dragIndex, hoverIndex)
     }
   })
-  drag(drop(containerRef))
+  drag(drop(fieldRef))
 
   // 削除フラグがオンになっている既存の画像をクリックした際の処理
   const handleContainerClick = () => {
@@ -419,9 +423,9 @@ const ImageFieldArrayItem = ({
         (removed ? " removed" : "") +
         (isDragging ? " dragging" : "")
       }
-      ref={containerRef}
+      ref={fieldRef}
       onClick={handleContainerClick}>
-      <img className="preview-image" src={url} />
+      <img className="preview-image" src={url} ref={previewImageRef} />
       {!removed && (
         <div
           className="image-field-remove-button"

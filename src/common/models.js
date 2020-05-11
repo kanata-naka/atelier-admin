@@ -11,3 +11,10 @@ export const AUTH_STATE_SIGNED_OUT = Symbol("SIGNED_OUT")
 export const createPagination = (perPage, total) => {
   return { offset: 0, perPage, total }
 }
+
+export const IMAGE_FILE_ACCEPTABLE_EXTENTIONS = [
+  ".gif",
+  ".jpg",
+  ".jpeg",
+  ".png"
+]

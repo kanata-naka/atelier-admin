@@ -2,7 +2,8 @@ import React, { useRef, useEffect, useCallback } from "react"
 import { Form, ButtonGroup, Button, Badge } from "react-bootstrap"
 import { reduxForm, Field, Fields, FieldArray } from "redux-form"
 import { formatDateTimeFromUnixTimestamp } from "../../../utils/dateUtil"
-import { adjustElementWidth } from "../../../utils/domUtil"
+import { useAdjustElementWidth, useDropFile } from "../../../common/hooks"
+import { IMAGE_FILE_ACCEPTABLE_EXTENTIONS } from "../../../common/models"
 import { TextareaField } from "../../../common/components/fields"
 import Grid from "../../../common/components/Grid"
 import { MODULE_NAME } from "../models"
@@ -277,22 +278,23 @@ const _ImageField = ({
     }
   }
 }) => {
-  const containerRef = useRef(null)
+  const fieldRef = useRef(null)
+  const previewImageRef = useRef(null)
+  useAdjustElementWidth(fieldRef, previewImageRef, [url])
 
-  useEffect(() => {
-    const containerElement = containerRef.current
-    const innerElement = containerElement.children[0]
-    innerElement.onload = () => {
-      adjustElementWidth(containerElement, innerElement)
-    }
-  }, [url])
-
-  const handleSelect = e => {
-    e.preventDefault()
-    const file = e.target.files[0]
+  const fileInputLabelRef = useRef(null)
+  const changeFile = file => {
     change(names[1], URL.createObjectURL(file))
     change(names[2], file)
     change(names[3], url)
+  }
+  useDropFile(fileInputLabelRef, changeFile, IMAGE_FILE_ACCEPTABLE_EXTENTIONS, [
+    editing
+  ])
+
+  const handleChange = e => {
+    e.preventDefault()
+    changeFile(e.target.files[0])
     // 同じファイルをアップロードしてもonChangeイベントを走らせるためvalueを空にする
     e.target.value = ""
   }
@@ -307,16 +309,18 @@ const _ImageField = ({
   const dirty = originalUrl && url !== originalUrl
 
   return (
-    <div className={`image-field ${classNamePrefix}-field`} ref={containerRef}>
+    <div className={`image-field ${classNamePrefix}-field`} ref={fieldRef}>
       <img
         className="preview-image"
         src={url}
         style={{ opacity: editing && !dirty ? 0.5 : 1 }}
+        ref={previewImageRef}
       />
       {editing && (
         <label
           className="image-file-input-label"
-          htmlFor={`topImages[${index}].${name}`}>
+          htmlFor={`topImages[${index}].${name}`}
+          ref={fileInputLabelRef}>
           {!dirty && (
             <i className="fas fa-file-upload image-file-upload-icon"></i>
           )}
@@ -325,7 +329,7 @@ const _ImageField = ({
             type="file"
             id={`topImages[${index}].${name}`}
             accept=".gif, .jpg, .jpeg, .png"
-            onChange={handleSelect}
+            onChange={handleChange}
           />
         </label>
       )}

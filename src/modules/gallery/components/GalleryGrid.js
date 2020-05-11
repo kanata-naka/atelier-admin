@@ -1,7 +1,7 @@
-import React, { useRef, useEffect } from "react"
+import React, { useRef } from "react"
 import { Button, Badge } from "react-bootstrap"
 import { formatDateTimeFromUnixTimestamp } from "../../../utils/dateUtil"
-import { adjustElementWidth } from "../../../utils/domUtil"
+import { useAdjustElementWidth } from "../../../common/hooks"
 import Grid from "../../../common/components/Grid"
 import Pagination from "../../../common/components/Pagination"
 
@@ -123,19 +123,13 @@ const GalleryGridControl = ({ selectedByItemId, onDeleteSelected }) => {
 
 const GalleryGridColumnImage = ({ image }) => {
   const containerRef = useRef(null)
-
-  useEffect(() => {
-    const containerElement = containerRef.current
-    const innerElement = containerElement.children[0]
-    innerElement.onload = () => {
-      adjustElementWidth(containerElement, innerElement)
-    }
-  }, [image])
+  const imageRef = useRef(null)
+  useAdjustElementWidth(containerRef, imageRef, [image])
 
   return (
     <a href={image.url} target="_blank">
       <div className="image-container" ref={containerRef}>
-        <img className="image" src={image.url} />
+        <img className="image" src={image.url} ref={imageRef} />
       </div>
     </a>
   )

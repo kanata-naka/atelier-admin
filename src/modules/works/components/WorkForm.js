@@ -50,6 +50,7 @@ const WorkForm = ({
         required
         useCurrentDateTimeCheckbox={true}
         useCurrentDateTimeCheckboxLabel="現在日を使用する"
+        dateFormat={["yyyy/MM/dd", "yyyy年MM月dd日"]}
       />
       <FieldArray
         name="images"
