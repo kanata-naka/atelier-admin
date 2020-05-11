@@ -5,14 +5,8 @@ import Router from "next/router"
 import { callFunction, saveFile, deleteFile } from "../../../common/firebase"
 import { Globals } from "../../../common/models"
 import Notification from "../../../common/components/Notification"
-import { resize } from "../../../utils/imageUtil"
 import { select, edit, cancelEdit } from "../actions"
-import {
-  MODULE_NAME,
-  IMAGE_MAX_WIDTH,
-  IMAGE_MAX_HEIGHT,
-  THUMBNAIL_IMAGE_MAX_WIDTH
-} from "../models"
+import { MODULE_NAME } from "../models"
 import TopImageGrid from "../components/TopImageGrid"
 
 const mapStateToProps = state => ({
@@ -66,10 +60,8 @@ const mapDispatchToProps = dispatch => ({
             hasError = true
           }
           if (!hasError) {
-            let file = topImage.image.newFile
+            const file = topImage.image.newFile
             imageName = `topImages/${topImage.id}/images/${file.name}`
-            // 画像をリサイズする
-            file = await resize(file, IMAGE_MAX_WIDTH, IMAGE_MAX_HEIGHT)
             try {
               // 画像をアップロードする
               await saveFile(file, imageName)
@@ -98,14 +90,8 @@ const mapDispatchToProps = dispatch => ({
             hasError = true
           }
           if (!hasError) {
-            let file = topImage.thumbnailImage.newFile
+            const file = topImage.thumbnailImage.newFile
             thumbnailImageName = `topImages/${topImage.id}/thumbnailImages/${file.name}`
-            // 画像をリサイズする
-            file = await resize(
-              file,
-              THUMBNAIL_IMAGE_MAX_WIDTH,
-              THUMBNAIL_IMAGE_MAX_WIDTH
-            )
             try {
               // サムネイル画像をアップロードする
               await saveFile(file, thumbnailImageName)

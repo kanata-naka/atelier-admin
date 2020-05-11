@@ -6,8 +6,7 @@ import { Globals } from "../../../common/models"
 import { getItemById } from "../../../common/selectors"
 import Notification from "../../../common/components/Notification"
 import { getNowUnixTimestamp } from "../../../utils/dateUtil"
-import { resize } from "../../../utils/imageUtil"
-import { MODULE_NAME, initialValues, IMAGE_MAX_WIDTH } from "../models"
+import { MODULE_NAME, initialValues } from "../models"
 import WorkForm from "../components/WorkForm"
 
 const mapStateToProps = state => ({
@@ -38,10 +37,8 @@ const mapDispatchToProps = dispatch => ({
             return
           }
           if (imageValue.newFile) {
-            let file = imageValue.newFile
+            const file = imageValue.newFile
             name = `works/${id}/images/${file.name}`
-            // 画像をリサイズする
-            file = await resize(file, IMAGE_MAX_WIDTH, IMAGE_MAX_WIDTH)
             try {
               // 新しい画像をアップロードする
               await saveFile(file, name)
