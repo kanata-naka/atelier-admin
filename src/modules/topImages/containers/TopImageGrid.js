@@ -1,11 +1,10 @@
 import { connect } from "react-redux"
 import { bindActionCreators } from "redux"
 import { initialize } from "redux-form"
-import Router from "next/router"
 import { callFunction, saveFile, deleteFile } from "../../../common/firebase"
 import { Globals } from "../../../common/models"
 import Notification from "../../../common/components/Notification"
-import { select, edit, cancelEdit } from "../actions"
+import { list, select, edit, cancelEdit } from "../actions"
 import { MODULE_NAME } from "../models"
 import TopImageGrid from "../components/TopImageGrid"
 
@@ -26,6 +25,19 @@ const mapDispatchToProps = dispatch => ({
     dispatch
   ),
   initialize: values => initialize(`${MODULE_NAME}_list`, values),
+  onLoad: async () => {
+    try {
+      const response = await callFunction({
+        name: "api-topImages-get",
+        data: {},
+        globals: Globals
+      })
+      dispatch(list(response.data.result))
+    } catch (error) {
+      console.error(error)
+      Notification.error("読み込みに失敗しました。\n" + JSON.stringify(error))
+    }
+  },
   /**
    * 編集ボタンを押下した際の処理
    */
@@ -126,13 +138,25 @@ const mapDispatchToProps = dispatch => ({
         data,
         globals: Globals
       })
-      Router.push("/topImages")
       Notification.success("トップ画像を更新しました。")
     } catch (error) {
       console.error(error)
       Notification.error(
         "トップ画像の更新に失敗しました。\n" + JSON.stringify(error)
       )
+      return
+    }
+
+    try {
+      const response = await callFunction({
+        name: "api-topImages-get",
+        data: {},
+        globals: Globals
+      })
+      dispatch(list(response.data.result))
+    } catch (error) {
+      console.error(error)
+      Notification.error("読み込みに失敗しました。\n" + JSON.stringify(error))
     }
   },
   /**
@@ -165,8 +189,21 @@ const mapDispatchToProps = dispatch => ({
       })
     )
     if (result.find(item => item.status === "fulfilled")) {
-      Router.push("/topImages")
       Notification.success("トップ画像を削除しました。")
+    } else {
+      return
+    }
+
+    try {
+      const response = await callFunction({
+        name: "api-topImages-get",
+        data: {},
+        globals: Globals
+      })
+      dispatch(list(response.data.result))
+    } catch (error) {
+      console.error(error)
+      Notification.error("読み込みに失敗しました。\n" + JSON.stringify(error))
     }
   }
 })

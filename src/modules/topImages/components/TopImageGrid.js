@@ -13,6 +13,7 @@ const TopImageGrid = ({
   selectedByItemId,
   editing,
   initialize,
+  onLoad,
   onEdit,
   onCancelEdit,
   onDeleteSelected,
@@ -25,6 +26,10 @@ const TopImageGrid = ({
   reset,
   change
 }) => {
+  useEffect(() => {
+    onLoad()
+  }, [])
+
   useEffect(() => {
     initialize({ topImages })
     onCancelEdit()

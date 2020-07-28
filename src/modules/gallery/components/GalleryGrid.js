@@ -1,4 +1,4 @@
-import React, { useRef } from "react"
+import React, { useRef, useEffect } from "react"
 import { Button, Badge } from "react-bootstrap"
 import { formatDateTimeFromUnixTimestamp } from "../../../utils/dateUtil"
 import { useAdjustElementWidth } from "../../../common/hooks"
@@ -9,6 +9,7 @@ export default ({
   items,
   pagination,
   selectedByItemId,
+  onLoad,
   onEdit,
   onCancelEdit,
   onDeleteSelected,
@@ -18,6 +19,10 @@ export default ({
   // -- Redux Form --
   dirty
 }) => {
+  useEffect(() => {
+    onLoad()
+  }, [])
+
   return (
     <div>
       <GalleryGridControl

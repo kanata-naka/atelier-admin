@@ -1,12 +1,11 @@
 import { connect } from "react-redux"
 import { bindActionCreators } from "redux"
 import { isDirty } from "redux-form"
-import Router from "next/router"
 import { callFunction } from "../../../common/firebase"
 import { Globals } from "../../../common/models"
 import { getItemsByPage } from "../../../common/selectors"
 import Notification from "../../../common/components/Notification"
-import { select, movePage, edit } from "../actions"
+import { list, select, movePage, edit } from "../actions"
 import { MODULE_NAME } from "../models"
 import GalleryGrid from "../components/GalleryGrid"
 
@@ -26,6 +25,19 @@ const mapDispatchToProps = dispatch => ({
     },
     dispatch
   ),
+  onLoad: async () => {
+    try {
+      const response = await callFunction({
+        name: "api-arts-get",
+        data: {},
+        globals: Globals
+      })
+      dispatch(list(response.data.result))
+    } catch (error) {
+      console.error(error)
+      Notification.error("読み込みに失敗しました。\n" + JSON.stringify(error))
+    }
+  },
   /**
    * 編集ボタンを押下した際の処理
    */
@@ -74,8 +86,21 @@ const mapDispatchToProps = dispatch => ({
       })
     )
     if (result.find(item => item.status === "fulfilled")) {
-      Router.push("/gallery")
       Notification.success("作品を削除しました。")
+    } else {
+      return
+    }
+
+    try {
+      const response = await callFunction({
+        name: "api-arts-get",
+        data: {},
+        globals: Globals
+      })
+      dispatch(list(response.data.result))
+    } catch (error) {
+      console.error(error)
+      Notification.error("読み込みに失敗しました。\n" + JSON.stringify(error))
     }
   }
 })

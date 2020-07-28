@@ -1,11 +1,11 @@
 import { connect } from "react-redux"
-import Router from "next/router"
 import uuidv4 from "uuid/v4"
 import { callFunction, saveFile, deleteFile } from "../../../common/firebase"
 import { Globals } from "../../../common/models"
 import { getItemById } from "../../../common/selectors"
 import Notification from "../../../common/components/Notification"
 import { getNowUnixTimestamp } from "../../../utils/dateUtil"
+import { list } from "../actions"
 import { MODULE_NAME, initialValues } from "../models"
 import WorkForm from "../components/WorkForm"
 
@@ -77,13 +77,13 @@ const mapDispatchToProps = dispatch => ({
           data,
           globals: Globals
         })
-        Router.push("/works")
         Notification.success("作品を編集しました。")
       } catch (error) {
         console.error(error)
         Notification.error(
           "作品の編集に失敗しました。\n" + JSON.stringify(error)
         )
+        return
       }
     } else {
       // 作品を登録する
@@ -93,14 +93,26 @@ const mapDispatchToProps = dispatch => ({
           data,
           globals: Globals
         })
-        Router.push("/works")
         Notification.success("作品を登録しました。")
       } catch (error) {
         console.error(error)
         Notification.error(
           "作品の登録に失敗しました。\n" + JSON.stringify(error)
         )
+        return
       }
+    }
+
+    try {
+      const response = await callFunction({
+        name: "api-works-get",
+        data: {},
+        globals: Globals
+      })
+      dispatch(list(response.data.result))
+    } catch (error) {
+      console.error(error)
+      Notification.error("読み込みに失敗しました。\n" + JSON.stringify(error))
     }
   }
 })

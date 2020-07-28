@@ -1,10 +1,10 @@
 import { connect } from "react-redux"
 import { initialize } from "redux-form"
-import Router from "next/router"
 import uuidv4 from "uuid/v4"
 import { callFunction, saveFile } from "../../../common/firebase"
 import { Globals } from "../../../common/models"
 import Notification from "../../../common/components/Notification"
+import { list } from "../actions"
 import { MODULE_NAME } from "../models"
 import { getLastOrder } from "../selectors"
 import TopImageForm from "../components/TopImageForm"
@@ -67,13 +67,25 @@ const mergeProps = (state, { dispatch }) => ({
         data,
         globals: Globals
       })
-      Router.push("/topImages")
       Notification.success("トップ画像を登録しました。")
     } catch (error) {
       console.error(error)
       Notification.error(
         "トップ画像の登録に失敗しました。\n" + JSON.stringify(error)
       )
+      return
+    }
+
+    try {
+      const response = await callFunction({
+        name: "api-topImages-get",
+        data: {},
+        globals: Globals
+      })
+      dispatch(list(response.data.result))
+    } catch (error) {
+      console.error(error)
+      Notification.error("読み込みに失敗しました。\n" + JSON.stringify(error))
     }
   }
 })
