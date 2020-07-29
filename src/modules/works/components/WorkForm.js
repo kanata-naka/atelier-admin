@@ -15,6 +15,7 @@ import {
 } from "../../../common/components/fields"
 import Notification from "../../../common/components/Notification"
 import { getNowUnixTimestamp } from "../../../utils/dateUtil"
+import { getExtension } from "../../../utils/fileUtil"
 import { list } from "../actions"
 import { MODULE_NAME, initialValues } from "../models"
 
@@ -125,7 +126,7 @@ export default reduxForm({
           }
           if (imageValue.newFile) {
             const file = imageValue.newFile
-            name = `works/${id}/images/${file.name}`
+            name = `works/${id}/images/${uuidv4()}.${getExtension(file.name)}`
             try {
               // 新しい画像をアップロードする
               await saveFile(file, name)

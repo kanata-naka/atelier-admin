@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { Form, ButtonGroup, Button, Badge } from "react-bootstrap"
 import { bindActionCreators } from "redux"
 import { reduxForm, Field, Fields, FieldArray } from "redux-form"
+import uuidv4 from "uuid/v4"
 import { formatDateTimeFromUnixTimestamp } from "../../../utils/dateUtil"
 import { callFunction, saveFile, deleteFile } from "../../../common/firebase"
 import { useAdjustElementWidth, useDropFile } from "../../../common/hooks"
@@ -13,6 +14,7 @@ import {
 import { TextareaField } from "../../../common/components/fields"
 import Grid from "../../../common/components/Grid"
 import Notification from "../../../common/components/Notification"
+import { getExtension } from "../../../utils/fileUtil"
 import { list, select, edit, cancelEdit } from "../actions"
 import { MODULE_NAME } from "../models"
 
@@ -151,10 +153,7 @@ const TopImageControl = ({
             disabled={!dirty || submitting}>
             {"保存"}
           </Button>
-          <Button
-            variant="secondary"
-            type="button"
-            onClick={onCancelEdit}>
+          <Button variant="secondary" type="button" onClick={onCancelEdit}>
             {"キャンセル"}
           </Button>
         </ButtonGroup>
@@ -434,7 +433,9 @@ export default reduxForm({
           }
           if (!hasError) {
             const file = topImage.image.newFile
-            imageName = `topImages/${topImage.id}/image/${file.name}`
+            imageName = `topImages/${
+              topImage.id
+            }/image/${uuidv4()}.${getExtension(file.name)}`
             try {
               // 画像をアップロードする
               await saveFile(file, imageName)
