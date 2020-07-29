@@ -1,6 +1,11 @@
 import React, { useEffect } from "react"
+import { useSelector } from "react-redux"
 import { Form, ButtonGroup, Button } from "react-bootstrap"
 import { reduxForm, Field, FieldArray } from "redux-form"
+import uuidv4 from "uuid/v4"
+import { callFunction, saveFile, deleteFile } from "../../../common/firebase"
+import { Globals } from "../../../common/models"
+import { getItemById } from "../../../common/selectors"
 import {
   InputField,
   MarkdownTextareaField,
@@ -8,11 +13,12 @@ import {
   DateTimeField,
   ImageFieldArray
 } from "../../../common/components/fields"
+import Notification from "../../../common/components/Notification"
+import { getNowUnixTimestamp } from "../../../utils/dateUtil"
+import { list } from "../actions"
 import { MODULE_NAME, initialValues } from "../models"
 
 const WorkForm = ({
-  id,
-  initialValues: values,
   // -- Redux Form --
   initialize,
   handleSubmit,
@@ -21,20 +27,18 @@ const WorkForm = ({
   reset,
   change
 }) => {
+  const id = useSelector(state => state[MODULE_NAME].editingItemId)
+  const values = useSelector(
+    state => getItemById(state[MODULE_NAME]) || initialValues
+  )
+
   useEffect(() => {
     // 現在の作品の編集がキャンセルされた、または別の作品が編集中になった場合
     initialize(values)
   }, [id])
 
   return (
-    <Form
-      onSubmit={async e => {
-        if (!(await handleSubmit(e))) {
-          // フォームを初期化する
-          initialize(initialValues)
-        }
-      }}
-      className="work-form">
+    <Form onSubmit={handleSubmit} className="work-form">
       <Field
         name="title"
         component={InputField}
@@ -96,5 +100,110 @@ const validate = values => {
 
 export default reduxForm({
   form: MODULE_NAME,
-  validate: validate
+  validate: validate,
+  onSubmit: async (values, dispatch) => {
+    const id = values.id || uuidv4()
+
+    let images = []
+    if (values.images && values.images.length) {
+      images = await Promise.all(
+        values.images.map(async imageValue => {
+          // ストレージ上のパス
+          let name = imageValue.name
+          if (imageValue.removed) {
+            try {
+              // 画像を削除する
+              await deleteFile(name)
+            } catch (error) {
+              console.error(error)
+              Notification.error(
+                `画像 [${name}] の削除に失敗しました。\n` +
+                  JSON.stringify(error)
+              )
+            }
+            return
+          }
+          if (imageValue.newFile) {
+            const file = imageValue.newFile
+            name = `works/${id}/images/${file.name}`
+            try {
+              // 新しい画像をアップロードする
+              await saveFile(file, name)
+            } catch (error) {
+              console.error(error)
+              Notification.error(
+                `画像 [${name}] のアップロードに失敗しました。\n` +
+                  JSON.stringify(error)
+              )
+              return
+            }
+          }
+          return {
+            name
+          }
+        })
+      )
+      // 削除された、またはアップロードに失敗した画像を除外する
+      images = images.filter(image => image)
+    }
+
+    const data = {
+      id,
+      title: values.title,
+      publishedDate: values.publishedDate || getNowUnixTimestamp(),
+      images,
+      description: values.description,
+      pickupFlag: values.pickupFlag
+    }
+
+    if (values.id) {
+      // 作品を更新する
+      try {
+        await callFunction({
+          name: "api-works-update",
+          data,
+          globals: Globals
+        })
+        Notification.success("作品を編集しました。")
+      } catch (error) {
+        console.error(error)
+        Notification.error(
+          "作品の編集に失敗しました。\n" + JSON.stringify(error)
+        )
+        throw error
+      }
+    } else {
+      // 作品を登録する
+      try {
+        await callFunction({
+          name: "api-works-create",
+          data,
+          globals: Globals
+        })
+        Notification.success("作品を登録しました。")
+      } catch (error) {
+        console.error(error)
+        Notification.error(
+          "作品の登録に失敗しました。\n" + JSON.stringify(error)
+        )
+        throw error
+      }
+    }
+
+    try {
+      const response = await callFunction({
+        name: "api-works-get",
+        data: {},
+        globals: Globals
+      })
+      dispatch(list(response.data.result))
+    } catch (error) {
+      console.error(error)
+      Notification.error("読み込みに失敗しました。\n" + JSON.stringify(error))
+    }
+  },
+  onSubmitSuccess: (_result, _dispatch, { initialize }) => {
+    // フォームを初期化する
+    initialize(initialValues)
+  }
 })(WorkForm)

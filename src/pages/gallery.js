@@ -5,8 +5,8 @@ import withAuthentication from "../common/hocs/withAuthentication"
 import withRedux from "../common/hocs/withRedux"
 import { MODULE_NAME } from "../modules/gallery/models"
 import reducers from "../modules/gallery/reducers"
-import GalleryGrid from "../modules/gallery/containers/GalleryGrid"
-import GalleryForm from "../modules/gallery/containers/GalleryForm"
+import GalleryGrid from "../modules/gallery/components/GalleryGrid"
+import GalleryForm from "../modules/gallery/components/GalleryForm"
 
 const Component = withAuthentication(() => {
   return (

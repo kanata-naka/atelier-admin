@@ -1,48 +1,111 @@
 import React, { useRef, useEffect, useCallback } from "react"
+import { useDispatch, useSelector } from "react-redux"
 import { Form, ButtonGroup, Button, Badge } from "react-bootstrap"
+import { bindActionCreators } from "redux"
 import { reduxForm, Field, Fields, FieldArray } from "redux-form"
 import { formatDateTimeFromUnixTimestamp } from "../../../utils/dateUtil"
+import { callFunction, saveFile, deleteFile } from "../../../common/firebase"
 import { useAdjustElementWidth, useDropFile } from "../../../common/hooks"
-import { IMAGE_FILE_ACCEPTABLE_EXTENTIONS } from "../../../common/models"
+import {
+  Globals,
+  IMAGE_FILE_ACCEPTABLE_EXTENTIONS
+} from "../../../common/models"
 import { TextareaField } from "../../../common/components/fields"
 import Grid from "../../../common/components/Grid"
+import Notification from "../../../common/components/Notification"
+import { list, select, edit, cancelEdit } from "../actions"
 import { MODULE_NAME } from "../models"
 
 const TopImageGrid = ({
-  topImages,
-  selectedByItemId,
-  editing,
-  initialize,
-  onLoad,
-  onEdit,
-  onCancelEdit,
-  onDeleteSelected,
-  // -- actions --
-  select,
   // -- Redux Form --
+  initialize,
   handleSubmit,
   dirty,
   submitting,
   reset,
   change
 }) => {
+  const items = useSelector(state => state[MODULE_NAME].items)
+  const selectedByItemId = useSelector(
+    state => state[MODULE_NAME].selectedByItemId
+  )
+  const editing = useSelector(state => state[MODULE_NAME].editing)
+  const dispatch = useDispatch()
+
+  const load = async () => {
+    try {
+      const response = await callFunction({
+        name: "api-topImages-get",
+        data: {},
+        globals: Globals
+      })
+      dispatch(list(response.data.result))
+    } catch (error) {
+      console.error(error)
+      Notification.error("読み込みに失敗しました。\n" + JSON.stringify(error))
+    }
+  }
   useEffect(() => {
-    onLoad()
+    load()
   }, [])
 
+  const handleSelect = bindActionCreators(select, dispatch)
+
+  const handleEdit = useCallback(() => {
+    dispatch(edit())
+  }, [])
+
+  const handleCancelEdit = useCallback(() => {
+    // 値が変わっていればアラートを表示する
+    if (dirty && !confirm("内容が変更されています。破棄してよろしいですか？")) {
+      return
+    }
+    reset()
+    dispatch(cancelEdit())
+  }, [dirty])
+
+  const handleDeleteSelected = useCallback(async () => {
+    if (
+      !confirm("チェックしたトップ画像を削除します。本当によろしいですか？")
+    ) {
+      return
+    }
+    const result = await Promise.allSettled(
+      Object.entries(selectedByItemId)
+        .filter(entry => entry[1])
+        .map(entry =>
+          callFunction({
+            name: "api-topImages-deleteById",
+            data: { id: entry[0] },
+            globals: Globals
+          }).catch(error => {
+            console.error(error)
+            Notification.error(
+              `トップ画像 [${entry[0]}] の削除に失敗しました。\n` +
+                JSON.stringify(error)
+            )
+          })
+        )
+    )
+    if (result.find(item => item.status === "fulfilled")) {
+      Notification.success("トップ画像を削除しました。")
+      load()
+    }
+  }, [selectedByItemId])
+
   useEffect(() => {
-    initialize({ topImages })
-    onCancelEdit()
-  }, [topImages])
+    initialize({ topImages: items })
+    dispatch(cancelEdit())
+  }, [items])
 
   return (
     <Form onSubmit={handleSubmit}>
       <TopImageControl
         selectedByItemId={selectedByItemId}
         editing={editing}
-        onEdit={onEdit}
-        onCancelEdit={onCancelEdit}
-        onDeleteSelected={onDeleteSelected}
+        onEdit={handleEdit}
+        onCancelEdit={handleCancelEdit}
+        onDeleteSelected={handleDeleteSelected}
         dirty={dirty}
         submitting={submitting}
         reset={reset}
@@ -50,10 +113,10 @@ const TopImageGrid = ({
       <FieldArray
         name="topImages"
         component={_TopImageGrid}
-        topImages={topImages}
+        items={items}
         selectedByItemId={selectedByItemId}
+        onSelect={handleSelect}
         editing={editing}
-        select={select}
         change={change}
       />
     </Form>
@@ -77,7 +140,7 @@ const TopImageControl = ({
         type="button"
         className="delete-button"
         disabled={!Object.keys(selectedByItemId).length}
-        onClick={() => onDeleteSelected(selectedByItemId)}>
+        onClick={onDeleteSelected}>
         {"チェックした作品を削除"}
       </Button>
       {editing ? (
@@ -91,10 +154,7 @@ const TopImageControl = ({
           <Button
             variant="secondary"
             type="button"
-            onClick={() => {
-              reset()
-              onCancelEdit(dirty)
-            }}>
+            onClick={onCancelEdit}>
             {"キャンセル"}
           </Button>
         </ButtonGroup>
@@ -108,12 +168,11 @@ const TopImageControl = ({
 }
 
 const _TopImageGrid = ({
-  topImages,
+  items,
   selectedByItemId,
+  onSelect,
   editing,
   change,
-  // -- actions --
-  select,
   // -- Redux Form --
   fields
 }) => {
@@ -135,9 +194,9 @@ const _TopImageGrid = ({
 
   return (
     <Grid
-      items={topImages}
+      items={items}
       selectedByItemId={selectedByItemId}
-      onSelect={select}
+      onSelect={onSelect}
       className="top-image-grid"
       striped
       columns={[
@@ -355,5 +414,110 @@ const validate = values => {
 
 export default reduxForm({
   form: `${MODULE_NAME}_list`,
-  validate: validate
+  validate: validate,
+  onSubmit: async (values, dispatch) => {
+    let data = await Promise.all(
+      values.topImages.map(async (topImage, index) => {
+        let imageName = topImage.image.name
+        if (topImage.image.newFile) {
+          let hasError = false
+          try {
+            // 画像を削除する
+            await deleteFile(imageName)
+          } catch (error) {
+            console.error(error)
+            Notification.error(
+              `画像 [${imageName}] の削除に失敗しました。\n` +
+                JSON.stringify(error)
+            )
+            hasError = true
+          }
+          if (!hasError) {
+            const file = topImage.image.newFile
+            imageName = `topImages/${topImage.id}/image/${file.name}`
+            try {
+              // 画像をアップロードする
+              await saveFile(file, imageName)
+            } catch (error) {
+              console.error(error)
+              Notification.error(
+                `画像 [${imageName}] のアップロードに失敗しました。\n` +
+                  JSON.stringify(error)
+              )
+              imageName = topImage.image.name
+            }
+          }
+        }
+        let thumbnailImageName = topImage.thumbnailImage.name
+        if (topImage.thumbnailImage.newFile) {
+          let hasError = false
+          try {
+            // 画像を削除する
+            await deleteFile(thumbnailImageName)
+          } catch (error) {
+            console.error(error)
+            Notification.error(
+              `画像 [${thumbnailImageName}] の削除に失敗しました。\n` +
+                JSON.stringify(error)
+            )
+            hasError = true
+          }
+          if (!hasError) {
+            const file = topImage.thumbnailImage.newFile
+            thumbnailImageName = `topImages/${topImage.id}/thumbnailImage/${file.name}`
+            try {
+              // サムネイル画像をアップロードする
+              await saveFile(file, thumbnailImageName)
+            } catch (error) {
+              console.error(error)
+              Notification.error(
+                `画像 [${thumbnailImageName}] のアップロードに失敗しました。\n` +
+                  JSON.stringify(error)
+              )
+              thumbnailImageName = topImage.thumbnailImage.name
+            }
+          }
+        }
+        return {
+          id: topImage.id,
+          image: {
+            name: imageName
+          },
+          thumbnailImage: {
+            name: thumbnailImageName
+          },
+          description: topImage.description,
+          // 表示順を設定し直す
+          order: index
+        }
+      })
+    )
+    // トップ画像を一括で更新する
+    try {
+      await callFunction({
+        name: "api-topImages-bulkUpdate",
+        data,
+        globals: Globals
+      })
+      Notification.success("トップ画像を更新しました。")
+    } catch (error) {
+      console.error(error)
+      Notification.error(
+        "トップ画像の更新に失敗しました。\n" + JSON.stringify(error)
+      )
+      throw error
+    }
+
+    try {
+      const response = await callFunction({
+        name: "api-topImages-get",
+        data: {},
+        globals: Globals
+      })
+      dispatch(list(response.data.result))
+    } catch (error) {
+      console.error(error)
+      Notification.error("読み込みに失敗しました。\n" + JSON.stringify(error))
+    }
+  }
 })(TopImageGrid)

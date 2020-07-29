@@ -5,8 +5,8 @@ import withAuthentication from "../common/hocs/withAuthentication"
 import withRedux from "../common/hocs/withRedux"
 import { MODULE_NAME } from "../modules/works/models"
 import reducers from "../modules/works/reducers"
-import WorkGrid from "../modules/works/containers/WorkGrid"
-import WorkForm from "../modules/works/containers/WorkForm"
+import WorkGrid from "../modules/works/components/WorkGrid"
+import WorkForm from "../modules/works/components/WorkForm"
 
 const Component = withAuthentication(() => {
   return (

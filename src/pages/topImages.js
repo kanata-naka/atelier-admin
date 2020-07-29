@@ -5,8 +5,8 @@ import withAuthentication from "../common/hocs/withAuthentication"
 import withRedux from "../common/hocs/withRedux"
 import { MODULE_NAME } from "../modules/topImages/models"
 import reducers from "../modules/topImages/reducers"
-import TopImageGrid from "../modules/topImages/containers/TopImageGrid"
-import TopImageForm from "../modules/topImages/containers/TopImageForm"
+import TopImageGrid from "../modules/topImages/components/TopImageGrid"
+import TopImageForm from "../modules/topImages/components/TopImageForm"
 
 const Component = withAuthentication(() => {
   return (

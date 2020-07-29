@@ -1,38 +1,112 @@
-import React, { useRef, useEffect } from "react"
+import React, { useRef, useEffect, useCallback } from "react"
+import { useDispatch, useSelector } from "react-redux"
 import { Button, Badge } from "react-bootstrap"
+import { bindActionCreators } from "redux"
+import { isDirty } from "redux-form"
 import { formatDateTimeFromUnixTimestamp } from "../../../utils/dateUtil"
+import { callFunction } from "../../../common/firebase"
 import { useAdjustElementWidth } from "../../../common/hooks"
+import { Globals } from "../../../common/models"
+import { getItemsByPage } from "../../../common/selectors"
+import Notification from "../../../common/components/Notification"
 import Grid from "../../../common/components/Grid"
 import Pagination from "../../../common/components/Pagination"
+import { list, select, movePage, edit } from "../actions"
+import { MODULE_NAME } from "../models"
 
-export default ({
-  items,
-  pagination,
-  selectedByItemId,
-  onLoad,
-  onEdit,
-  onCancelEdit,
-  onDeleteSelected,
-  // -- actions --
-  select,
-  movePage,
-  // -- Redux Form --
-  dirty
-}) => {
+export default () => {
+  const items = useSelector(state => getItemsByPage(state[MODULE_NAME]))
+  const pagination = useSelector(state => state[MODULE_NAME].pagination)
+  const selectedByItemId = useSelector(
+    state => state[MODULE_NAME].selectedByItemId
+  )
+  const dirty = useSelector(state => isDirty(MODULE_NAME)(state))
+  const dispatch = useDispatch()
+
+  const load = async () => {
+    try {
+      const response = await callFunction({
+        name: "api-arts-get",
+        data: {},
+        globals: Globals
+      })
+      dispatch(list(response.data.result))
+    } catch (error) {
+      console.error(error)
+      Notification.error("読み込みに失敗しました。\n" + JSON.stringify(error))
+    }
+  }
   useEffect(() => {
-    onLoad()
+    load()
   }, [])
+
+  const { select: handleSelect, movePage: handleMovePage } = bindActionCreators(
+    {
+      select,
+      movePage
+    },
+    dispatch
+  )
+
+  const handleEdit = useCallback(
+    id => {
+      // 値が変わっていればアラートを表示する
+      if (
+        dirty &&
+        !confirm("内容が変更されています。破棄してよろしいですか？")
+      ) {
+        return
+      }
+      dispatch(edit(id))
+    },
+    [dirty]
+  )
+
+  const handleCancelEdit = useCallback(() => {
+    // 値が変わっていればアラートを表示する
+    if (dirty && !confirm("内容が変更されています。破棄してよろしいですか？")) {
+      return
+    }
+    dispatch(edit(null))
+  }, [dirty])
+
+  const handleDeleteSelected = useCallback(async () => {
+    if (!confirm("チェックしたイラストを削除します。本当によろしいですか？")) {
+      return
+    }
+    const result = await Promise.allSettled(
+      Object.entries(selectedByItemId)
+        .filter(entry => entry[1])
+        .map(entry =>
+          callFunction({
+            name: "api-arts-deleteById",
+            data: { id: entry[0] },
+            globals: Globals
+          }).catch(error => {
+            console.error(error)
+            Notification.error(
+              `イラスト [${entry[0]}] の削除に失敗しました。\n` +
+                JSON.stringify(error)
+            )
+          })
+        )
+    )
+    if (result.find(item => item.status === "fulfilled")) {
+      Notification.success("イラストを削除しました。")
+      load()
+    }
+  }, [selectedByItemId])
 
   return (
     <div>
       <GalleryGridControl
         selectedByItemId={selectedByItemId}
-        onDeleteSelected={onDeleteSelected}
+        onDeleteSelected={handleDeleteSelected}
       />
       <Grid
         items={items}
         selectedByItemId={selectedByItemId}
-        onSelect={select}
+        onSelect={handleSelect}
         className="gallery-grid"
         striped
         rowClassName={item =>
@@ -92,14 +166,14 @@ export default ({
                 <Button
                   variant="outline-danger"
                   type="button"
-                  onClick={() => onCancelEdit(dirty)}>
+                  onClick={handleCancelEdit}>
                   {"キャンセル"}
                 </Button>
               ) : (
                 <Button
                   variant="outline-warning"
                   type="button"
-                  onClick={() => onEdit(item.id, dirty)}>
+                  onClick={() => handleEdit(item.id)}>
                   {"編集"}
                 </Button>
               )
@@ -107,7 +181,11 @@ export default ({
           }
         ]}
       />
-      <Pagination pagination={pagination} items={items} onMovePage={movePage} />
+      <Pagination
+        pagination={pagination}
+        items={items}
+        onMovePage={handleMovePage}
+      />
     </div>
   )
 }
@@ -119,7 +197,7 @@ const GalleryGridControl = ({ selectedByItemId, onDeleteSelected }) => {
         variant="danger"
         type="button"
         disabled={!Object.keys(selectedByItemId).length}
-        onClick={() => onDeleteSelected(selectedByItemId)}>
+        onClick={onDeleteSelected}>
         {"チェックした作品を削除"}
       </Button>
     </div>
