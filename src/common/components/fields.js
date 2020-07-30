@@ -6,13 +6,18 @@ import HTML5Backend from "react-dnd-html5-backend-cjs"
 import { Fields } from "redux-form"
 import ja from "date-fns/locale/ja"
 import { useAdjustElementWidth, useDropFile } from "../hooks"
-import { IMAGE_FILE_ACCEPTABLE_EXTENTIONS } from "../models"
+import {
+  IMAGE_FILE_ACCEPTABLE_EXTENTIONS,
+  IMAGE_FILE_MAX_SIZE
+} from "../models"
+import Notification from "./Notification"
 import {
   getNowDate,
   getDateFromUnixTimestamp,
   getUnixTimestampFromDate
 } from "../../utils/dateUtil"
 import { renderMarkdown } from "../../utils/domUtil"
+import { validateFile } from "../../utils/fileUtil"
 import { RequiredLabel } from "./elements"
 
 // ※date-fns/local/ja はデフォルトで月曜日始まり
@@ -242,15 +247,30 @@ const _ImageField = ({
   useAdjustElementWidth(fieldRef, previewImageRef, [url])
 
   const fileInputLabelRef = useRef(null)
+  const validate = file => {
+    const validationResult = validateFile(
+      file,
+      IMAGE_FILE_ACCEPTABLE_EXTENTIONS,
+      IMAGE_FILE_MAX_SIZE
+    )
+    if (validationResult) {
+      Notification.error(validationResult)
+      return false
+    }
+    return true
+  }
   const changeFile = file => {
     change(names[0], URL.createObjectURL(file))
     change(names[1], file)
   }
-  useDropFile(fileInputLabelRef, changeFile, IMAGE_FILE_ACCEPTABLE_EXTENTIONS)
+  useDropFile(fileInputLabelRef, validate, changeFile)
 
   const handleChange = useCallback(e => {
     e.preventDefault()
-    changeFile(e.target.files[0])
+    const file = e.target.files[0]
+    if (validate(file)) {
+      changeFile(file)
+    }
     // 同じファイルをアップロードしてもonChangeイベントを走らせるためvalueを空にする
     e.target.value = ""
   })
@@ -291,6 +311,18 @@ export const ImageFieldArray = ({
   meta: { submitFailed, error }
 }) => {
   const fileInputLabelRef = useRef(null)
+  const validate = file => {
+    const validationResult = validateFile(
+      file,
+      IMAGE_FILE_ACCEPTABLE_EXTENTIONS,
+      IMAGE_FILE_MAX_SIZE
+    )
+    if (validationResult) {
+      Notification.error(validationResult)
+      return false
+    }
+    return true
+  }
   const addFile = file => {
     fields.push({
       name: file.name,
@@ -298,12 +330,16 @@ export const ImageFieldArray = ({
       newFile: file
     })
   }
-  useDropFile(fileInputLabelRef, addFile, IMAGE_FILE_ACCEPTABLE_EXTENTIONS)
+
+  useDropFile(fileInputLabelRef, validate, addFile)
 
   const handleChange = useCallback(
     e => {
       e.preventDefault()
-      addFile(e.target.files[0])
+      const file = e.target.files[0]
+      if (validate(file)) {
+        addFile(file)
+      }
       // 同じファイルをアップロードしてもonChangeイベントを走らせるためvalueを空にする
       e.target.value = ""
     },

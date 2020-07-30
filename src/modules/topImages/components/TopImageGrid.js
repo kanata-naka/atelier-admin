@@ -9,12 +9,13 @@ import { callFunction, saveFile, deleteFile } from "../../../common/firebase"
 import { useAdjustElementWidth, useDropFile } from "../../../common/hooks"
 import {
   Globals,
-  IMAGE_FILE_ACCEPTABLE_EXTENTIONS
+  IMAGE_FILE_ACCEPTABLE_EXTENTIONS,
+  IMAGE_FILE_MAX_SIZE
 } from "../../../common/models"
 import { TextareaField } from "../../../common/components/fields"
 import Grid from "../../../common/components/Grid"
 import Notification from "../../../common/components/Notification"
-import { getExtension } from "../../../utils/fileUtil"
+import { validateFile, getExtension } from "../../../utils/fileUtil"
 import { list, select, edit, cancelEdit } from "../actions"
 import { MODULE_NAME } from "../models"
 
@@ -346,18 +347,32 @@ const _ImageField = ({
   useAdjustElementWidth(fieldRef, previewImageRef, [url])
 
   const fileInputLabelRef = useRef(null)
+  const validate = file => {
+    const validationResult = validateFile(
+      file,
+      IMAGE_FILE_ACCEPTABLE_EXTENTIONS,
+      IMAGE_FILE_MAX_SIZE
+    )
+    if (validationResult) {
+      Notification.error(validationResult)
+      return false
+    }
+    return true
+  }
   const changeFile = file => {
     change(names[1], URL.createObjectURL(file))
     change(names[2], file)
     change(names[3], url)
   }
-  useDropFile(fileInputLabelRef, changeFile, IMAGE_FILE_ACCEPTABLE_EXTENTIONS, [
-    editing
-  ])
+
+  useDropFile(fileInputLabelRef, validate, changeFile, [editing])
 
   const handleChange = e => {
     e.preventDefault()
-    changeFile(e.target.files[0])
+    const file = e.target.files[0]
+    if (validate(file)) {
+      changeFile(e.target.files[0])
+    }
     // 同じファイルをアップロードしてもonChangeイベントを走らせるためvalueを空にする
     e.target.value = ""
   }

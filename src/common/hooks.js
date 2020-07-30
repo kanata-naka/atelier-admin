@@ -17,12 +17,7 @@ export const useAdjustElementWidth = (containerRef, innerRef, deps) => {
 /**
  * ファイルのドラッグ＆ドロップを有効にする
  */
-export const useDropFile = (
-  ref,
-  onChange,
-  acceptableExtentions = [],
-  deps = []
-) => {
+export const useDropFile = (ref, validate, change, deps = []) => {
   useEffect(() => {
     const element = ref.current
     if (!element) {
@@ -37,14 +32,8 @@ export const useDropFile = (
     element.addEventListener("drop", e => {
       e.preventDefault()
       const files = e.dataTransfer.files
-      if (
-        files.length &&
-        (!acceptableExtentions.length ||
-          acceptableExtentions.find(extention =>
-            files[0].name.endsWith(extention)
-          ))
-      ) {
-        onChange(files[0])
+      if (files.length && validate(files[0])) {
+        change(files[0])
       }
     })
   }, deps)

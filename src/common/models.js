@@ -18,3 +18,6 @@ export const IMAGE_FILE_ACCEPTABLE_EXTENTIONS = [
   ".jpeg",
   ".png"
 ]
+
+/** 画像ファイルの最大ファイルサイズ */
+export const IMAGE_FILE_MAX_SIZE = 1024 * 1024 * 2
