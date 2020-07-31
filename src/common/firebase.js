@@ -107,12 +107,3 @@ export const saveFile = async (file, name) => {
   const imageRef = storageRef.child(name)
   return await imageRef.put(file)
 }
-
-/**
- * ストレージからファイルを削除する
- */
-export const deleteFile = async name => {
-  const storageRef = firebase.storage().ref()
-  const imageRef = storageRef.child(name)
-  await imageRef.delete()
-}

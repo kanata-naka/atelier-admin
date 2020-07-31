@@ -85,36 +85,16 @@ export default reduxForm({
   onSubmit: async (values, dispatch) => {
     const id = uuidv4()
 
-    const image = {}
-    try {
-      // 画像をアップロードする
-      image.name = `topImages/${id}/image/${uuidv4()}.${getExtension(
+    const image = {
+      name: `topImages/${id}/image/${uuidv4()}.${getExtension(
         values.image.file.name
       )}`
-      await saveFile(values.image.file, image.name)
-    } catch (error) {
-      console.error(error)
-      Notification.error(
-        `画像 [${image.name}] のアップロードに失敗しました。\n` +
-          JSON.stringify(error)
-      )
-      throw error
     }
 
-    const thumbnailImage = {}
-    try {
-      // サムネイル画像をアップロードする
-      thumbnailImage.name = `topImages/${id}/thumbnailImage/${uuidv4()}.${getExtension(
+    const thumbnailImage = {
+      name: `topImages/${id}/thumbnailImage/${uuidv4()}.${getExtension(
         values.thumbnailImage.file.name
       )}`
-      await saveFile(values.thumbnailImage.file, thumbnailImage.name)
-    } catch (error) {
-      console.error(error)
-      Notification.error(
-        `サムネイル画像 [${thumbnailImage.name}] のアップロードに失敗しました。\n` +
-          JSON.stringify(error)
-      )
-      throw error
     }
 
     const data = {
@@ -132,7 +112,6 @@ export default reduxForm({
         data,
         globals: Globals
       })
-      Notification.success("トップ画像を登録しました。")
     } catch (error) {
       console.error(error)
       Notification.error(
@@ -142,16 +121,41 @@ export default reduxForm({
     }
 
     try {
-      const response = await callFunction({
-        name: "api-topImages-get",
-        data: {},
-        globals: Globals
-      })
-      dispatch(list(response.data.result))
+      // 画像をアップロードする
+      await saveFile(values.image.file, image.name)
     } catch (error) {
       console.error(error)
-      Notification.error("読み込みに失敗しました。\n" + JSON.stringify(error))
+      Notification.error(
+        `画像 [${image.name}] のアップロードに失敗しました。\n` +
+          JSON.stringify(error)
+      )
+      throw error
     }
+
+    try {
+      // サムネイル画像をアップロードする
+      await saveFile(values.thumbnailImage.file, thumbnailImage.name)
+    } catch (error) {
+      console.error(error)
+      Notification.error(
+        `サムネイル画像 [${thumbnailImage.name}] のアップロードに失敗しました。\n` +
+          JSON.stringify(error)
+      )
+      throw error
+    }
+
+    Notification.success("トップ画像を登録しました。")
+
+    callFunction({
+      name: "api-topImages-get",
+      data: {},
+      globals: Globals
+    })
+      .then(response => dispatch(list(response.data.result)))
+      .catch(error => {
+        console.error(error)
+        Notification.error("読み込みに失敗しました。\n" + JSON.stringify(error))
+      })
 
     return {
       lastOrder: data.order

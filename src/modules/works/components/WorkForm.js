@@ -3,7 +3,7 @@ import { useSelector } from "react-redux"
 import { Form, ButtonGroup, Button } from "react-bootstrap"
 import { reduxForm, Field, FieldArray } from "redux-form"
 import uuidv4 from "uuid/v4"
-import { callFunction, saveFile, deleteFile } from "../../../common/firebase"
+import { callFunction, saveFile } from "../../../common/firebase"
 import { Globals } from "../../../common/models"
 import { getItemById } from "../../../common/selectors"
 import {
@@ -107,45 +107,18 @@ export default reduxForm({
 
     let images = []
     if (values.images && values.images.length) {
-      images = await Promise.all(
-        values.images.map(async imageValue => {
-          // ストレージ上のパス
-          let name = imageValue.name
-          if (imageValue.removed) {
-            try {
-              // 画像を削除する
-              await deleteFile(name)
-            } catch (error) {
-              console.error(error)
-              Notification.error(
-                `画像 [${name}] の削除に失敗しました。\n` +
-                  JSON.stringify(error)
-              )
-            }
-            return
-          }
+      images = values.images
+        .filter(imageValue => !imageValue.removed)
+        .map(imageValue => {
           if (imageValue.newFile) {
-            const file = imageValue.newFile
-            name = `works/${id}/images/${uuidv4()}.${getExtension(file.name)}`
-            try {
-              // 新しい画像をアップロードする
-              await saveFile(file, name)
-            } catch (error) {
-              console.error(error)
-              Notification.error(
-                `画像 [${name}] のアップロードに失敗しました。\n` +
-                  JSON.stringify(error)
-              )
-              return
-            }
+            imageValue.name = `works/${id}/images/${uuidv4()}.${getExtension(
+              imageValue.newFile.name
+            )}`
           }
           return {
-            name
+            name: imageValue.name
           }
         })
-      )
-      // 削除された、またはアップロードに失敗した画像を除外する
-      images = images.filter(image => image)
     }
 
     const data = {
@@ -165,7 +138,6 @@ export default reduxForm({
           data,
           globals: Globals
         })
-        Notification.success("作品を編集しました。")
       } catch (error) {
         console.error(error)
         Notification.error(
@@ -181,7 +153,6 @@ export default reduxForm({
           data,
           globals: Globals
         })
-        Notification.success("作品を登録しました。")
       } catch (error) {
         console.error(error)
         Notification.error(
@@ -191,17 +162,37 @@ export default reduxForm({
       }
     }
 
-    try {
-      const response = await callFunction({
-        name: "api-works-get",
-        data: {},
-        globals: Globals
+    await Promise.all(
+      values.images
+        .filter(imageValue => imageValue.newFile)
+        .map(async imageValue => {
+          try {
+            // 新しい画像をアップロードする
+            await saveFile(imageValue.newFile, imageValue.name)
+          } catch (error) {
+            console.error(error)
+            Notification.error(
+              `画像 [${name}] のアップロードに失敗しました。\n` +
+                JSON.stringify(error)
+            )
+          }
+        })
+    )
+
+    Notification.success(
+      values.id ? "作品を編集しました。" : "作品を登録しました。"
+    )
+
+    callFunction({
+      name: "api-works-get",
+      data: {},
+      globals: Globals
+    })
+      .then(response => dispatch(list(response.data.result)))
+      .catch(error => {
+        console.error(error)
+        Notification.error("読み込みに失敗しました。\n" + JSON.stringify(error))
       })
-      dispatch(list(response.data.result))
-    } catch (error) {
-      console.error(error)
-      Notification.error("読み込みに失敗しました。\n" + JSON.stringify(error))
-    }
   },
   onSubmitSuccess: (_result, _dispatch, { initialize }) => {
     // フォームを初期化する

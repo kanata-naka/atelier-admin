@@ -3,7 +3,7 @@ import { useSelector } from "react-redux"
 import { Form, ButtonGroup, Button } from "react-bootstrap"
 import { reduxForm, Field, FieldArray } from "redux-form"
 import uuidv4 from "uuid/v4"
-import { callFunction, saveFile, deleteFile } from "../../../common/firebase"
+import { callFunction, saveFile } from "../../../common/firebase"
 import { Globals } from "../../../common/models"
 import { getItemById } from "../../../common/selectors"
 import {
@@ -163,7 +163,7 @@ const validate = values => {
   if (!values.title) {
     errors.title = "タイトルは必須です"
   }
-  if (!values.images || !values.images.length) {
+  if (!values.images || !values.images.filter(image => !image.removed).length) {
     errors.images = { _error: "画像は必須です" }
   }
   return errors
@@ -175,46 +175,19 @@ export default reduxForm({
   onSubmit: async (values, dispatch) => {
     const id = values.id || uuidv4()
 
-    let images = await Promise.all(
-      values.images.map(async imageValue => {
-        // ストレージ上のパス
-        let name = imageValue.name
-        if (imageValue.removed) {
-          try {
-            // 画像を削除する
-            await deleteFile(name)
-          } catch (error) {
-            console.error(error)
-            Notification.error(
-              `画像 [${name}] の削除に失敗しました。\n` + JSON.stringify(error)
-            )
-          }
-          return
-        }
+    let images = values.images
+      .filter(imageValue => !imageValue.removed)
+      .map(imageValue => {
         if (imageValue.newFile) {
-          const file = imageValue.newFile
-          name = `arts/${id}/images/${uuidv4()}.${getExtension(file.name)}`
-          try {
-            // 新しい画像をアップロードする
-            await saveFile(file, name)
-          } catch (error) {
-            console.error(error)
-            Notification.error(
-              `画像 [${name}] のアップロードに失敗しました。\n` +
-                JSON.stringify(error)
-            )
-            return
-          }
+          imageValue.name = `arts/${id}/images/${uuidv4()}.${getExtension(
+            imageValue.newFile.name
+          )}`
         }
         return {
-          name
+          name: imageValue.name
         }
       })
-    )
-    // 削除された、またはアップロードに失敗した画像を除外する
-    images = images.filter(image => image)
     if (!images.length) {
-      // 有効な画像が1件もなければ処理を中止する
       return
     }
 
@@ -236,11 +209,10 @@ export default reduxForm({
           data,
           globals: Globals
         })
-        Notification.success("作品を編集しました。")
       } catch (error) {
         console.error(error)
         Notification.error(
-          "作品の編集に失敗しました。\n" + JSON.stringify(error)
+          "イラストの編集に失敗しました。\n" + JSON.stringify(error)
         )
         throw error
       }
@@ -252,27 +224,46 @@ export default reduxForm({
           data,
           globals: Globals
         })
-        Notification.success("作品を登録しました。")
       } catch (error) {
         console.error(error)
         Notification.error(
-          "作品の登録に失敗しました。\n" + JSON.stringify(error)
+          "イラストの登録に失敗しました。\n" + JSON.stringify(error)
         )
         throw error
       }
     }
 
-    try {
-      const response = await callFunction({
-        name: "api-arts-get",
-        data: {},
-        globals: Globals
+    await Promise.all(
+      values.images
+        .filter(imageValue => imageValue.newFile)
+        .map(async imageValue => {
+          try {
+            // 新しい画像をアップロードする
+            await saveFile(imageValue.newFile, imageValue.name)
+          } catch (error) {
+            console.error(error)
+            Notification.error(
+              `画像 [${name}] のアップロードに失敗しました。\n` +
+                JSON.stringify(error)
+            )
+          }
+        })
+    )
+
+    Notification.success(
+      values.id ? "イラストを編集しました。" : "イラストを登録しました。"
+    )
+
+    callFunction({
+      name: "api-arts-get",
+      data: {},
+      globals: Globals
+    })
+      .then(response => dispatch(list(response.data.result)))
+      .catch(error => {
+        console.error(error)
+        Notification.error("読み込みに失敗しました。\n" + JSON.stringify(error))
       })
-      dispatch(list(response.data.result))
-    } catch (error) {
-      console.error(error)
-      Notification.error("読み込みに失敗しました。\n" + JSON.stringify(error))
-    }
   },
   onSubmitSuccess: (_result, _dispatch, { initialize }) => {
     // フォームを初期化する

@@ -5,7 +5,7 @@ import { bindActionCreators } from "redux"
 import { reduxForm, Field, Fields, FieldArray } from "redux-form"
 import uuidv4 from "uuid/v4"
 import { formatDateTimeFromUnixTimestamp } from "../../../utils/dateUtil"
-import { callFunction, saveFile, deleteFile } from "../../../common/firebase"
+import { callFunction, saveFile } from "../../../common/firebase"
 import { useAdjustElementWidth, useDropFile } from "../../../common/hooks"
 import {
   Globals,
@@ -430,84 +430,30 @@ export default reduxForm({
   form: `${MODULE_NAME}_list`,
   validate: validate,
   onSubmit: async (values, dispatch) => {
-    let data = await Promise.all(
-      values.topImages.map(async (topImage, index) => {
-        let imageName = topImage.image.name
-        if (topImage.image.newFile) {
-          let hasError = false
-          try {
-            // 画像を削除する
-            await deleteFile(imageName)
-          } catch (error) {
-            console.error(error)
-            Notification.error(
-              `画像 [${imageName}] の削除に失敗しました。\n` +
-                JSON.stringify(error)
-            )
-            hasError = true
-          }
-          if (!hasError) {
-            const file = topImage.image.newFile
-            imageName = `topImages/${
-              topImage.id
-            }/image/${uuidv4()}.${getExtension(file.name)}`
-            try {
-              // 画像をアップロードする
-              await saveFile(file, imageName)
-            } catch (error) {
-              console.error(error)
-              Notification.error(
-                `画像 [${imageName}] のアップロードに失敗しました。\n` +
-                  JSON.stringify(error)
-              )
-              imageName = topImage.image.name
-            }
-          }
-        }
-        let thumbnailImageName = topImage.thumbnailImage.name
-        if (topImage.thumbnailImage.newFile) {
-          let hasError = false
-          try {
-            // 画像を削除する
-            await deleteFile(thumbnailImageName)
-          } catch (error) {
-            console.error(error)
-            Notification.error(
-              `画像 [${thumbnailImageName}] の削除に失敗しました。\n` +
-                JSON.stringify(error)
-            )
-            hasError = true
-          }
-          if (!hasError) {
-            const file = topImage.thumbnailImage.newFile
-            thumbnailImageName = `topImages/${topImage.id}/thumbnailImage/${file.name}`
-            try {
-              // サムネイル画像をアップロードする
-              await saveFile(file, thumbnailImageName)
-            } catch (error) {
-              console.error(error)
-              Notification.error(
-                `画像 [${thumbnailImageName}] のアップロードに失敗しました。\n` +
-                  JSON.stringify(error)
-              )
-              thumbnailImageName = topImage.thumbnailImage.name
-            }
-          }
-        }
-        return {
-          id: topImage.id,
-          image: {
-            name: imageName
-          },
-          thumbnailImage: {
-            name: thumbnailImageName
-          },
-          description: topImage.description,
-          // 表示順を設定し直す
-          order: index
-        }
-      })
-    )
+    let data = values.topImages.map((topImage, index) => {
+      if (topImage.image.newFile) {
+        topImage.image.name = `topImages/${
+          topImage.id
+        }/image/${uuidv4()}.${getExtension(topImage.image.newFile.name)}`
+      }
+      if (topImage.thumbnailImage.newFile) {
+        topImage.thumbnailImage.name = `topImages/${
+          topImage.id
+        }/thumbnailImage/${uuidv4()}.${getExtension(topImage.thumbnailImage.newFile.name)}`
+      }
+      return {
+        id: topImage.id,
+        image: {
+          name: topImage.image.name
+        },
+        thumbnailImage: {
+          name: topImage.thumbnailImage.name
+        },
+        description: topImage.description,
+        // 表示順を設定し直す
+        order: index
+      }
+    })
     // トップ画像を一括で更新する
     try {
       await callFunction({
@@ -515,7 +461,6 @@ export default reduxForm({
         data,
         globals: Globals
       })
-      Notification.success("トップ画像を更新しました。")
     } catch (error) {
       console.error(error)
       Notification.error(
@@ -524,16 +469,49 @@ export default reduxForm({
       throw error
     }
 
-    try {
-      const response = await callFunction({
-        name: "api-topImages-get",
-        data: {},
-        globals: Globals
+    await Promise.all(
+      values.topImages.map(async topImage => {
+        if (topImage.image.newFile) {
+          try {
+            // 新しい画像をアップロードする
+            await saveFile(topImage.image.newFile, topImage.image.name)
+          } catch (error) {
+            console.error(error)
+            Notification.error(
+              `画像 [${name}] のアップロードに失敗しました。\n` +
+                JSON.stringify(error)
+            )
+          }
+        }
+        if (topImage.thumbnailImage.newFile) {
+          try {
+            // 新しいサムネイル画像をアップロードする
+            await saveFile(
+              topImage.thumbnailImage.newFile,
+              topImage.thumbnailImage.name
+            )
+          } catch (error) {
+            console.error(error)
+            Notification.error(
+              `サムネイル画像 [${name}] のアップロードに失敗しました。\n` +
+                JSON.stringify(error)
+            )
+          }
+        }
       })
-      dispatch(list(response.data.result))
-    } catch (error) {
-      console.error(error)
-      Notification.error("読み込みに失敗しました。\n" + JSON.stringify(error))
-    }
+    )
+
+    Notification.success("トップ画像を更新しました。")
+
+    callFunction({
+      name: "api-topImages-get",
+      data: {},
+      globals: Globals
+    })
+      .then(response => dispatch(list(response.data.result)))
+      .catch(error => {
+        console.error(error)
+        Notification.error("読み込みに失敗しました。\n" + JSON.stringify(error))
+      })
   }
 })(TopImageGrid)
