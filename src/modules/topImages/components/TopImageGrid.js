@@ -439,7 +439,9 @@ export default reduxForm({
       if (topImage.thumbnailImage.newFile) {
         topImage.thumbnailImage.name = `topImages/${
           topImage.id
-        }/thumbnailImage/${uuidv4()}.${getExtension(topImage.thumbnailImage.newFile.name)}`
+        }/thumbnailImage/${uuidv4()}.${getExtension(
+          topImage.thumbnailImage.newFile.name
+        )}`
       }
       return {
         id: topImage.id,
