@@ -207,7 +207,7 @@ const GalleryGridControl = ({ selectedByItemId, onDeleteSelected }) => {
 const GalleryGridColumnImage = ({ image }) => {
   const containerRef = useRef(null)
   const imageRef = useRef(null)
-  useAdjustElementWidth(containerRef, imageRef, [image])
+  useAdjustElementWidth(containerRef, imageRef, "inside", [image])
 
   return (
     <a href={image.url} target="_blank">

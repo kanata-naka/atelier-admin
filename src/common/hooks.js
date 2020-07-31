@@ -4,12 +4,12 @@ import { adjustElementWidth } from "../utils/domUtil"
 /**
  * 要素の大きさを外枠に合わせて調整する
  */
-export const useAdjustElementWidth = (containerRef, innerRef, deps) => {
+export const useAdjustElementWidth = (containerRef, innerRef, fit, deps) => {
   useEffect(() => {
     const containerElement = containerRef.current
     const innerElement = innerRef.current
     innerElement.onload = () => {
-      adjustElementWidth(containerElement, innerElement)
+      adjustElementWidth(containerElement, innerElement, fit)
     }
   }, deps)
 }

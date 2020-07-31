@@ -344,7 +344,7 @@ const _ImageField = ({
 }) => {
   const fieldRef = useRef(null)
   const previewImageRef = useRef(null)
-  useAdjustElementWidth(fieldRef, previewImageRef, [url])
+  useAdjustElementWidth(fieldRef, previewImageRef, "inside", [url])
 
   const fileInputLabelRef = useRef(null)
   const validate = file => {

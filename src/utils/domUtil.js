@@ -5,17 +5,34 @@ import * as marked from "marked"
  * @param containerElement 外枠のHTMLElement
  * @param innerElement 内側のHTMLElement
  */
-export const adjustElementWidth = (containerElement, innerElement) => {
+export const adjustElementWidth = (containerElement, innerElement, fit) => {
   const containerWidth = containerElement.clientWidth
   const containerHeight = containerElement.clientHeight
-  const magnificationX = containerWidth / innerElement.width
-  const magnificationY = containerHeight / innerElement.height
-  if (magnificationX < magnificationY) {
-    innerElement.style.width = containerWidth + "px"
-    innerElement.style.height = "auto"
-  } else {
-    innerElement.style.width = "auto"
-    innerElement.style.height = containerHeight + "px"
+  switch (fit) {
+    case "inside":
+      if (
+        containerWidth / innerElement.width <
+        containerHeight / innerElement.height
+      ) {
+        innerElement.style.width = containerWidth + "px"
+        innerElement.style.height = "auto"
+      } else {
+        innerElement.style.width = "auto"
+        innerElement.style.height = containerHeight + "px"
+      }
+      break
+    case "cover":
+      if (
+        innerElement.width / containerWidth <
+        innerElement.height / containerHeight
+      ) {
+        innerElement.style.width = containerWidth + "px"
+        innerElement.style.height = "auto"
+      } else {
+        innerElement.style.width = "auto"
+        innerElement.style.height = containerHeight + "px"
+      }
+      break
   }
 }
 

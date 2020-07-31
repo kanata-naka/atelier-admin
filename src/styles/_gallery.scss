@@ -69,17 +69,22 @@
   }
 
   .column-images {
-    width: 250px;
-    text-align: center;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    min-width: 250px;
     overflow-x: hidden;
   }
 
   .image-container {
-    display: inline-block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     position: relative;
     border: 1px solid #dedede;
     width: 100px;
     height: 100px;
+    margin: 2px;
     padding: 4px;
     overflow: hidden;
   }

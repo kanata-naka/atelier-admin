@@ -34,6 +34,7 @@ const TopImageForm = ({
         classNamePrefix="image"
         label="画像"
         required
+        fit="cover"
         change={change}
       />
       <p className="annotation">{"※縦横比は 5:3 です"}</p>
@@ -42,6 +43,7 @@ const TopImageForm = ({
         classNamePrefix="thumbnail-image"
         label="サムネイル画像"
         required
+        fit="cover"
         change={change}
       />
       <p className="annotation">{"※縦横比は 1:1 (正方形)です"}</p>

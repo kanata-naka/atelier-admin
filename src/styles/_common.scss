@@ -174,20 +174,15 @@ form {
     padding: 4px 0 8px;
 
     .image-field {
+      display: flex;
+      justify-content: center;
+      align-items: center;
       position: relative;
       margin: 0 8px 8px 0;
       border: 1px dotted #ababab;
       overflow: hidden;
 
       .preview-image {
-        display: block;
-        bottom: 0;
-        left: 0;
-        margin: auto;
-        position: absolute;
-        right: 0;
-        top: 0;
-        width: 100%;
       }
 
       .image-file-input-label {
@@ -221,9 +216,16 @@ form {
   .images-field-wrapper {
     padding: 8px 0;
 
+    .images-field {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
     .image-field {
+      display: flex;
+      justify-content: center;
+      align-items: center;
       cursor: move;
-      display: inline-block;
       position: relative;
       width: 200px;
       height: 200px;
@@ -239,14 +241,6 @@ form {
       }
 
       .preview-image {
-        display: block;
-        bottom: 0;
-        left: 0;
-        margin: auto;
-        position: absolute;
-        right: 0;
-        top: 0;
-        width: 198px;
       }
 
       &-remove-button {

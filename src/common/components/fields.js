@@ -210,6 +210,7 @@ export const ImageField = ({
   classNamePrefix,
   label,
   required,
+  fit = "inside",
   change
 }) => {
   return (
@@ -220,6 +221,7 @@ export const ImageField = ({
       classNamePrefix={classNamePrefix}
       label={label}
       required={required}
+      fit={fit}
       change={change}
     />
   )
@@ -232,6 +234,7 @@ const _ImageField = ({
   classNamePrefix,
   label,
   required,
+  fit,
   // -- Redux Form --
   [name]: {
     url: {
@@ -244,7 +247,7 @@ const _ImageField = ({
 }) => {
   const fieldRef = useRef(null)
   const previewImageRef = useRef(null)
-  useAdjustElementWidth(fieldRef, previewImageRef, [url])
+  useAdjustElementWidth(fieldRef, previewImageRef, fit, [url])
 
   const fileInputLabelRef = useRef(null)
   const validate = file => {
@@ -305,6 +308,7 @@ const _ImageField = ({
 export const ImageFieldArray = ({
   label,
   required,
+  fit = "inside",
   change,
   // -- Redux Form --
   fields,
@@ -357,6 +361,7 @@ export const ImageFieldArray = ({
             return (
               <Fields
                 key={field}
+                fit={fit}
                 names={[
                   `${field}.name`,
                   `${field}.url`,
@@ -392,6 +397,7 @@ export const ImageFieldArray = ({
 }
 
 const ImageFieldArrayItem = ({
+  fit,
   names,
   index,
   change,
@@ -413,7 +419,7 @@ const ImageFieldArrayItem = ({
 
   const fieldRef = useRef(null)
   const previewImageRef = useRef(null)
-  useAdjustElementWidth(fieldRef, previewImageRef, [url])
+  useAdjustElementWidth(fieldRef, previewImageRef, fit, [url])
 
   // ドラッグの設定
   const [{ isDragging }, drag] = useDrag({
