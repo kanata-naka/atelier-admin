@@ -55,11 +55,12 @@
 
 .top-image-grid {
   .image-field {
-    display: inline-flex;
+    display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
     border: 1px solid #dedede;
+    margin: auto;
     padding: 4px;
     overflow: hidden;
 
@@ -104,7 +105,6 @@
 
   .column-image {
     width: 200px;
-    text-align: center;
     overflow-x: hidden;
   }
 
@@ -133,7 +133,6 @@
 
   .column-thumbnail-image {
     width: 150px;
-    text-align: center;
     overflow-x: hidden;
   }
 
