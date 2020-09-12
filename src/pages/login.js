@@ -1,36 +1,36 @@
-import React, { useState, useEffect } from "react"
-import { useDispatch } from "react-redux"
-import { Button } from "react-bootstrap"
-import Head from "next/head"
-import { useRouter } from "next/router"
-import { signInFailed } from "../common/actions"
-import { signInWithRedirect, getRedirectResult } from "../common/firebase"
-import LoadingEffect from "../common/components/LoadingEffect"
-import withRedux from "../common/hocs/withRedux"
+import React, { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { Button } from "react-bootstrap";
+import Head from "next/head";
+import { useRouter } from "next/router";
+import { signInFailed } from "../common/actions";
+import { signInWithRedirect, getRedirectResult } from "../common/firebase";
+import LoadingEffect from "../common/components/LoadingEffect";
+import withRedux from "../common/hocs/withRedux";
 
 const Component = () => {
-  const [loading, setLoading] = useState(true)
-  const router = useRouter()
-  const dispatch = useDispatch()
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     getRedirectResult()
       .then(({ user }) => {
         if (user) {
           // ダッシュボードにリダイレクトする
-          router.push("/")
+          router.push("/");
         } else {
-          setLoading(false)
+          setLoading(false);
         }
       })
       .catch(error => {
-        console.error(error)
-        dispatch(signInFailed())
-      })
-  }, [])
+        console.error(error);
+        dispatch(signInFailed());
+      });
+  }, []);
 
   if (loading) {
-    return <LoadingEffect />
+    return <LoadingEffect />;
   }
 
   return (
@@ -51,7 +51,7 @@ const Component = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default withRedux(Component, {})
+export default withRedux(Component, {});

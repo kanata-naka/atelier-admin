@@ -1,4 +1,4 @@
-import * as marked from "marked"
+import * as marked from "marked";
 
 /**
  * 要素の大きさを外枠に合わせて調整する
@@ -6,39 +6,39 @@ import * as marked from "marked"
  * @param innerElement 内側のHTMLElement
  */
 export const adjustElementWidth = (containerElement, innerElement, fit) => {
-  const containerWidth = containerElement.clientWidth
-  const containerHeight = containerElement.clientHeight
+  const containerWidth = containerElement.clientWidth;
+  const containerHeight = containerElement.clientHeight;
   switch (fit) {
     case "inside":
       if (
         containerWidth / innerElement.width <
         containerHeight / innerElement.height
       ) {
-        innerElement.style.width = containerWidth + "px"
-        innerElement.style.height = "auto"
+        innerElement.style.width = containerWidth + "px";
+        innerElement.style.height = "auto";
       } else {
-        innerElement.style.width = "auto"
-        innerElement.style.height = containerHeight + "px"
+        innerElement.style.width = "auto";
+        innerElement.style.height = containerHeight + "px";
       }
-      break
+      break;
     case "cover":
       if (
         innerElement.width / containerWidth <
         innerElement.height / containerHeight
       ) {
-        innerElement.style.width = containerWidth + "px"
-        innerElement.style.height = "auto"
+        innerElement.style.width = containerWidth + "px";
+        innerElement.style.height = "auto";
       } else {
-        innerElement.style.width = "auto"
-        innerElement.style.height = containerHeight + "px"
+        innerElement.style.width = "auto";
+        innerElement.style.height = containerHeight + "px";
       }
-      break
+      break;
   }
-}
+};
 
 export const renderMarkdown = src => {
   if (!src) {
-    return <span />
+    return <span />;
   }
   return (
     <span
@@ -46,5 +46,5 @@ export const renderMarkdown = src => {
       dangerouslySetInnerHTML={{
         __html: marked(src, { breaks: true })
       }}></span>
-  )
-}
+  );
+};

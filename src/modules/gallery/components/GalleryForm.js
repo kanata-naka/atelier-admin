@@ -1,23 +1,23 @@
-import React, { useRef, useEffect, useCallback } from "react"
-import { useSelector } from "react-redux"
-import { Form, ButtonGroup, Button } from "react-bootstrap"
-import { reduxForm, Field, FieldArray } from "redux-form"
-import uuidv4 from "uuid/v4"
-import { callFunction, saveFile } from "../../../common/firebase"
-import { Globals } from "../../../common/models"
-import { getItemById } from "../../../common/selectors"
+import React, { useRef, useEffect, useCallback } from "react";
+import { useSelector } from "react-redux";
+import { Form, ButtonGroup, Button } from "react-bootstrap";
+import { reduxForm, Field, FieldArray } from "redux-form";
+import uuidv4 from "uuid/v4";
+import { callFunction, saveFile } from "../../../common/firebase";
+import { Globals } from "../../../common/models";
+import { getItemById } from "../../../common/selectors";
 import {
   InputField,
   MarkdownTextareaField,
   CheckboxField,
   DateTimeField,
   ImageFieldArray
-} from "../../../common/components/fields"
-import Notification from "../../../common/components/Notification"
-import { getNowUnixTimestamp } from "../../../utils/dateUtil"
-import { getExtension } from "../../../utils/fileUtil"
-import { list } from "../actions"
-import { MODULE_NAME, initialValues } from "../models"
+} from "../../../common/components/fields";
+import Notification from "../../../common/components/Notification";
+import { getNowUnixTimestamp } from "../../../utils/dateUtil";
+import { getExtension } from "../../../utils/fileUtil";
+import { list } from "../actions";
+import { MODULE_NAME, initialValues } from "../models";
 
 const GalleryForm = ({
   // -- Redux Form --
@@ -28,15 +28,15 @@ const GalleryForm = ({
   reset,
   change
 }) => {
-  const id = useSelector(state => state[MODULE_NAME].editingItemId)
+  const id = useSelector(state => state[MODULE_NAME].editingItemId);
   const values = useSelector(
     state => getItemById(state[MODULE_NAME]) || initialValues
-  )
+  );
 
   useEffect(() => {
     // 現在の作品の編集がキャンセルされた、または別の作品が編集中になった場合
-    initialize(values)
-  }, [id])
+    initialize(values);
+  }, [id]);
 
   return (
     <Form onSubmit={handleSubmit} className="gallery-form">
@@ -90,25 +90,25 @@ const GalleryForm = ({
         </Button>
       </ButtonGroup>
     </Form>
-  )
-}
+  );
+};
 
 const TagFieldArray = ({ fields, meta: { error } }) => {
-  const inputRef = useRef(null)
+  const inputRef = useRef(null);
 
   const handleTagClick = useCallback(index => {
-    fields.remove(index)
-  })
+    fields.remove(index);
+  });
 
   const handleConfirm = useCallback(() => {
-    let value = inputRef.current.value.trim()
+    let value = inputRef.current.value.trim();
     if (value === "") {
-      return
+      return;
     }
-    fields.push(value)
+    fields.push(value);
     // 現在の入力内容を削除する
-    inputRef.current.value = ""
-  })
+    inputRef.current.value = "";
+  });
 
   const handleKeyUp = useCallback(e => {
     if (
@@ -117,9 +117,9 @@ const TagFieldArray = ({ fields, meta: { error } }) => {
         inputRef.current.value !== inputRef.current.value.trimEnd())
     ) {
       // スペースキーorエンターキーが(日本語入力の場合は確定後に)押下された場合、タグを追加する
-      handleConfirm()
+      handleConfirm();
     }
-  })
+  });
 
   return (
     <Form.Group controlId={"tags"}>
@@ -135,7 +135,7 @@ const TagFieldArray = ({ fields, meta: { error } }) => {
                 onClick={() => handleTagClick(index)}>
                 {fields.get(index)}
               </li>
-            )
+            );
           })}
         </ul>
         <input
@@ -147,7 +147,7 @@ const TagFieldArray = ({ fields, meta: { error } }) => {
           ref={inputRef}
           onKeyDown={e => {
             if (e.keyCode === 13) {
-              e.preventDefault()
+              e.preventDefault();
             }
           }}
           onKeyUp={handleKeyUp}
@@ -155,25 +155,25 @@ const TagFieldArray = ({ fields, meta: { error } }) => {
         />
       </div>
     </Form.Group>
-  )
-}
+  );
+};
 
 const validate = values => {
-  const errors = {}
+  const errors = {};
   if (!values.title) {
-    errors.title = "タイトルは必須です"
+    errors.title = "タイトルは必須です";
   }
   if (!values.images || !values.images.filter(image => !image.removed).length) {
-    errors.images = { _error: "画像は必須です" }
+    errors.images = { _error: "画像は必須です" };
   }
-  return errors
-}
+  return errors;
+};
 
 export default reduxForm({
   form: MODULE_NAME,
   validate: validate,
   onSubmit: async (values, dispatch) => {
-    const id = values.id || uuidv4()
+    const id = values.id || uuidv4();
 
     let images = values.images
       .filter(imageValue => !imageValue.removed)
@@ -181,14 +181,14 @@ export default reduxForm({
         if (imageValue.newFile) {
           imageValue.name = `arts/${id}/images/${uuidv4()}.${getExtension(
             imageValue.newFile.name
-          )}`
+          )}`;
         }
         return {
           name: imageValue.name
-        }
-      })
+        };
+      });
     if (!images.length) {
-      return
+      return;
     }
 
     const data = {
@@ -199,7 +199,7 @@ export default reduxForm({
       description: values.description,
       pickupFlag: values.pickupFlag,
       createdAt: values.createdAt || getNowUnixTimestamp()
-    }
+    };
 
     if (values.id) {
       // イラストを更新する
@@ -208,13 +208,13 @@ export default reduxForm({
           name: "api-arts-update",
           data,
           globals: Globals
-        })
+        });
       } catch (error) {
-        console.error(error)
+        console.error(error);
         Notification.error(
           "イラストの編集に失敗しました。\n" + JSON.stringify(error)
-        )
-        throw error
+        );
+        throw error;
       }
     } else {
       // イラストを登録する
@@ -223,13 +223,13 @@ export default reduxForm({
           name: "api-arts-create",
           data,
           globals: Globals
-        })
+        });
       } catch (error) {
-        console.error(error)
+        console.error(error);
         Notification.error(
           "イラストの登録に失敗しました。\n" + JSON.stringify(error)
-        )
-        throw error
+        );
+        throw error;
       }
     }
 
@@ -239,20 +239,20 @@ export default reduxForm({
         .map(async imageValue => {
           try {
             // 新しい画像をアップロードする
-            await saveFile(imageValue.newFile, imageValue.name)
+            await saveFile(imageValue.newFile, imageValue.name);
           } catch (error) {
-            console.error(error)
+            console.error(error);
             Notification.error(
               `画像 [${name}] のアップロードに失敗しました。\n` +
                 JSON.stringify(error)
-            )
+            );
           }
         })
-    )
+    );
 
     Notification.success(
       values.id ? "イラストを編集しました。" : "イラストを登録しました。"
-    )
+    );
 
     callFunction({
       name: "api-arts-get",
@@ -261,12 +261,14 @@ export default reduxForm({
     })
       .then(response => dispatch(list(response.data.result)))
       .catch(error => {
-        console.error(error)
-        Notification.error("読み込みに失敗しました。\n" + JSON.stringify(error))
-      })
+        console.error(error);
+        Notification.error(
+          "読み込みに失敗しました。\n" + JSON.stringify(error)
+        );
+      });
   },
   onSubmitSuccess: (_result, _dispatch, { initialize }) => {
     // フォームを初期化する
-    initialize(initialValues)
+    initialize(initialValues);
   }
-})(GalleryForm)
+})(GalleryForm);

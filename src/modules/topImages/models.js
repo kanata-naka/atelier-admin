@@ -1,1 +1,1 @@
-export const MODULE_NAME = "topImages"
+export const MODULE_NAME = "topImages";

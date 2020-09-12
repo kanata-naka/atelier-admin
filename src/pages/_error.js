@@ -1,26 +1,26 @@
-import React from "react"
+import React from "react";
 
 export default class Error extends React.Component {
   static getInitialProps({ res, err }) {
-    const statusCode = res ? res.statusCode : err ? err.statusCode : null
-    return { statusCode }
+    const statusCode = res ? res.statusCode : err ? err.statusCode : null;
+    return { statusCode };
   }
 
   render() {
-    const { statusCode } = this.props
-    let message
+    const { statusCode } = this.props;
+    let message;
     switch (statusCode) {
       case 401:
-        message = "401 Unauthorized"
-        break
+        message = "401 Unauthorized";
+        break;
       default:
-        message = statusCode
-        break
+        message = statusCode;
+        break;
     }
     return (
       <div className="error-page">
         <h1>{message}</h1>
       </div>
-    )
+    );
   }
 }

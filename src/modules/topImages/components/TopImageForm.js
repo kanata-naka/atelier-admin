@@ -1,16 +1,16 @@
-import React, { useEffect } from "react"
-import { useSelector, useDispatch } from "react-redux"
-import { Form, ButtonGroup, Button } from "react-bootstrap"
-import { reduxForm, Field, initialize } from "redux-form"
-import uuidv4 from "uuid/v4"
-import { callFunction, saveFile } from "../../../common/firebase"
-import { Globals } from "../../../common/models"
-import { TextareaField, ImageField } from "../../../common/components/fields"
-import Notification from "../../../common/components/Notification"
-import { getExtension } from "../../../utils/fileUtil"
-import { list } from "../actions"
-import { MODULE_NAME } from "../models"
-import { getLastOrder } from "../selectors"
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { Form, ButtonGroup, Button } from "react-bootstrap";
+import { reduxForm, Field, initialize } from "redux-form";
+import uuidv4 from "uuid/v4";
+import { callFunction, saveFile } from "../../../common/firebase";
+import { Globals } from "../../../common/models";
+import { TextareaField, ImageField } from "../../../common/components/fields";
+import Notification from "../../../common/components/Notification";
+import { getExtension } from "../../../utils/fileUtil";
+import { list } from "../actions";
+import { MODULE_NAME } from "../models";
+import { getLastOrder } from "../selectors";
 
 const TopImageForm = ({
   // -- Redux Form --
@@ -20,12 +20,12 @@ const TopImageForm = ({
   reset,
   change
 }) => {
-  const lastOrder = useSelector(state => getLastOrder(state[MODULE_NAME]))
-  const dispatch = useDispatch()
+  const lastOrder = useSelector(state => getLastOrder(state[MODULE_NAME]));
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(initialize(MODULE_NAME, { order: lastOrder + 1 }))
-  }, [lastOrder])
+    dispatch(initialize(MODULE_NAME, { order: lastOrder + 1 }));
+  }, [lastOrder]);
 
   return (
     <Form onSubmit={handleSubmit} className="top-image-upload-form">
@@ -67,37 +67,37 @@ const TopImageForm = ({
         </Button>
       </ButtonGroup>
     </Form>
-  )
-}
+  );
+};
 
 const validate = values => {
-  const errors = {}
+  const errors = {};
   if (!values.image || !values.image.file) {
-    errors.image = { file: "画像は必須です" }
+    errors.image = { file: "画像は必須です" };
   }
   if (!values.thumbnailImage || !values.thumbnailImage.file) {
-    errors.thumbnailImage = { file: "サムネイル画像は必須です" }
+    errors.thumbnailImage = { file: "サムネイル画像は必須です" };
   }
-  return errors
-}
+  return errors;
+};
 
 export default reduxForm({
   form: MODULE_NAME,
   validate: validate,
   onSubmit: async (values, dispatch) => {
-    const id = uuidv4()
+    const id = uuidv4();
 
     const image = {
       name: `topImages/${id}/image/${uuidv4()}.${getExtension(
         values.image.file.name
       )}`
-    }
+    };
 
     const thumbnailImage = {
       name: `topImages/${id}/thumbnailImage/${uuidv4()}.${getExtension(
         values.thumbnailImage.file.name
       )}`
-    }
+    };
 
     const data = {
       id,
@@ -105,7 +105,7 @@ export default reduxForm({
       thumbnailImage,
       description: values.description,
       order: values.order
-    }
+    };
 
     try {
       // トップ画像を登録する
@@ -113,40 +113,40 @@ export default reduxForm({
         name: "api-topImages-create",
         data,
         globals: Globals
-      })
+      });
     } catch (error) {
-      console.error(error)
+      console.error(error);
       Notification.error(
         "トップ画像の登録に失敗しました。\n" + JSON.stringify(error)
-      )
-      throw error
+      );
+      throw error;
     }
 
     try {
       // 画像をアップロードする
-      await saveFile(values.image.file, image.name)
+      await saveFile(values.image.file, image.name);
     } catch (error) {
-      console.error(error)
+      console.error(error);
       Notification.error(
         `画像 [${image.name}] のアップロードに失敗しました。\n` +
           JSON.stringify(error)
-      )
-      throw error
+      );
+      throw error;
     }
 
     try {
       // サムネイル画像をアップロードする
-      await saveFile(values.thumbnailImage.file, thumbnailImage.name)
+      await saveFile(values.thumbnailImage.file, thumbnailImage.name);
     } catch (error) {
-      console.error(error)
+      console.error(error);
       Notification.error(
         `サムネイル画像 [${thumbnailImage.name}] のアップロードに失敗しました。\n` +
           JSON.stringify(error)
-      )
-      throw error
+      );
+      throw error;
     }
 
-    Notification.success("トップ画像を登録しました。")
+    Notification.success("トップ画像を登録しました。");
 
     callFunction({
       name: "api-topImages-get",
@@ -155,16 +155,18 @@ export default reduxForm({
     })
       .then(response => dispatch(list(response.data.result)))
       .catch(error => {
-        console.error(error)
-        Notification.error("読み込みに失敗しました。\n" + JSON.stringify(error))
-      })
+        console.error(error);
+        Notification.error(
+          "読み込みに失敗しました。\n" + JSON.stringify(error)
+        );
+      });
 
     return {
       lastOrder: data.order
-    }
+    };
   },
   onSubmitSuccess: (result, _dispatch, { initialize }) => {
     // フォームを初期化する
-    initialize({ order: result.lastOrder + 1 })
+    initialize({ order: result.lastOrder + 1 });
   }
-})(TopImageForm)
+})(TopImageForm);

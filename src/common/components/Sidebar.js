@@ -1,7 +1,7 @@
-import { useSelector, useDispatch } from "react-redux"
-import { Button } from "react-bootstrap"
-import { signOut } from "../firebase"
-import GlobalNav from "./GlobalNav"
+import { useSelector, useDispatch } from "react-redux";
+import { Button } from "react-bootstrap";
+import { signOut } from "../firebase";
+import GlobalNav from "./GlobalNav";
 
 /**
  * サイドバー
@@ -14,11 +14,11 @@ export default ({ currentKey }) => {
       <GlobalNav currentKey={currentKey} />
       <Footer />
     </div>
-  )
-}
+  );
+};
 
 const Header = () => {
-  const user = useSelector(state => state["common"].user)
+  const user = useSelector(state => state["common"].user);
   return (
     <div className="sidebar-header">
       <div className="sidebar-header-profile">
@@ -35,11 +35,11 @@ const Header = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 const Footer = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   return (
     <div className="sidebar-footer">
       <Button
@@ -47,10 +47,10 @@ const Footer = () => {
         type="button"
         className="logout-button"
         onClick={() => {
-          signOut()
+          signOut();
         }}>
         {"ログアウト"}
       </Button>
     </div>
-  )
-}
+  );
+};

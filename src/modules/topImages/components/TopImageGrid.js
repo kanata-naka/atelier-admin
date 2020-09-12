@@ -1,23 +1,23 @@
-import React, { useRef, useEffect, useCallback } from "react"
-import { useDispatch, useSelector } from "react-redux"
-import { Form, ButtonGroup, Button, Badge } from "react-bootstrap"
-import { bindActionCreators } from "redux"
-import { reduxForm, Field, Fields, FieldArray } from "redux-form"
-import uuidv4 from "uuid/v4"
-import { formatDateTimeFromUnixTimestamp } from "../../../utils/dateUtil"
-import { callFunction, saveFile } from "../../../common/firebase"
-import { useAdjustElementWidth, useDropFile } from "../../../common/hooks"
+import React, { useRef, useEffect, useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Form, ButtonGroup, Button, Badge } from "react-bootstrap";
+import { bindActionCreators } from "redux";
+import { reduxForm, Field, Fields, FieldArray } from "redux-form";
+import uuidv4 from "uuid/v4";
+import { formatDateTimeFromUnixTimestamp } from "../../../utils/dateUtil";
+import { callFunction, saveFile } from "../../../common/firebase";
+import { useAdjustElementWidth, useDropFile } from "../../../common/hooks";
 import {
   Globals,
   IMAGE_FILE_ACCEPTABLE_EXTENTIONS,
   IMAGE_FILE_MAX_SIZE
-} from "../../../common/models"
-import { TextareaField } from "../../../common/components/fields"
-import Grid from "../../../common/components/Grid"
-import Notification from "../../../common/components/Notification"
-import { validateFile, getExtension } from "../../../utils/fileUtil"
-import { list, select, edit, cancelEdit } from "../actions"
-import { MODULE_NAME } from "../models"
+} from "../../../common/models";
+import { TextareaField } from "../../../common/components/fields";
+import Grid from "../../../common/components/Grid";
+import Notification from "../../../common/components/Notification";
+import { validateFile, getExtension } from "../../../utils/fileUtil";
+import { list, select, edit, cancelEdit } from "../actions";
+import { MODULE_NAME } from "../models";
 
 const TopImageGrid = ({
   // -- Redux Form --
@@ -28,12 +28,12 @@ const TopImageGrid = ({
   reset,
   change
 }) => {
-  const items = useSelector(state => state[MODULE_NAME].items)
+  const items = useSelector(state => state[MODULE_NAME].items);
   const selectedByItemId = useSelector(
     state => state[MODULE_NAME].selectedByItemId
-  )
-  const editing = useSelector(state => state[MODULE_NAME].editing)
-  const dispatch = useDispatch()
+  );
+  const editing = useSelector(state => state[MODULE_NAME].editing);
+  const dispatch = useDispatch();
 
   const load = async () => {
     try {
@@ -41,37 +41,37 @@ const TopImageGrid = ({
         name: "api-topImages-get",
         data: {},
         globals: Globals
-      })
-      dispatch(list(response.data.result))
+      });
+      dispatch(list(response.data.result));
     } catch (error) {
-      console.error(error)
-      Notification.error("読み込みに失敗しました。\n" + JSON.stringify(error))
+      console.error(error);
+      Notification.error("読み込みに失敗しました。\n" + JSON.stringify(error));
     }
-  }
+  };
   useEffect(() => {
-    load()
-  }, [])
+    load();
+  }, []);
 
-  const handleSelect = bindActionCreators(select, dispatch)
+  const handleSelect = bindActionCreators(select, dispatch);
 
   const handleEdit = useCallback(() => {
-    dispatch(edit())
-  }, [])
+    dispatch(edit());
+  }, []);
 
   const handleCancelEdit = useCallback(() => {
     // 値が変わっていればアラートを表示する
     if (dirty && !confirm("内容が変更されています。破棄してよろしいですか？")) {
-      return
+      return;
     }
-    reset()
-    dispatch(cancelEdit())
-  }, [dirty])
+    reset();
+    dispatch(cancelEdit());
+  }, [dirty]);
 
   const handleDeleteSelected = useCallback(async () => {
     if (
       !confirm("チェックしたトップ画像を削除します。本当によろしいですか？")
     ) {
-      return
+      return;
     }
     const result = await Promise.allSettled(
       Object.entries(selectedByItemId)
@@ -82,24 +82,24 @@ const TopImageGrid = ({
             data: { id: entry[0] },
             globals: Globals
           }).catch(error => {
-            console.error(error)
+            console.error(error);
             Notification.error(
               `トップ画像 [${entry[0]}] の削除に失敗しました。\n` +
                 JSON.stringify(error)
-            )
+            );
           })
         )
-    )
+    );
     if (result.find(item => item.status === "fulfilled")) {
-      Notification.success("トップ画像を削除しました。")
-      load()
+      Notification.success("トップ画像を削除しました。");
+      load();
     }
-  }, [selectedByItemId])
+  }, [selectedByItemId]);
 
   useEffect(() => {
-    initialize({ topImages: items })
-    dispatch(cancelEdit())
-  }, [items])
+    initialize({ topImages: items });
+    dispatch(cancelEdit());
+  }, [items]);
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -123,8 +123,8 @@ const TopImageGrid = ({
         change={change}
       />
     </Form>
-  )
-}
+  );
+};
 
 const TopImageControl = ({
   selectedByItemId,
@@ -164,8 +164,8 @@ const TopImageControl = ({
         </Button>
       )}
     </div>
-  )
-}
+  );
+};
 
 const _TopImageGrid = ({
   items,
@@ -179,18 +179,18 @@ const _TopImageGrid = ({
   // 「上へ移動」ボタンをクリックした際の処理
   const handleMoveUpButtonClick = useCallback(currentIndex => {
     if (currentIndex == 0) {
-      return
+      return;
     }
-    fields.move(currentIndex, currentIndex - 1)
-  })
+    fields.move(currentIndex, currentIndex - 1);
+  });
 
   // 「下へ移動」ボタンをクリックした際の処理
   const handleMoveBelowButtonClick = useCallback(currentIndex => {
     if (currentIndex == fields.length - 1) {
-      return
+      return;
     }
-    fields.move(currentIndex, currentIndex + 1)
-  })
+    fields.move(currentIndex, currentIndex + 1);
+  });
 
   return (
     <Grid
@@ -212,7 +212,7 @@ const _TopImageGrid = ({
                 change={change}
                 editing={editing}
               />
-            )
+            );
           }
         },
         {
@@ -227,7 +227,7 @@ const _TopImageGrid = ({
                 change={change}
                 editing={editing}
               />
-            )
+            );
           }
         },
         {
@@ -274,7 +274,7 @@ const _TopImageGrid = ({
                   variant="outline-secondary"
                   type="button"
                   onClick={() => {
-                    handleMoveUpButtonClick(index)
+                    handleMoveUpButtonClick(index);
                   }}>
                   {"上へ移動"}
                 </Button>
@@ -282,7 +282,7 @@ const _TopImageGrid = ({
                   variant="outline-secondary"
                   type="button"
                   onClick={() => {
-                    handleMoveBelowButtonClick(index)
+                    handleMoveBelowButtonClick(index);
                   }}>
                   {"下へ移動"}
                 </Button>
@@ -293,8 +293,8 @@ const _TopImageGrid = ({
         }
       ]}
     />
-  )
-}
+  );
+};
 
 export const ImageField = ({
   name,
@@ -318,8 +318,8 @@ export const ImageField = ({
       change={change}
       editing={editing}
     />
-  )
-}
+  );
+};
 
 const _ImageField = ({
   name,
@@ -342,49 +342,49 @@ const _ImageField = ({
     }
   }
 }) => {
-  const fieldRef = useRef(null)
-  const previewImageRef = useRef(null)
-  useAdjustElementWidth(fieldRef, previewImageRef, "cover", [url])
+  const fieldRef = useRef(null);
+  const previewImageRef = useRef(null);
+  useAdjustElementWidth(fieldRef, previewImageRef, "cover", [url]);
 
-  const fileInputLabelRef = useRef(null)
+  const fileInputLabelRef = useRef(null);
   const validate = file => {
     const validationResult = validateFile(
       file,
       IMAGE_FILE_ACCEPTABLE_EXTENTIONS,
       IMAGE_FILE_MAX_SIZE
-    )
+    );
     if (validationResult) {
-      Notification.error(validationResult)
-      return false
+      Notification.error(validationResult);
+      return false;
     }
-    return true
-  }
+    return true;
+  };
   const changeFile = file => {
-    change(names[1], URL.createObjectURL(file))
-    change(names[2], file)
-    change(names[3], url)
-  }
+    change(names[1], URL.createObjectURL(file));
+    change(names[2], file);
+    change(names[3], url);
+  };
 
-  useDropFile(fileInputLabelRef, validate, changeFile, [editing])
+  useDropFile(fileInputLabelRef, validate, changeFile, [editing]);
 
   const handleChange = e => {
-    e.preventDefault()
-    const file = e.target.files[0]
+    e.preventDefault();
+    const file = e.target.files[0];
     if (validate(file)) {
-      changeFile(e.target.files[0])
+      changeFile(e.target.files[0]);
     }
     // 同じファイルをアップロードしてもonChangeイベントを走らせるためvalueを空にする
-    e.target.value = ""
-  }
+    e.target.value = "";
+  };
 
   // 取り消しボタンをクリックした際の処理
   const handleRemoveButtonClick = e => {
-    e.preventDefault()
-    change(names[1], originalUrl)
-    change(names[2], null)
-  }
+    e.preventDefault();
+    change(names[1], originalUrl);
+    change(names[2], null);
+  };
 
-  const dirty = originalUrl && url !== originalUrl
+  const dirty = originalUrl && url !== originalUrl;
 
   return (
     <div className={`image-field ${classNamePrefix}-field`} ref={fieldRef}>
@@ -419,12 +419,12 @@ const _ImageField = ({
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
 const validate = values => {
-  return {}
-}
+  return {};
+};
 
 export default reduxForm({
   form: `${MODULE_NAME}_list`,
@@ -434,14 +434,14 @@ export default reduxForm({
       if (topImage.image.newFile) {
         topImage.image.name = `topImages/${
           topImage.id
-        }/image/${uuidv4()}.${getExtension(topImage.image.newFile.name)}`
+        }/image/${uuidv4()}.${getExtension(topImage.image.newFile.name)}`;
       }
       if (topImage.thumbnailImage.newFile) {
         topImage.thumbnailImage.name = `topImages/${
           topImage.id
         }/thumbnailImage/${uuidv4()}.${getExtension(
           topImage.thumbnailImage.newFile.name
-        )}`
+        )}`;
       }
       return {
         id: topImage.id,
@@ -454,21 +454,21 @@ export default reduxForm({
         description: topImage.description,
         // 表示順を設定し直す
         order: index
-      }
-    })
+      };
+    });
     // トップ画像を一括で更新する
     try {
       await callFunction({
         name: "api-topImages-bulkUpdate",
         data,
         globals: Globals
-      })
+      });
     } catch (error) {
-      console.error(error)
+      console.error(error);
       Notification.error(
         "トップ画像の更新に失敗しました。\n" + JSON.stringify(error)
-      )
-      throw error
+      );
+      throw error;
     }
 
     await Promise.all(
@@ -476,13 +476,13 @@ export default reduxForm({
         if (topImage.image.newFile) {
           try {
             // 新しい画像をアップロードする
-            await saveFile(topImage.image.newFile, topImage.image.name)
+            await saveFile(topImage.image.newFile, topImage.image.name);
           } catch (error) {
-            console.error(error)
+            console.error(error);
             Notification.error(
               `画像 [${name}] のアップロードに失敗しました。\n` +
                 JSON.stringify(error)
-            )
+            );
           }
         }
         if (topImage.thumbnailImage.newFile) {
@@ -491,19 +491,19 @@ export default reduxForm({
             await saveFile(
               topImage.thumbnailImage.newFile,
               topImage.thumbnailImage.name
-            )
+            );
           } catch (error) {
-            console.error(error)
+            console.error(error);
             Notification.error(
               `サムネイル画像 [${name}] のアップロードに失敗しました。\n` +
                 JSON.stringify(error)
-            )
+            );
           }
         }
       })
-    )
+    );
 
-    Notification.success("トップ画像を更新しました。")
+    Notification.success("トップ画像を更新しました。");
 
     callFunction({
       name: "api-topImages-get",
@@ -512,8 +512,10 @@ export default reduxForm({
     })
       .then(response => dispatch(list(response.data.result)))
       .catch(error => {
-        console.error(error)
-        Notification.error("読み込みに失敗しました。\n" + JSON.stringify(error))
-      })
+        console.error(error);
+        Notification.error(
+          "読み込みに失敗しました。\n" + JSON.stringify(error)
+        );
+      });
   }
-})(TopImageGrid)
+})(TopImageGrid);

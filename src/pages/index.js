@@ -1,8 +1,8 @@
-import React from "react"
-import Head from "next/head"
-import Sidebar from "../common/components/Sidebar"
-import withAuthentication from "../common/hocs/withAuthentication"
-import withRedux from "../common/hocs/withRedux"
+import React from "react";
+import Head from "next/head";
+import Sidebar from "../common/components/Sidebar";
+import withAuthentication from "../common/hocs/withAuthentication";
+import withRedux from "../common/hocs/withRedux";
 
 const Component = withAuthentication(() => {
   return (
@@ -13,7 +13,7 @@ const Component = withAuthentication(() => {
       <Sidebar currentKey={"home"} />
       <div className="page-content"></div>
     </div>
-  )
-})
+  );
+});
 
-export default withRedux(Component, {})
+export default withRedux(Component, {});

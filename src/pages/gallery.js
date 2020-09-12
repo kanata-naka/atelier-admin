@@ -1,12 +1,12 @@
-import React from "react"
-import Head from "next/head"
-import Sidebar from "../common/components/Sidebar"
-import withAuthentication from "../common/hocs/withAuthentication"
-import withRedux from "../common/hocs/withRedux"
-import { MODULE_NAME } from "../modules/gallery/models"
-import reducers from "../modules/gallery/reducers"
-import GalleryGrid from "../modules/gallery/components/GalleryGrid"
-import GalleryForm from "../modules/gallery/components/GalleryForm"
+import React from "react";
+import Head from "next/head";
+import Sidebar from "../common/components/Sidebar";
+import withAuthentication from "../common/hocs/withAuthentication";
+import withRedux from "../common/hocs/withRedux";
+import { MODULE_NAME } from "../modules/gallery/models";
+import reducers from "../modules/gallery/reducers";
+import GalleryGrid from "../modules/gallery/components/GalleryGrid";
+import GalleryForm from "../modules/gallery/components/GalleryForm";
 
 const Component = withAuthentication(() => {
   return (
@@ -23,9 +23,9 @@ const Component = withAuthentication(() => {
         <GalleryGrid />
       </div>
     </div>
-  )
-})
+  );
+});
 
 export default withRedux(Component, {
   [MODULE_NAME]: reducers
-})
+});

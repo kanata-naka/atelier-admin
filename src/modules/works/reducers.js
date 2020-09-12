@@ -1,7 +1,7 @@
-import { handleActions } from "redux-actions"
-import { createPagination } from "../../common/models"
-import { list, movePage, select, edit } from "./actions"
-import { PER_PAGE } from "./models"
+import { handleActions } from "redux-actions";
+import { createPagination } from "../../common/models";
+import { list, movePage, select, edit } from "./actions";
+import { PER_PAGE } from "./models";
 
 const initialState = {
   items: [],
@@ -11,7 +11,7 @@ const initialState = {
   selectedByItemId: {},
   // 編集中の作品ID
   editingItemId: null
-}
+};
 
 const handlers = {
   [list]: (state, action) => ({
@@ -42,18 +42,18 @@ const handlers = {
       editingItemId: action.payload
     }
   })
-}
+};
 
 const updateEditing = (items, editingItemId) => {
   for (let item of items) {
     if (item.editing) {
-      delete item.editing
+      delete item.editing;
     }
     if (item.id === editingItemId) {
-      item.editing = true
+      item.editing = true;
     }
   }
-  return [...items]
-}
+  return [...items];
+};
 
-export default handleActions(handlers, initialState)
+export default handleActions(handlers, initialState);

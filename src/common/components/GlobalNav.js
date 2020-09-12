@@ -1,4 +1,4 @@
-import Link from "next/link"
+import Link from "next/link";
 
 /**
  * グローバルナビゲーション
@@ -36,11 +36,11 @@ export default ({ currentKey }) => {
         }
       ].map((item, index) => {
         if (item.type === "separator") {
-          return <hr key={index} />
+          return <hr key={index} />;
         }
         switch (item.type) {
           case "separator":
-            return <hr />
+            return <hr />;
           default:
             return (
               <GlobalNavItem
@@ -49,12 +49,12 @@ export default ({ currentKey }) => {
                 url={item.url}>
                 {item.text}
               </GlobalNavItem>
-            )
+            );
         }
       })}
     </ul>
-  )
-}
+  );
+};
 
 const GlobalNavItem = ({ url, isActive, children }) => {
   return (
@@ -69,5 +69,5 @@ const GlobalNavItem = ({ url, isActive, children }) => {
         <p>{children}</p>
       )}
     </li>
-  )
-}
+  );
+};

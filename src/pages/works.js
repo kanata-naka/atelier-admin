@@ -1,12 +1,12 @@
-import React from "react"
-import Head from "next/head"
-import Sidebar from "../common/components/Sidebar"
-import withAuthentication from "../common/hocs/withAuthentication"
-import withRedux from "../common/hocs/withRedux"
-import { MODULE_NAME } from "../modules/works/models"
-import reducers from "../modules/works/reducers"
-import WorkGrid from "../modules/works/components/WorkGrid"
-import WorkForm from "../modules/works/components/WorkForm"
+import React from "react";
+import Head from "next/head";
+import Sidebar from "../common/components/Sidebar";
+import withAuthentication from "../common/hocs/withAuthentication";
+import withRedux from "../common/hocs/withRedux";
+import { MODULE_NAME } from "../modules/works/models";
+import reducers from "../modules/works/reducers";
+import WorkGrid from "../modules/works/components/WorkGrid";
+import WorkForm from "../modules/works/components/WorkForm";
 
 const Component = withAuthentication(() => {
   return (
@@ -23,9 +23,9 @@ const Component = withAuthentication(() => {
         <WorkGrid />
       </div>
     </div>
-  )
-})
+  );
+});
 
 export default withRedux(Component, {
   [MODULE_NAME]: reducers
-})
+});

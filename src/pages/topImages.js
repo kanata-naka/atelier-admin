@@ -1,12 +1,12 @@
-import React from "react"
-import Head from "next/head"
-import Sidebar from "../common/components/Sidebar"
-import withAuthentication from "../common/hocs/withAuthentication"
-import withRedux from "../common/hocs/withRedux"
-import { MODULE_NAME } from "../modules/topImages/models"
-import reducers from "../modules/topImages/reducers"
-import TopImageGrid from "../modules/topImages/components/TopImageGrid"
-import TopImageForm from "../modules/topImages/components/TopImageForm"
+import React from "react";
+import Head from "next/head";
+import Sidebar from "../common/components/Sidebar";
+import withAuthentication from "../common/hocs/withAuthentication";
+import withRedux from "../common/hocs/withRedux";
+import { MODULE_NAME } from "../modules/topImages/models";
+import reducers from "../modules/topImages/reducers";
+import TopImageGrid from "../modules/topImages/components/TopImageGrid";
+import TopImageForm from "../modules/topImages/components/TopImageForm";
 
 const Component = withAuthentication(() => {
   return (
@@ -23,9 +23,9 @@ const Component = withAuthentication(() => {
         <TopImageGrid />
       </div>
     </div>
-  )
-})
+  );
+});
 
 export default withRedux(Component, {
   [MODULE_NAME]: reducers
-})
+});

@@ -1,16 +1,16 @@
-import { handleActions } from "redux-actions"
-import { signedIn, signedOut, signInFailed } from "./actions"
+import { handleActions } from "redux-actions";
+import { signedIn, signedOut, signInFailed } from "./actions";
 import {
   AUTH_STATE_NOT_SIGNED_IN,
   AUTH_STATE_SIGNED_IN,
   AUTH_STATE_SIGN_IN_FAILED,
   AUTH_STATE_SIGNED_OUT
-} from "./models"
+} from "./models";
 
 const initialState = {
   authState: AUTH_STATE_NOT_SIGNED_IN,
   user: null
-}
+};
 
 export default handleActions(
   {
@@ -28,4 +28,4 @@ export default handleActions(
     })
   },
   initialState
-)
+);

@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useCallback } from "react"
-import { Table } from "react-bootstrap"
+import React, { useState, useEffect, useCallback } from "react";
+import { Table } from "react-bootstrap";
 
 export default props => {
-  const { className, rowClassName, items, selectedByItemId, onSelect } = props
-  const [checkedAll, setCheckedAll] = useState(false)
+  const { className, rowClassName, items, selectedByItemId, onSelect } = props;
+  const [checkedAll, setCheckedAll] = useState(false);
 
   useEffect(() => {
     // チェックボックス以外の契機で選択中の項目が変更された場合
@@ -11,41 +11,41 @@ export default props => {
       Object.entries(selectedByItemId).filter(entry => entry[1]).length ===
       items.length
     ) {
-      setCheckedAll(true)
+      setCheckedAll(true);
     } else {
-      setCheckedAll(false)
+      setCheckedAll(false);
     }
-  }, [selectedByItemId])
+  }, [selectedByItemId]);
 
   // 各項目のチェックボックスを押下した際の処理
   const handleCheck = useCallback(
     id => {
-      let nextSelectedByItemId
+      let nextSelectedByItemId;
       if (id in selectedByItemId) {
-        nextSelectedByItemId = { ...selectedByItemId }
-        delete nextSelectedByItemId[id]
+        nextSelectedByItemId = { ...selectedByItemId };
+        delete nextSelectedByItemId[id];
       } else {
-        nextSelectedByItemId = { ...selectedByItemId, [id]: true }
+        nextSelectedByItemId = { ...selectedByItemId, [id]: true };
       }
-      onSelect(nextSelectedByItemId)
+      onSelect(nextSelectedByItemId);
     },
     [selectedByItemId]
-  )
+  );
 
   // 一番上のチェックボックスを押下した際の処理
   const handleCheckAll = useCallback(() => {
     if (checkedAll) {
       // 全てチェックされている状態なら全てチェックを外す
-      onSelect({})
+      onSelect({});
     } else {
       // 1つ以上チェックされていない状態なら全てチェックする
-      const nextSelectedByItemId = {}
+      const nextSelectedByItemId = {};
       items.forEach(item => {
-        nextSelectedByItemId[item.id] = true
-      })
-      onSelect(nextSelectedByItemId)
+        nextSelectedByItemId[item.id] = true;
+      });
+      onSelect(nextSelectedByItemId);
     }
-  }, [checkedAll])
+  }, [checkedAll]);
 
   return (
     <Table className={`grid ${className}`}>
@@ -67,8 +67,8 @@ export default props => {
         ))}
       </tbody>
     </Table>
-  )
-}
+  );
+};
 
 // ヘッダー行
 const HeaderRow = ({ columns, checkedAll, onSelect, handleCheckAll }) => {
@@ -86,12 +86,12 @@ const HeaderRow = ({ columns, checkedAll, onSelect, handleCheckAll }) => {
           </th>
         )}
         {columns.map((column, columnIndex) => {
-          return <th key={columnIndex}>{column.title}</th>
+          return <th key={columnIndex}>{column.title}</th>;
         })}
       </tr>
     </thead>
-  )
-}
+  );
+};
 
 // 各項目の行
 const ItemRow = ({
@@ -121,8 +121,8 @@ const ItemRow = ({
           <td key={columnIndex} className={`grid-cell ${column.className}`}>
             {column.render(item, index)}
           </td>
-        )
+        );
       })}
     </tr>
-  )
-}
+  );
+};

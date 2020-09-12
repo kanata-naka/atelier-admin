@@ -1,29 +1,29 @@
-import React, { useState, useRef, useEffect, useCallback } from "react"
-import { Form } from "react-bootstrap"
-import DatePicker, { registerLocale } from "react-datepicker"
-import { DndProvider, useDrag, useDrop } from "react-dnd-cjs"
-import HTML5Backend from "react-dnd-html5-backend-cjs"
-import { Fields } from "redux-form"
-import ja from "date-fns/locale/ja"
-import { useAdjustElementWidth, useDropFile } from "../hooks"
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import { Form } from "react-bootstrap";
+import DatePicker, { registerLocale } from "react-datepicker";
+import { DndProvider, useDrag, useDrop } from "react-dnd-cjs";
+import HTML5Backend from "react-dnd-html5-backend-cjs";
+import { Fields } from "redux-form";
+import ja from "date-fns/locale/ja";
+import { useAdjustElementWidth, useDropFile } from "../hooks";
 import {
   IMAGE_FILE_ACCEPTABLE_EXTENTIONS,
   IMAGE_FILE_MAX_SIZE
-} from "../models"
-import Notification from "./Notification"
+} from "../models";
+import Notification from "./Notification";
 import {
   getNowDate,
   getDateFromUnixTimestamp,
   getUnixTimestampFromDate
-} from "../../utils/dateUtil"
-import { renderMarkdown } from "../../utils/domUtil"
-import { validateFile } from "../../utils/fileUtil"
-import { RequiredLabel } from "./elements"
+} from "../../utils/dateUtil";
+import { renderMarkdown } from "../../utils/domUtil";
+import { validateFile } from "../../utils/fileUtil";
+import { RequiredLabel } from "./elements";
 
 // ※date-fns/local/ja はデフォルトで月曜日始まり
 // →日曜日始まりに変更する
-ja.options.weekStartsOn = 0
-registerLocale("ja", ja)
+ja.options.weekStartsOn = 0;
+registerLocale("ja", ja);
 
 export const InputField = ({
   type,
@@ -47,8 +47,8 @@ export const InputField = ({
         {...input}
       />
     </Form.Group>
-  )
-}
+  );
+};
 
 export const TextareaField = ({
   label,
@@ -72,8 +72,8 @@ export const TextareaField = ({
         {input.value}
       </Form.Control>
     </Form.Group>
-  )
-}
+  );
+};
 
 export const MarkdownTextareaField = ({
   label,
@@ -106,8 +106,8 @@ export const MarkdownTextareaField = ({
         </div>
       </div>
     </Form.Group>
-  )
-}
+  );
+};
 
 export const CheckboxField = ({
   label,
@@ -125,8 +125,8 @@ export const CheckboxField = ({
         label={label}
         {...input}></Form.Check>
     </Form.Group>
-  )
-}
+  );
+};
 
 export const DateTimeField = ({
   name,
@@ -143,33 +143,33 @@ export const DateTimeField = ({
 }) => {
   const [useCurrentDateTime, setUseCurrentDateTime] = useState(
     useCurrentDateTimeCheckbox
-  )
+  );
 
   const toggleUseCurrentDateTime = _useCurrentDateTime => {
-    setUseCurrentDateTime(_useCurrentDateTime)
+    setUseCurrentDateTime(_useCurrentDateTime);
     // 初期化する
     if (_useCurrentDateTime) {
-      input.onChange("")
+      input.onChange("");
     } else {
-      input.onChange(initial)
+      input.onChange(initial);
     }
-  }
+  };
 
   useEffect(() => {
     if (dirty) {
-      return
+      return;
     }
-    toggleUseCurrentDateTime(!initial)
-  }, [initial, dirty])
+    toggleUseCurrentDateTime(!initial);
+  }, [initial, dirty]);
 
   const handleChange = date => {
-    input.onChange(getUnixTimestampFromDate(date))
-  }
+    input.onChange(getUnixTimestampFromDate(date));
+  };
 
   // 「現在日時を使用する」チェックボックスを切り替えた際の処理
   const handleChangeUseCurrentDateTime = () => {
-    toggleUseCurrentDateTime(!useCurrentDateTime)
-  }
+    toggleUseCurrentDateTime(!useCurrentDateTime);
+  };
 
   return (
     <Form.Group controlId={input.name}>
@@ -202,8 +202,8 @@ export const DateTimeField = ({
         />
       </div>
     </Form.Group>
-  )
-}
+  );
+};
 
 export const ImageField = ({
   name,
@@ -224,8 +224,8 @@ export const ImageField = ({
       fit={fit}
       change={change}
     />
-  )
-}
+  );
+};
 
 const _ImageField = ({
   names,
@@ -245,38 +245,38 @@ const _ImageField = ({
     }
   }
 }) => {
-  const fieldRef = useRef(null)
-  const previewImageRef = useRef(null)
-  useAdjustElementWidth(fieldRef, previewImageRef, fit, [url])
+  const fieldRef = useRef(null);
+  const previewImageRef = useRef(null);
+  useAdjustElementWidth(fieldRef, previewImageRef, fit, [url]);
 
-  const fileInputLabelRef = useRef(null)
+  const fileInputLabelRef = useRef(null);
   const validate = file => {
     const validationResult = validateFile(
       file,
       IMAGE_FILE_ACCEPTABLE_EXTENTIONS,
       IMAGE_FILE_MAX_SIZE
-    )
+    );
     if (validationResult) {
-      Notification.error(validationResult)
-      return false
+      Notification.error(validationResult);
+      return false;
     }
-    return true
-  }
+    return true;
+  };
   const changeFile = file => {
-    change(names[0], URL.createObjectURL(file))
-    change(names[1], file)
-  }
-  useDropFile(fileInputLabelRef, validate, changeFile)
+    change(names[0], URL.createObjectURL(file));
+    change(names[1], file);
+  };
+  useDropFile(fileInputLabelRef, validate, changeFile);
 
   const handleChange = useCallback(e => {
-    e.preventDefault()
-    const file = e.target.files[0]
+    e.preventDefault();
+    const file = e.target.files[0];
     if (validate(file)) {
-      changeFile(file)
+      changeFile(file);
     }
     // 同じファイルをアップロードしてもonChangeイベントを走らせるためvalueを空にする
-    e.target.value = ""
-  })
+    e.target.value = "";
+  });
 
   return (
     <div className="image-field-wrapper">
@@ -302,8 +302,8 @@ const _ImageField = ({
         </label>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export const ImageFieldArray = ({
   label,
@@ -314,41 +314,41 @@ export const ImageFieldArray = ({
   fields,
   meta: { submitFailed, error }
 }) => {
-  const fileInputLabelRef = useRef(null)
+  const fileInputLabelRef = useRef(null);
   const validate = file => {
     const validationResult = validateFile(
       file,
       IMAGE_FILE_ACCEPTABLE_EXTENTIONS,
       IMAGE_FILE_MAX_SIZE
-    )
+    );
     if (validationResult) {
-      Notification.error(validationResult)
-      return false
+      Notification.error(validationResult);
+      return false;
     }
-    return true
-  }
+    return true;
+  };
   const addFile = file => {
     fields.push({
       name: file.name,
       url: URL.createObjectURL(file),
       newFile: file
-    })
-  }
+    });
+  };
 
-  useDropFile(fileInputLabelRef, validate, addFile)
+  useDropFile(fileInputLabelRef, validate, addFile);
 
   const handleChange = useCallback(
     e => {
-      e.preventDefault()
-      const file = e.target.files[0]
+      e.preventDefault();
+      const file = e.target.files[0];
       if (validate(file)) {
-        addFile(file)
+        addFile(file);
       }
       // 同じファイルをアップロードしてもonChangeイベントを走らせるためvalueを空にする
-      e.target.value = ""
+      e.target.value = "";
     },
     [fields]
-  )
+  );
 
   return (
     <div className="images-field-wrapper">
@@ -373,7 +373,7 @@ export const ImageFieldArray = ({
                 change={change}
                 fields={fields}
               />
-            )
+            );
           })}
         </DndProvider>
         <div className="image-field">
@@ -393,8 +393,8 @@ export const ImageFieldArray = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 const ImageFieldArrayItem = ({
   fit,
@@ -415,11 +415,11 @@ const ImageFieldArrayItem = ({
     removed: {
       input: { value: removed }
     }
-  } = values
+  } = values;
 
-  const fieldRef = useRef(null)
-  const previewImageRef = useRef(null)
-  useAdjustElementWidth(fieldRef, previewImageRef, fit, [url])
+  const fieldRef = useRef(null);
+  const previewImageRef = useRef(null);
+  useAdjustElementWidth(fieldRef, previewImageRef, fit, [url]);
 
   // ドラッグの設定
   const [{ isDragging }, drag] = useDrag({
@@ -427,36 +427,36 @@ const ImageFieldArrayItem = ({
     collect: monitor => ({
       isDragging: monitor.isDragging()
     })
-  })
+  });
   // ドロップの設定
   const [, drop] = useDrop({
     accept: "ImageFieldArrayItem",
     drop(item) {
-      const dragIndex = item.index
-      const hoverIndex = index
+      const dragIndex = item.index;
+      const hoverIndex = index;
       // 要素を入れ替える
-      move(dragIndex, hoverIndex)
+      move(dragIndex, hoverIndex);
     }
-  })
-  drag(drop(fieldRef))
+  });
+  drag(drop(fieldRef));
 
   // 削除フラグがオンになっている既存の画像をクリックした際の処理
   const handleContainerClick = () => {
     if (removed) {
-      change(names[3], false)
+      change(names[3], false);
     }
-  }
+  };
 
   // 削除ボタンをクリックした際の処理
   const handleRemoveButtonClick = () => {
     if (newFile) {
       // 新規にアップロードした画像なら要素ごと削除する
-      remove(index)
+      remove(index);
     } else {
       // 削除フラグをオンにする
-      change(names[3], true)
+      change(names[3], true);
     }
-  }
+  };
 
   return (
     <div
@@ -476,5 +476,5 @@ const ImageFieldArrayItem = ({
         </div>
       )}
     </div>
-  )
-}
+  );
+};
