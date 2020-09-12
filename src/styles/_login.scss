@@ -1,27 +1,27 @@
 @import "mixins";
 
 .login-page {
-  align-items: center;
-  background-color: lavender;
   display: flex;
+  align-items: center;
   justify-content: center;
   width: 100vw;
   height: 100vh;
+  background-color: lavender;
 }
 
 .login-form {
-  align-items: center;
-  background-color: white;
-  border-radius: 8px;
   display: flex;
+  align-items: center;
   flex-direction: column;
+  width: 320px;
   margin: 0 auto 24px;
   padding: 24px;
-  width: 320px;
+  background-color: white;
+  border-radius: 8px;
 
   .site-logo {
     display: block;
-    margin: 12px 0 48px 0;
     width: 256px;
+    margin: 12px 0 48px 0;
   }
 }

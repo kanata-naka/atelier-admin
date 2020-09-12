@@ -2,16 +2,13 @@
 
 .work-form {
   label {
-    font-weight: bold;
     padding-right: 4px;
+    font-weight: bold;
   }
 
   .error-message {
-    color: darkred;
     padding-left: 8px;
-  }
-
-  .title-input {
+    color: darkred;
   }
 
   .description-textarea {
@@ -38,29 +35,29 @@
     justify-content: center;
     align-items: center;
     position: relative;
-    border: 1px solid #dedede;
     width: 100px;
     height: 100px;
     margin: 2px;
     padding: 4px;
     overflow: hidden;
+    border: 1px solid #dedede;
   }
 
   .image {
     display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
     bottom: 0;
     left: 0;
-    margin: auto;
-    position: absolute;
-    right: 0;
-    top: 0;
     width: 98px;
+    margin: auto;
   }
 
   .column-description {
     min-width: 250px;
-    white-space: pre-wrap;
     overflow-y: auto;
+    white-space: pre-wrap;
   }
 
   .description__fixed-label {
@@ -80,7 +77,7 @@
   }
 
   .column-controls {
-    text-align: center;
     width: 140px;
+    text-align: center;
   }
 }

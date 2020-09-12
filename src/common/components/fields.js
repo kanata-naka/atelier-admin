@@ -166,8 +166,8 @@ export const DateTimeField = ({
     input.onChange(getUnixTimestampFromDate(date));
   };
 
-  // 「現在日時を使用する」チェックボックスを切り替えた際の処理
   const handleChangeUseCurrentDateTime = () => {
+    // 「現在日時を使用する」チェックボックスを切り替えた場合
     toggleUseCurrentDateTime(!useCurrentDateTime);
   };
 
@@ -440,15 +440,15 @@ const ImageFieldArrayItem = ({
   });
   drag(drop(fieldRef));
 
-  // 削除フラグがオンになっている既存の画像をクリックした際の処理
   const handleContainerClick = () => {
+    // 削除フラグがオンになっている既存の画像を押下した場合
     if (removed) {
       change(names[3], false);
     }
   };
 
-  // 削除ボタンをクリックした際の処理
   const handleRemoveButtonClick = () => {
+    // 削除ボタンを押下した場合
     if (newFile) {
       // 新規にアップロードした画像なら要素ごと削除する
       remove(index);

@@ -222,7 +222,7 @@ const WorkGridColumnImage = ({ image }) => {
   return (
     <a href={image.url} target="_blank">
       <div className="image-container" ref={containerRef}>
-        <img className="image" src={image.url} ref={imageRef} />
+        <img className="image" src={image.thumbnailUrl.small} ref={imageRef} />
       </div>
     </a>
   );

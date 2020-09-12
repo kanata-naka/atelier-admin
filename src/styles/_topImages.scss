@@ -2,13 +2,13 @@
 
 .top-image-upload-form {
   label {
-    font-weight: bold;
     padding-right: 4px;
+    font-weight: bold;
   }
 
   .error-message {
-    color: darkred;
     padding-left: 8px;
+    color: darkred;
   }
 
   .image-field-wrapper {
@@ -18,9 +18,9 @@
 
       .image-file-input-label {
         .image-file-upload-icon {
-          font-size: 64px;
           width: 64px;
           height: 64px;
+          font-size: 64px;
           line-height: 64px;
         }
       }
@@ -32,9 +32,9 @@
 
       .image-file-input-label {
         .image-file-upload-icon {
-          font-size: 32px;
           width: 32px;
           height: 32px;
+          font-size: 32px;
           line-height: 32px;
         }
       }
@@ -56,20 +56,17 @@
 .top-image-grid {
   .image-field {
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     position: relative;
-    border: 1px solid #dedede;
     margin: auto;
     padding: 4px;
+    border: 1px solid #dedede;
     overflow: hidden;
 
-    .preview-image {
-    }
-
     &-remove-button {
-      cursor: pointer;
       position: absolute;
+      cursor: pointer;
 
       i {
         color: darkred;
@@ -78,27 +75,27 @@
 
     .image-file-input-label {
       display: block;
-      margin: 0;
       position: absolute;
       top: 0;
-      left: 0;
-      bottom: 0;
       right: 0;
+      bottom: 0;
+      left: 0;
+      margin: 0;
 
       .image-file-input {
         display: none;
       }
 
       .image-file-upload-icon {
-        color: lightgray;
         display: block;
-        margin: auto;
-        text-align: center;
+        position: absolute;
         top: 0;
+        right: 0;
         bottom: 0;
         left: 0;
-        right: 0;
-        position: absolute;
+        margin: auto;
+        color: lightgray;
+        text-align: center;
       }
     }
   }
@@ -123,9 +120,9 @@
 
     .image-file-input-label {
       .image-file-upload-icon {
-        font-size: 48px;
         width: 48px;
         height: 48px;
+        font-size: 48px;
         line-height: 48px;
       }
     }
@@ -151,9 +148,9 @@
 
     .image-file-input-label {
       .image-file-upload-icon {
-        font-size: 16px;
         width: 16px;
         height: 16px;
+        font-size: 16px;
         line-height: 16px;
       }
     }
@@ -181,7 +178,7 @@
   }
 
   .column-controls {
-    text-align: center;
     width: 140px;
+    text-align: center;
   }
 }

@@ -16,24 +16,24 @@ body {
 }
 
 .sidebar {
-  background-color: rgb(31, 31, 31);
-  bottom: 0;
-  color: white;
-  left: 0;
-  padding: 12px;
   position: fixed;
   top: 0;
+  bottom: 0;
+  left: 0;
   width: 240px;
+  padding: 12px;
   z-index: 1;
+  background-color: rgb(31, 31, 31);
+  color: white;
 
   &-header {
     &-profile {
-      align-items: center;
       display: flex;
+      align-items: center;
       padding: 6px 4px;
 
       .profile-column--left {
-        margin-right: 12px;
+        padding-right: 12px;
 
         .profile-image {
           border-radius: 50%;
@@ -45,8 +45,8 @@ body {
         flex-grow: 3;
 
         .display-name {
+          padding-bottom: 3px;
           font-weight: bold;
-          margin-bottom: 3px;
         }
 
         .email {
@@ -58,25 +58,25 @@ body {
   }
 
   &-footer {
-    bottom: 12px;
     position: absolute;
     right: 12px;
+    bottom: 12px;
     text-align: right;
   }
 }
 
 .page-content {
-  left: 0;
-  margin-left: 240px;
-  padding: 12px;
   position: absolute;
   top: 0;
   right: 0;
+  left: 0;
+  margin-left: 240px;
+  padding: 12px;
 }
 
 .global-nav {
-  list-style-type: none;
   padding-left: 0;
+  list-style-type: none;
 
   &-item {
     p {
@@ -89,8 +89,8 @@ body {
     }
 
     &__link {
-      color: white;
       display: block;
+      color: white;
       font-weight: bold;
       text-decoration: none;
 
@@ -104,15 +104,15 @@ body {
 }
 
 .page-heading {
+  padding: 18px 0;
   color: #2222aa;
   font-size: 2em;
-  margin: 18px 0;
 }
 
 form {
   .annotation {
+    margin-left: 4px;
     font-size: 0.9em;
-    margin-left: 3px;
   }
 
   .checkbox-container {
@@ -163,9 +163,9 @@ form {
     }
 
     &-preview {
-      border: 1px dotted #cdcdcd;
       height: 512px;
       padding: 8px;
+      border: 1px dotted #cdcdcd;
       overflow: scroll;
     }
   }
@@ -175,39 +175,36 @@ form {
 
     .image-field {
       display: flex;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
       position: relative;
       margin: 0 8px 8px 0;
-      border: 1px dotted #ababab;
       overflow: hidden;
-
-      .preview-image {
-      }
+      border: 1px dotted #ababab;
 
       .image-file-input-label {
         display: block;
-        margin: 0;
         position: absolute;
         top: 0;
-        left: 0;
-        bottom: 0;
         right: 0;
+        bottom: 0;
+        left: 0;
+        margin: 0;
 
         .image-file-input {
           display: none;
         }
 
         .image-file-upload-icon {
-          color: lightgray;
           display: block;
-          margin: auto;
-          text-align: center;
+          position: absolute;
           top: 0;
+          right: 0;
           bottom: 0;
           left: 0;
-          right: 0;
-          position: absolute;
+          margin: auto;
+          color: lightgray;
+          text-align: center;
         }
       }
     }
@@ -223,15 +220,15 @@ form {
 
     .image-field {
       display: flex;
-      justify-content: center;
       align-items: center;
-      cursor: move;
+      justify-content: center;
       position: relative;
       width: 200px;
       height: 200px;
       margin: 0 8px 8px 0;
-      border: 1px dotted #ababab;
       overflow: hidden;
+      border: 1px dotted #ababab;
+      cursor: move;
 
       &.removed {
         cursor: pointer;
@@ -240,14 +237,11 @@ form {
         }
       }
 
-      .preview-image {
-      }
-
       &-remove-button {
-        cursor: pointer;
         position: absolute;
         top: 8px;
         right: 8px;
+        cursor: pointer;
 
         i {
           font-size: 1.2em;
@@ -257,31 +251,31 @@ form {
 
       .image-file-input-label {
         display: block;
-        margin: 0;
         position: absolute;
         top: 0;
-        left: 0;
-        bottom: 0;
         right: 0;
+        bottom: 0;
+        left: 0;
+        margin: 0;
 
         .image-file-input {
           display: none;
         }
 
         .image-file-upload-icon {
-          color: lightgray;
           display: block;
-          font-size: 64px;
-          margin: auto;
-          width: 64px;
-          height: 64px;
-          line-height: 64px;
-          text-align: center;
+          position: absolute;
           top: 0;
+          right: 0;
           bottom: 0;
           left: 0;
-          right: 0;
-          position: absolute;
+          width: 64px;
+          height: 64px;
+          margin: auto;
+          color: lightgray;
+          font-size: 64px;
+          line-height: 64px;
+          text-align: center;
         }
       }
     }
@@ -289,9 +283,9 @@ form {
 }
 
 hr {
+  margin: 20px 0;
   border: 0;
   border-top: 1px solid #eeeeee;
-  margin: 20px 0;
 }
 
 .grid {
@@ -306,8 +300,8 @@ hr {
   }
 
   &-cell {
-    vertical-align: middle !important;
     overflow-y: hidden;
+    vertical-align: middle !important;
 
     &.column-checks {
       width: 32px;
@@ -316,7 +310,7 @@ hr {
 }
 
 .controls {
-  margin: 24px 12px;
+  padding: 0 12px 24px;
 }
 
 .pagination {
@@ -327,32 +321,32 @@ hr {
 }
 
 .error-page {
-  align-items: center;
   display: flex;
+  align-items: center;
   justify-content: center;
   width: 100vw;
   height: 100vh;
 }
 
 .page-loading {
-  background-color: white;
-  bottom: 0;
   display: flex;
-  justify-content: center;
   align-items: center;
-  left: 0;
+  justify-content: center;
   position: fixed;
-  right: 0;
   top: 0;
-  transition: opacity 250ms;
+  right: 0;
+  bottom: 0;
+  left: 0;
   z-index: 9;
+  background-color: white;
+  transition: opacity 250ms;
 
   .loading-image {
-    animation: loading_image 2s linear infinite;
     display: block;
-    height: 64px;
-    transform: translate(-50%, -50%);
     width: 64px;
+    height: 64px;
+    animation: loading_image 2s linear infinite;
+    transform: translate(-50%, -50%);
   }
 }
 
