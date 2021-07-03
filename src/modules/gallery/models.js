@@ -5,5 +5,5 @@ export const PER_PAGE = 10;
 
 /** フォームの初期値 */
 export const initialValues = {
-  pickupFlag: true
+  restrict: "0"
 };

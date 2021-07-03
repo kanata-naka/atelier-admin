@@ -128,6 +128,35 @@ export const CheckboxField = ({
   );
 };
 
+export const RadioField = ({
+  label,
+  options,
+  className,
+  change,
+  // -- Redux Form --
+  input,
+  meta: { touched, error }
+}) => {
+  return (
+    <Form.Group controlId={input.name}>
+      <Form.Label>{label}</Form.Label>
+      {touched && error && <span className="error-message">{error}</span>}
+      <br />
+      {options.map((option, index) => 
+        <Form.Check
+        type="radio"
+        inline
+        className={`checkbox-container ${className || ""}`}
+        id={input.name + "-" + option.value}
+        label={option.label}
+        checked={input.value === option.value}
+        {...input}
+        value={option.value}></Form.Check>
+      )}
+    </Form.Group>
+  );
+};
+
 export const DateTimeField = ({
   name,
   label,
@@ -216,7 +245,7 @@ export const ImageField = ({
   return (
     <Fields
       names={[`${name}.url`, `${name}.file`]}
-      component={_ImageField}
+      component={ImageFieldComponent}
       name={name}
       classNamePrefix={classNamePrefix}
       label={label}
@@ -227,7 +256,7 @@ export const ImageField = ({
   );
 };
 
-const _ImageField = ({
+const ImageFieldComponent = ({
   names,
   change,
   name,

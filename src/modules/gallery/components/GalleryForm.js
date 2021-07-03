@@ -9,7 +9,7 @@ import { getItemById } from "../../../common/selectors";
 import {
   InputField,
   MarkdownTextareaField,
-  CheckboxField,
+  RadioField,
   DateTimeField,
   ImageFieldArray
 } from "../../../common/components/fields";
@@ -72,10 +72,16 @@ const GalleryForm = ({
         className="description-textarea"
       />
       <Field
-        name="pickupFlag"
-        component={CheckboxField}
-        label="トップページに表示する"
-        className="pickup-flag-checkbox"
+        name="restrict"
+        component={RadioField}
+        label="公開範囲"
+        options={[
+          {label: "トップページに表示する", value: "0"},
+          {label: "ギャラリーにのみ表示する", value: "1"},
+          {label: "非公開", value: "2"}
+        ]}
+        change={change}
+        className="restrict-radio"
       />
       <ButtonGroup>
         <Button variant="primary" type="submit" disabled={!dirty || submitting}>
@@ -197,7 +203,7 @@ export default reduxForm({
       tags: values.tags || [],
       images,
       description: values.description,
-      pickupFlag: values.pickupFlag,
+      restrict: values.restrict,
       createdAt: values.createdAt || getNowUnixTimestamp()
     };
 

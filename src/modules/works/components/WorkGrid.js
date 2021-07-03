@@ -110,7 +110,7 @@ export default () => {
         className="work-grid"
         striped
         rowClassName={item =>
-          `${!item.editing && item.pickupFlag ? "pickup" : ""} ${
+          `${!item.editing && item.restrict === '0' ? "all" : ""} ${
             item.editing ? "editing" : ""
           }`
         }
