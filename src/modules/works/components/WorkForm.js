@@ -139,7 +139,7 @@ export default reduxForm({
       // 作品を更新する
       try {
         await callFunction({
-          name: "api-works-update",
+          name: "works-update",
           data,
           globals: Globals
         });
@@ -154,7 +154,7 @@ export default reduxForm({
       // 作品を登録する
       try {
         await callFunction({
-          name: "api-works-create",
+          name: "works-create",
           data,
           globals: Globals
         });
@@ -189,7 +189,7 @@ export default reduxForm({
     );
 
     callFunction({
-      name: "api-works-get",
+      name: "works-get",
       data: {},
       globals: Globals
     })

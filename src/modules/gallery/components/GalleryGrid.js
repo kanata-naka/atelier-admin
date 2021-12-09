@@ -26,7 +26,7 @@ export default () => {
   const load = async () => {
     try {
       const response = await callFunction({
-        name: "api-arts-get",
+        name: "arts-get",
         data: {},
         globals: Globals
       });
@@ -79,7 +79,7 @@ export default () => {
         .filter(entry => entry[1])
         .map(entry =>
           callFunction({
-            name: "api-arts-deleteById",
+            name: "arts-deleteById",
             data: { id: entry[0] },
             globals: Globals
           }).catch(error => {

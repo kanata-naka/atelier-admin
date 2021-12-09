@@ -38,7 +38,7 @@ const TopImageGrid = ({
   const load = async () => {
     try {
       const response = await callFunction({
-        name: "api-topImages-get",
+        name: "topImages-get",
         data: {},
         globals: Globals
       });
@@ -78,7 +78,7 @@ const TopImageGrid = ({
         .filter(entry => entry[1])
         .map(entry =>
           callFunction({
-            name: "api-topImages-deleteById",
+            name: "topImages-deleteById",
             data: { id: entry[0] },
             globals: Globals
           }).catch(error => {
@@ -459,7 +459,7 @@ export default reduxForm({
     // トップ画像を一括で更新する
     try {
       await callFunction({
-        name: "api-topImages-bulkUpdate",
+        name: "topImages-bulkUpdate",
         data,
         globals: Globals
       });
@@ -506,7 +506,7 @@ export default reduxForm({
     Notification.success("トップ画像を更新しました。");
 
     callFunction({
-      name: "api-topImages-get",
+      name: "topImages-get",
       data: {},
       globals: Globals
     })

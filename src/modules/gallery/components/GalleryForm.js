@@ -211,7 +211,7 @@ export default reduxForm({
       // イラストを更新する
       try {
         await callFunction({
-          name: "api-arts-update",
+          name: "arts-update",
           data,
           globals: Globals
         });
@@ -226,7 +226,7 @@ export default reduxForm({
       // イラストを登録する
       try {
         await callFunction({
-          name: "api-arts-create",
+          name: "arts-create",
           data,
           globals: Globals
         });
@@ -261,7 +261,7 @@ export default reduxForm({
     );
 
     callFunction({
-      name: "api-arts-get",
+      name: "arts-get",
       data: {},
       globals: Globals
     })

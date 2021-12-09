@@ -110,7 +110,7 @@ export default reduxForm({
     try {
       // トップ画像を登録する
       await callFunction({
-        name: "api-topImages-create",
+        name: "topImages-create",
         data,
         globals: Globals
       });
@@ -149,7 +149,7 @@ export default reduxForm({
     Notification.success("トップ画像を登録しました。");
 
     callFunction({
-      name: "api-topImages-get",
+      name: "topImages-get",
       data: {},
       globals: Globals
     })
