@@ -136,15 +136,15 @@ function TopImageGrid() {
                 return (
                   <div
                     css={css`
-                      margin-left: 12px;
+                      margin-left: 30px;
                     `}
                   >
                     <ImageFileInput
                       name={`items.${index}.thumbnailImage`}
                       label="サムネイル画像"
-                      width={120}
-                      height={120}
-                      uploadIconWidth={48}
+                      width={80}
+                      height={80}
+                      uploadIconWidth={32}
                       fit="cover"
                       required={true}
                       disabled={!editing}
@@ -254,15 +254,15 @@ function EditControl() {
 
 function GridColumnAnnotation({ children }: { children: ReactNode }) {
   return (
-    <div
+    <span
       css={css`
-        margin-top: 6px;
+        margin-left: 8px;
         font-size: 0.9em;
         font-weight: lighter;
       `}
     >
       {children}
-    </div>
+    </span>
   );
 }
 
