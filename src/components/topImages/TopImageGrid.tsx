@@ -73,7 +73,7 @@ function TopImageGrid() {
   return (
     <FormProvider {...useFormReturn}>
       <Form onSubmit={handleSubmit(submit)}>
-        <EditControl />
+        <GridControl />
         <Grid
           columns={[
             {
@@ -159,7 +159,7 @@ function TopImageGrid() {
               label: "説明",
               css: css`
                 min-width: 250px;
-                vertical-align: top;
+                vertical-align: middle;
                 white-space: pre-wrap;
               `,
               render: (item, index) =>
@@ -198,14 +198,14 @@ function TopImageGrid() {
           itemRowStyle={(_, index) => css`
             background-color: ${watch(`items.${index}.removed`) ? "darkgray" : "inherit"};
           `}
-        ></Grid>
+        />
         {editing && <GridItemAppendControl append={append} />}
       </Form>
     </FormProvider>
   );
 }
 
-function EditControl() {
+function GridControl() {
   const { items, editing } = useSelector((state) => ({
     items: state.topImages.items,
     editing: state.topImages.editing,

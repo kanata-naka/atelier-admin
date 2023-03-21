@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import { SerializedStyles } from "@emotion/utils";
 import { User } from "@firebase/auth";
 import { FieldValues, Path, FieldPathValue } from "react-hook-form";
+import { Restrict } from "@/constants";
 import store from "@/store";
 
 export type State = ReturnType<typeof store.getState>;
@@ -60,4 +61,30 @@ export type ImageState = {
   url?: string;
   file?: File;
   beforeUrl?: string;
+};
+
+export type ArtsState = {
+  items: ArtState[];
+  pagination: PaginationState;
+  checkedItemIds: string[];
+  editingItemId?: string;
+};
+
+export type ArtState = {
+  id: string;
+  title: string;
+  tags: string[];
+  images: ImageState[];
+  description?: string;
+  restrict: Restrict;
+  createdAt?: number;
+  updatedAt?: number;
+};
+
+export type Restrict = (typeof Restrict)[keyof typeof Restrict];
+
+export type PaginationState = {
+  page: number;
+  perPage: number;
+  total: number;
 };
