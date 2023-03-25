@@ -24,32 +24,6 @@ import { getDateFromUnixTimestamp, getNowUnixTimestamp, getUnixTimestampFromDate
 import { renderMarkdown } from "@/utils/domUtil";
 import { validateFile } from "@/utils/fIleUtil";
 
-type TextFieldProps<T extends FieldValues> = {
-  label: string;
-} & UseControllerProps<T, FieldPathByValue<T, string>>;
-
-export function TextField<T extends FieldValues>({ label, name, rules }: TextFieldProps<T>) {
-  const { control, register } = useFormContext<T>();
-  const {
-    formState: { isSubmitSuccessful },
-    fieldState: { error },
-  } = useController({ name, control, rules });
-
-  return (
-    <Form.Group
-      controlId={name}
-      css={css`
-        margin-bottom: 1rem;
-      `}
-    >
-      <FieldLabel>{label}</FieldLabel>
-      {rules?.required && <RequiredBadge />}
-      {!isSubmitSuccessful && error && <FieldErrorMessage>{error.message}</FieldErrorMessage>}
-      <Form.Control type="text" {...register(name, rules)} />
-    </Form.Group>
-  );
-}
-
 export function RequiredBadge() {
   return (
     <Badge pill bg="danger">
@@ -81,6 +55,32 @@ export function FieldErrorMessage({ children }: { children: ReactNode }) {
     >
       {children}
     </span>
+  );
+}
+
+type TextFieldProps<T extends FieldValues> = {
+  label: string;
+} & UseControllerProps<T, FieldPathByValue<T, string>>;
+
+export function TextField<T extends FieldValues>({ label, name, rules }: TextFieldProps<T>) {
+  const { control, register } = useFormContext<T>();
+  const {
+    formState: { isSubmitSuccessful },
+    fieldState: { error },
+  } = useController({ name, control, rules });
+
+  return (
+    <Form.Group
+      controlId={name}
+      css={css`
+        margin-bottom: 1rem;
+      `}
+    >
+      <FieldLabel>{label}</FieldLabel>
+      {rules?.required && <RequiredBadge />}
+      {!isSubmitSuccessful && error && <FieldErrorMessage>{error.message}</FieldErrorMessage>}
+      <Form.Control type="text" {...register(name, rules)} />
+    </Form.Group>
   );
 }
 
