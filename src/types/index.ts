@@ -2,15 +2,15 @@ import { ReactNode } from "react";
 import { SerializedStyles } from "@emotion/utils";
 import { User } from "@firebase/auth";
 import { FieldValues, Path, FieldPathValue } from "react-hook-form";
-import { Restrict } from "@/constants";
+import { Restrict, USE_CURRENT_DATE_TIME } from "@/constants";
 import store from "@/store";
 
 export type State = ReturnType<typeof store.getState>;
 export type Dispatch = typeof store.dispatch;
 
-export type SpecifiedTypeField<Item extends FieldValues, T> = {
-  [P in Path<Item>]: T extends FieldPathValue<Item, P> ? P : never;
-}[Path<Item>];
+export type SpecifiedTypeField<R extends FieldValues, T> = {
+  [P in Path<R>]: T extends FieldPathValue<R, P> ? P : never;
+}[Path<R>];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type GridItem = Record<string, any>;
@@ -61,19 +61,21 @@ export type ImageState = {
   url?: string;
   file?: File;
   beforeUrl?: string;
+  removed?: boolean;
 };
 
-export type ArtsState = {
+export type GalleryState = {
   items: ArtState[];
   pagination: PaginationState;
-  checkedItemIds: string[];
+  selectedItemIds: string[];
   editingItemId?: string;
+  isFormDirty: boolean;
 };
 
 export type ArtState = {
   id: string;
   title: string;
-  tags: string[];
+  tags: TagState[];
   images: ImageState[];
   description?: string;
   restrict: Restrict;
@@ -81,7 +83,16 @@ export type ArtState = {
   updatedAt?: number;
 };
 
+export type TagState = {
+  name: string;
+};
+
 export type Restrict = (typeof Restrict)[keyof typeof Restrict];
+
+export type GalleryFormState = {
+  id?: string;
+  createdAt?: number | typeof USE_CURRENT_DATE_TIME;
+} & Omit<ArtState, "id" | "createdAt">;
 
 export type PaginationState = {
   page: number;

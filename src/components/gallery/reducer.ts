@@ -1,28 +1,29 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { PER_PAGE } from "@/constants";
-import { ArtsState, ArtState, PaginationState } from "@/types";
+import { GalleryState, ArtState, PaginationState } from "@/types";
 import { createPagination } from "@/utils/pageUtil";
 
-const initialState: ArtsState = {
+const initialState: GalleryState = {
   items: [],
   pagination: createPagination(PER_PAGE, 0),
-  checkedItemIds: [],
+  selectedItemIds: [],
+  isFormDirty: false,
 };
 
 export const slice = createSlice({
-  name: "artsSlice",
+  name: "gallerySlice",
   initialState,
   reducers: {
     fetchItems: (state, action: PayloadAction<ArtState[]>) => {
       state.items = action.payload;
       state.pagination = createPagination(PER_PAGE, action.payload.length);
-      state.checkedItemIds = [];
+      state.selectedItemIds = [];
     },
     movePage: (state, action: PayloadAction<PaginationState>) => {
       state.pagination = action.payload;
     },
-    checkItem: (state, action: PayloadAction<string[]>) => {
-      state.checkedItemIds = action.payload;
+    selectItem: (state, action: PayloadAction<string[]>) => {
+      state.selectedItemIds = action.payload;
     },
     edit: (state, action: PayloadAction<string>) => {
       state.editingItemId = action.payload;
@@ -30,8 +31,11 @@ export const slice = createSlice({
     cancelEdit: (state) => {
       state.editingItemId = undefined;
     },
+    touchForm: (state, action: PayloadAction<boolean>) => {
+      state.isFormDirty = action.payload;
+    },
   },
 });
 
-export const { fetchItems, movePage, checkItem, edit, cancelEdit } = slice.actions;
+export const { fetchItems, movePage, selectItem, edit, cancelEdit, touchForm } = slice.actions;
 export default slice.reducer;

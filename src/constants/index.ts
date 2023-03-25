@@ -11,3 +11,5 @@ export const Restrict = {
 } as const;
 
 export const PER_PAGE = 20;
+
+export const USE_CURRENT_DATE_TIME = Symbol();

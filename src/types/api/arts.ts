@@ -37,11 +37,16 @@ export type ArtCreateRequest = {
   id: string;
   title: string;
   tags: string[];
-  images: {
-    name: string;
-  }[];
+  images: ArtCreateRequest.Image[];
   description?: string;
   restrict: Restrict;
+  createdAt?: number;
 };
+
+export namespace ArtCreateRequest {
+  export type Image = {
+    name: string;
+  };
+}
 
 export type ArtUpdateRequest = ArtCreateRequest;

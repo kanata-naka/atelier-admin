@@ -3,24 +3,23 @@ import { css } from "@emotion/react";
 import Image from "next/image";
 import Link from "next/link";
 import { Badge, Button, ButtonGroup } from "react-bootstrap";
-import { callFunction } from "@/api/firebase";
 import Notification from "@/components/common/Notification";
 import { Restrict } from "@/constants";
 import { useDispatch, useSelector } from "@/hooks";
 import { ArtState } from "@/types";
 import { formatDateTimeFromUnixTimestamp } from "@/utils/dateUtil";
 import { getItemsByPage } from "@/utils/pageUtil";
-import { cancelEdit, checkItem, edit, movePage } from "./reducer";
-import { fetchArts } from "./services";
+import { cancelEdit, selectItem, edit, movePage } from "./reducer";
+import { deleteArts, fetchArts } from "./services";
 import Grid from "../common/Grid";
 import Pagination from "../common/Pagination";
 import { withLoading } from "../common/services";
 
 function GalleryGrid() {
-  const { items, pagination, checkedItemIds, editingItemId } = useSelector((state) => ({
+  const { items, pagination, selectedItemIds, editingItemId } = useSelector((state) => ({
     items: state.gallery.items,
     pagination: state.gallery.pagination,
-    checkedItemIds: state.gallery.checkedItemIds,
+    selectedItemIds: state.gallery.selectedItemIds,
     editingItemId: state.gallery.editingItemId,
   }));
   const dispatch = useDispatch();
@@ -49,21 +48,24 @@ function GalleryGrid() {
             render: (item) => {
               return (
                 <>
-                  {item.images.map((image, index) => (
-                    <Link key={index} href={image.url!}>
-                      <Image
-                        src={image.url!}
-                        width={100}
-                        height={100}
-                        alt=""
-                        css={css`
-                          margin: 2px;
-                          border: 1px solid #dedede;
-                          object-fit: contain;
-                        `}
-                      />
-                    </Link>
-                  ))}
+                  {item.images.map(
+                    (image, index) =>
+                      image.url && (
+                        <Link key={index} href={image.url}>
+                          <Image
+                            src={image.url}
+                            width={100}
+                            height={100}
+                            alt=""
+                            css={css`
+                              margin: 2px;
+                              border: 1px solid #dedede;
+                              object-fit: contain;
+                            `}
+                          />
+                        </Link>
+                      )
+                  )}
                 </>
               );
             },
@@ -77,7 +79,7 @@ function GalleryGrid() {
               white-space: pre-wrap;
               overflow-y: auto;
             `,
-            render: (item) => <span>{item.tags.join(", ")}</span>,
+            render: (item) => <span>{item.tags.map((tag) => tag.name).join(", ")}</span>,
           },
           {
             label: "説明",
@@ -120,8 +122,8 @@ function GalleryGrid() {
             ? "whitesmoke"
             : "transparent"};
         `}
-        checkedItemIds={checkedItemIds}
-        onCheck={(checkedItemIds) => dispatch(checkItem(checkedItemIds))}
+        checkedItemIds={selectedItemIds}
+        onCheck={(checkedItemIds) => dispatch(selectItem(checkedItemIds))}
       />
       <Pagination pagination={pagination} onMovePage={(pagination) => dispatch(movePage(pagination))} />
     </>
@@ -129,36 +131,31 @@ function GalleryGrid() {
 }
 
 function GridControl() {
-  const { items, checkedItemIds } = useSelector((state) => ({
+  const { selectedItemIds } = useSelector((state) => ({
     items: state.gallery.items,
-    checkedItemIds: state.gallery.checkedItemIds,
+    selectedItemIds: state.gallery.selectedItemIds,
   }));
   const dispatch = useDispatch();
 
-  const disabled = !checkedItemIds.length;
+  const disabled = !selectedItemIds.length;
 
   const handleRemove = () => {
     if (!confirm("チェックした作品を削除します。本当によろしいですか？")) {
       return;
     }
     withLoading(async () => {
-      const result = await Promise.allSettled(
-        checkedItemIds.map((itemId) =>
-          callFunction("arts-deleteById", { id: itemId }).catch((error) => {
+      await deleteArts(selectedItemIds)
+        .then(async () => {
+          Notification.success("作品を削除しました。");
+          await fetchArts(dispatch).catch((error) => {
             console.error(error);
-            Notification.error(
-              `「${items.find((item) => item.id === itemId)?.title}」の削除に失敗しました。\n` + JSON.stringify(error)
-            );
-          })
-        )
-      );
-      if (result.find((item) => item.status === "fulfilled")) {
-        Notification.success("作品を削除しました。");
-      }
-      await fetchArts(dispatch).catch((error) => {
-        console.error(error);
-        Notification.error("読み込みに失敗しました。");
-      });
+            Notification.error("読み込みに失敗しました。");
+          });
+        })
+        .catch((error) => {
+          console.error(error);
+          Notification.error("作品の削除に失敗しました。");
+        });
     }, dispatch);
   };
 
@@ -178,7 +175,7 @@ function GridControl() {
         チェックした作品を
       </span>
       <ButtonGroup>
-        <Button variant="primary" type="button" disabled={disabled}>
+        {/* <Button variant="primary" type="button" disabled={disabled}>
           {"トップページに表示する"}
         </Button>
         <Button variant="outline-dark" type="button" disabled={disabled}>
@@ -186,7 +183,7 @@ function GridControl() {
         </Button>
         <Button variant="outline-dark" type="button" disabled={disabled}>
           {"非公開"}
-        </Button>
+        </Button> */}
         <Button variant="danger" type="button" disabled={disabled} onClick={handleRemove}>
           {"削除"}
         </Button>
@@ -215,14 +212,21 @@ function DateRow({ label, unixTimestamp }: { label: string; unixTimestamp?: numb
 }
 
 function GridItemEditControl({ itemId }: { itemId: string }) {
-  const editingItemId = useSelector((state) => state.gallery.editingItemId);
+  const { editingItemId, isFormDirty } = useSelector((state) => ({
+    editingItemId: state.gallery.editingItemId,
+    isFormDirty: state.gallery.isFormDirty,
+  }));
   const dispatch = useDispatch();
 
+  const checkFormDirty = () => !isFormDirty || confirm("内容が変更されています。破棄してよろしいですか？");
+
   const handleEdit = () => {
+    if (!checkFormDirty()) return;
     dispatch(edit(itemId));
   };
 
   const handleCancelEdit = () => {
+    if (!checkFormDirty()) return;
     dispatch(cancelEdit());
   };
 

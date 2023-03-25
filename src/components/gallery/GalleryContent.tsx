@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import Notification from "@/components/common/Notification";
 import { useDispatch } from "@/hooks";
+import GalleryForm from "./GalleryForm";
 import GalleryGrid from "./GalleryGrid";
 import { fetchArts } from "./services";
 import PageContent from "../common/PageContent";
@@ -24,6 +25,8 @@ function GalleryContent() {
   return (
     <PageContent>
       <PageHeading>GALLERY</PageHeading>
+      <hr />
+      <GalleryForm />
       <hr />
       <GalleryGrid />
     </PageContent>

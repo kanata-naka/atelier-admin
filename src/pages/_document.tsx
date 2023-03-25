@@ -17,6 +17,10 @@ export default function Document() {
           integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf"
           crossOrigin="anonymous"
         />
+        <link
+          href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/4.0.0/github-markdown.min.css"
+          rel="stylesheet"
+        />
       </Head>
       <body
         css={css`
