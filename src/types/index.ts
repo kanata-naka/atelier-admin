@@ -1,16 +1,16 @@
 import { ReactNode } from "react";
 import { SerializedStyles } from "@emotion/utils";
 import { User } from "@firebase/auth";
-import { FieldValues, Path, FieldPathValue } from "react-hook-form";
+import { FieldValues, FieldArrayPathValue, FieldArrayPath, FieldPathByValue } from "react-hook-form";
 import { Restrict, USE_CURRENT_DATE_TIME } from "@/constants";
 import store from "@/store";
 
 export type State = ReturnType<typeof store.getState>;
 export type Dispatch = typeof store.dispatch;
 
-export type SpecifiedTypeField<R extends FieldValues, T> = {
-  [P in Path<R>]: T extends FieldPathValue<R, P> ? P : never;
-}[Path<R>];
+export type FieldArrayPathByValue<TFieldValues extends FieldValues, TValue> = {
+  [Key in FieldArrayPath<TFieldValues>]: FieldArrayPathValue<TFieldValues, Key> extends TValue ? Key : never;
+}[FieldArrayPath<TFieldValues>];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type GridItem = Record<string, any>;
@@ -22,7 +22,7 @@ export type GridColumn<Item extends GridItem> = {
   render: (item: Item, index: number) => ReactNode;
 };
 
-export type GridItemIdField<Item extends GridItem> = SpecifiedTypeField<Item, string | number>;
+export type GridItemIdField<Item extends GridItem> = FieldPathByValue<Item, string | number>;
 
 export type AuthState = {
   status: "not_signed_in" | "signing_in" | "signed_in" | "sign_in_failed";

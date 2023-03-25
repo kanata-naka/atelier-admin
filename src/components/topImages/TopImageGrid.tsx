@@ -2,10 +2,7 @@ import React, { MouseEvent, ChangeEvent, useRef, useEffect, ReactNode } from "re
 import { css, SerializedStyles } from "@emotion/react";
 import { Badge, Button, ButtonGroup, CloseButton, Form, FormControlProps } from "react-bootstrap";
 import {
-  FieldValues,
   FormProvider,
-  Path,
-  PathValue,
   SubmitHandler,
   UseControllerProps,
   useFieldArray,
@@ -19,7 +16,7 @@ import {
 import Notification from "@/components/common/Notification";
 import { IMAGE_FILE_ACCEPTABLE_EXTENTIONS, IMAGE_FILE_MAX_SIZE } from "@/constants";
 import { useDispatch, useDropFile, useSelector } from "@/hooks";
-import { SpecifiedTypeField, ImageState, TopImagesState, TopImageState } from "@/types";
+import { ImageState, TopImagesState, TopImageState } from "@/types";
 import { formatDateTimeFromUnixTimestamp } from "@/utils/dateUtil";
 import { validateFile } from "@/utils/fIleUtil";
 import { edit, cancelEdit } from "./reducer";
@@ -146,7 +143,6 @@ function TopImageGrid() {
                       height={80}
                       uploadIconWidth={32}
                       fit="cover"
-                      required={true}
                       disabled={!editing}
                       rules={{ required: "選択してください" }}
                     />
@@ -337,34 +333,32 @@ function GridItemErrorMessage({ children }: { children: ReactNode }) {
   );
 }
 
-type ImageFileInputProps<T extends FieldValues> = {
+type ImageFileInputProps = {
   label: string;
   width: number;
   height: number;
-  uploadIconWidth: number;
   fit?: "contain" | "cover";
-  required?: boolean;
+  uploadIconWidth: number;
   disabled?: boolean;
-  name: SpecifiedTypeField<T, ImageState>;
-} & Omit<UseControllerProps<T>, "name">;
+} & UseControllerProps;
 
-function ImageFileInput<T extends FieldValues>({
+function ImageFileInput({
   label,
   width,
   height,
-  uploadIconWidth,
   fit = "contain",
+  uploadIconWidth,
   disabled = false,
   rules,
   name,
-}: ImageFileInputProps<T>) {
-  const { register, control, setValue } = useFormContext<T>();
-  const value: ImageState = useWatch<T>({ name, control });
+}: ImageFileInputProps) {
+  const { register, control, setValue } = useFormContext();
   const fileInputLabelRef = useRef<HTMLLabelElement>(null);
+  const value: ImageState = useWatch({ name, control });
   const isDirty = !!value.file;
 
   if (rules) {
-    register(`${name}.url` as Path<T>, rules);
+    register(`${name}.url`, rules);
   }
 
   const validate = (file: File) => {
@@ -377,14 +371,14 @@ function ImageFileInput<T extends FieldValues>({
   };
 
   const setFile = (file: File) => {
-    setValue<typeof name>(
+    setValue(
       name,
       {
         name: value.name,
         url: URL.createObjectURL(file),
         file,
         beforeUrl: value.beforeUrl,
-      } as PathValue<T, typeof name>,
+      },
       { shouldDirty: true }
     );
   };
@@ -411,7 +405,7 @@ function ImageFileInput<T extends FieldValues>({
         name: value.name,
         url: value.beforeUrl,
         beforeUrl: value.beforeUrl,
-      } as PathValue<T, typeof name>,
+      },
       { shouldDirty: true }
     );
   };
@@ -513,16 +507,14 @@ function ImageFileInput<T extends FieldValues>({
   );
 }
 
-type TextareaInputProps<T extends FieldValues> = {
-  name: SpecifiedTypeField<T, string>;
+type TextareaInputProps = {
   css?: SerializedStyles;
-} & Omit<UseControllerProps<T>, "name"> &
+} & UseControllerProps &
   FormControlProps;
 
-function TextareaInput<T extends FieldValues>({ name, ...props }: TextareaInputProps<T>) {
-  const { control, register } = useFormContext<T>();
-  const value = useWatch<T>({ name, control });
-  return <Form.Control as="textarea" value={value} {...register(name)} {...props}></Form.Control>;
+function TextareaInput({ name, ...props }: TextareaInputProps) {
+  const { register } = useFormContext();
+  return <Form.Control as="textarea" {...register(name)} {...props}></Form.Control>;
 }
 
 function DateRow({ label, unixTimestamp }: { label: string; unixTimestamp?: number }) {
@@ -544,13 +536,15 @@ function DateRow({ label, unixTimestamp }: { label: string; unixTimestamp?: numb
   );
 }
 
-type GridItemMoveControlProps = {
+function GridItemMoveControl({
+  itemIndex,
+  length,
+  move,
+}: {
   itemIndex: number;
   length: number;
   move: UseFieldArrayMove;
-};
-
-function GridItemMoveControl({ itemIndex, length, move }: GridItemMoveControlProps) {
+}) {
   return (
     <ButtonGroup
       vertical
