@@ -95,7 +95,7 @@ export function DateTimeField<
   defaultValue,
   rules,
   dateFormat = "yyyy/MM/dd",
-  showTimeInput,
+  showTimeInput = false,
   useCurrentDateTimeCheckbox = false,
 }: {
   label: string;

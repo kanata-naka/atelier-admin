@@ -31,3 +31,20 @@ export namespace WorkGetResponse {
     };
   };
 }
+
+export type WorkCreateRequest = {
+  id: string;
+  title: string;
+  publishedDate: number;
+  images: WorkCreateRequest.Image[];
+  description: Nullable<string>;
+  restrict: Restrict;
+};
+
+export namespace WorkCreateRequest {
+  export type Image = {
+    name: string;
+  };
+}
+
+export type WorkUpdateRequest = WorkCreateRequest;

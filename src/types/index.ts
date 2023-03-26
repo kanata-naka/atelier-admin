@@ -135,3 +135,33 @@ export type RadioFieldOption = {
   label: string;
   value: string | number;
 };
+
+export type WorksState = {
+  items: WorkState[];
+  pagination: PaginationState;
+  selectedItemIds: string[];
+  editingItemId?: string;
+  isFormDirty: boolean;
+};
+
+export type WorkState = {
+  id: string;
+  title: string;
+  publishedDate: number;
+  images: ImageState[];
+  description: Nullable<string>;
+  restrict: Restrict;
+  createdAt: number;
+  updatedAt: number;
+};
+
+export type WorkFormValues = {
+  id: Nullable<string>;
+  title: string;
+  publishedDate: number | typeof USE_CURRENT_DATE_TIME;
+  images: ImageFieldValues[];
+  description: Nullable<string>;
+  restrict: Restrict;
+  createdAt?: number;
+  updatedAt?: number;
+};
