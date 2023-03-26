@@ -1,16 +1,14 @@
 import React, { MouseEvent, ChangeEvent, useRef, useEffect, ReactNode } from "react";
-import { css, SerializedStyles } from "@emotion/react";
+import { css } from "@emotion/react";
 import Image from "next/image";
-import { Badge, Button, ButtonGroup, CloseButton, Form, FormControlProps } from "react-bootstrap";
+import { Badge, Button, ButtonGroup, CloseButton, Form } from "react-bootstrap";
 import {
   FieldPathByValue,
   FormProvider,
   SubmitHandler,
+  useController,
   UseControllerProps,
   useFieldArray,
-  UseFieldArrayAppend,
-  UseFieldArrayMove,
-  UseFieldArrayRemove,
   useForm,
   useFormContext,
   useWatch,
@@ -18,12 +16,12 @@ import {
 import Notification from "@/components/common/Notification";
 import { IMAGE_FILE_ACCEPTABLE_EXTENTIONS, IMAGE_FILE_MAX_SIZE } from "@/constants";
 import { useDispatch, useDropFile, useSelector } from "@/hooks";
-import { TopImagesFormValues, TopImageFieldValues, ImageFieldValues, Nullable } from "@/types";
+import { TopImagesFormValues, TopImageFieldValues, ImageFieldValues } from "@/types";
 import { formatDateTimeFromUnixTimestamp } from "@/utils/dateUtil";
 import { validateFile } from "@/utils/fIleUtil";
 import { edit, cancelEdit } from "./reducer";
 import { convertTopImageStateToFieldValues } from "./selectors";
-import { bulkUpdateTopImages } from "./services";
+import { bulkUpdateTopImages, fetchTopImages } from "./services";
 import { RequiredBadge } from "../common/form";
 import Grid from "../common/Grid";
 import { withLoading } from "../common/services";
@@ -35,13 +33,7 @@ function TopImageGrid() {
   }));
   const useFormReturn = useForm<TopImagesFormValues>();
   const dispatch = useDispatch();
-  const {
-    control,
-    watch,
-    formState: { errors },
-    handleSubmit,
-    reset,
-  } = useFormReturn;
+  const { control, register, watch, handleSubmit, reset } = useFormReturn;
   const { fields, append, move, remove } = useFieldArray<TopImagesFormValues>({ control, name: "items" });
 
   useEffect(() => {
@@ -49,17 +41,21 @@ function TopImageGrid() {
   }, [items]);
 
   const submit: SubmitHandler<TopImagesFormValues> = (data, event) => {
-    console.log("onSubmit: ", data);
     event?.preventDefault();
     withLoading(
       () =>
-        bulkUpdateTopImages(data.items, items, dispatch)
-          .then(() => {
+        bulkUpdateTopImages(data.items, items)
+          .then(async () => {
             Notification.success("トップ画像を登録しました。");
+            await fetchTopImages(dispatch).catch((error) => {
+              console.error(error);
+              Notification.error("読み込みに失敗しました。");
+            });
+            dispatch(cancelEdit());
           })
           .catch((error) => {
             console.error(error);
-            Notification.error("トップ画像の登録に失敗しました。\n" + JSON.stringify(error));
+            Notification.error("トップ画像の登録に失敗しました。");
           }),
       dispatch
     );
@@ -92,24 +88,19 @@ function TopImageGrid() {
               ),
               css: css`
                 width: 200px;
+                vertical-align: top;
               `,
-              render: (_, index) => {
-                const message = errors.items && errors.items[index]?.image?.url?.message;
-                return (
-                  <>
-                    <ImageFileInput
-                      name={`items.${index}.image`}
-                      label="画像"
-                      width={200}
-                      height={120}
-                      uploadIconWidth={48}
-                      fit="cover"
-                      disabled={!editing}
-                    />
-                    {message && <GridItemErrorMessage>{message}</GridItemErrorMessage>}
-                  </>
-                );
-              },
+              render: (_, index) => (
+                <ImageFileInput
+                  name={`items.${index}.image`}
+                  label="画像"
+                  width={200}
+                  height={120}
+                  uploadIconWidth={48}
+                  fit="cover"
+                  disabled={!editing}
+                />
+              ),
             },
             {
               label: (
@@ -124,40 +115,35 @@ function TopImageGrid() {
               ),
               css: css`
                 width: 160px;
+                vertical-align: top;
               `,
-              render: (_, index) => {
-                const message = errors.items && errors.items[index]?.thumbnailImage?.url?.message;
-                return (
-                  <div
-                    css={css`
-                      margin-left: 30px;
-                    `}
-                  >
-                    <ImageFileInput
-                      name={`items.${index}.thumbnailImage`}
-                      label="サムネイル画像"
-                      width={80}
-                      height={80}
-                      uploadIconWidth={32}
-                      fit="cover"
-                      disabled={!editing}
-                    />
-                    {message && <GridItemErrorMessage>{message}</GridItemErrorMessage>}
-                  </div>
-                );
-              },
+              render: (_, index) => (
+                <ImageFileInput
+                  name={`items.${index}.thumbnailImage`}
+                  label="サムネイル画像"
+                  width={120}
+                  height={120}
+                  uploadIconWidth={32}
+                  fit="cover"
+                  disabled={!editing}
+                />
+              ),
             },
             {
               label: "説明",
               css: css`
                 min-width: 250px;
-                vertical-align: middle;
                 white-space: pre-wrap;
+                ${editing &&
+                css`
+                  vertical-align: top;
+                `}
               `,
               render: (item, index) =>
                 editing ? (
-                  <TextareaInput
-                    name={`items.${index}.description`}
+                  <Form.Control
+                    as="textarea"
+                    {...register(`items.${index}.description`)}
                     css={css`
                       height: 120px;
                     `}
@@ -264,7 +250,7 @@ function GridItemRemoveControl({
 }: {
   item: TopImageFieldValues;
   index: number;
-  remove: UseFieldArrayRemove;
+  remove: (index: number) => void;
 }) {
   const beforeItems = useSelector((state) => state.topImages.items);
   const { watch, setValue } = useFormContext<TopImagesFormValues>();
@@ -344,12 +330,14 @@ function ImageFileInput({
   uploadIconWidth: number;
   disabled?: boolean;
 } & UseControllerProps<TopImagesFormValues, FieldPathByValue<TopImagesFormValues, ImageFieldValues>>) {
-  const { register, control, setValue } = useFormContext<TopImagesFormValues>();
   const fileInputLabelRef = useRef<HTMLLabelElement>(null);
+  const { control, setValue } = useFormContext<TopImagesFormValues>();
+  const {
+    fieldState: { error },
+    formState: { isSubmitted },
+  } = useController({ name: `${name}.url`, control, rules: { required: "選択してください" } });
   const value: ImageFieldValues = useWatch({ name, control });
-  const isDirty = !!value.file;
-
-  register(`${name}.url`, { required: "選択してください" });
+  const selectedFile = !!value.file;
 
   const validate = (file: File) => {
     const validationResult = validateFile(file, IMAGE_FILE_ACCEPTABLE_EXTENTIONS, IMAGE_FILE_MAX_SIZE);
@@ -360,17 +348,17 @@ function ImageFileInput({
     return true;
   };
 
+  const change = (value: ImageFieldValues) => {
+    setValue(name, value, { shouldDirty: true, shouldValidate: isSubmitted });
+  };
+
   const setFile = (file: File) => {
-    setValue(
-      name,
-      {
-        name: value.name,
-        url: URL.createObjectURL(file),
-        file,
-        beforeUrl: value.beforeUrl,
-      },
-      { shouldDirty: true }
-    );
+    change({
+      name: value.name,
+      url: URL.createObjectURL(file),
+      file,
+      beforeUrl: value.beforeUrl,
+    });
   };
 
   useDropFile(fileInputLabelRef, validate, setFile, [disabled]);
@@ -389,16 +377,12 @@ function ImageFileInput({
 
   const handleRemoveButtonClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    setValue<typeof name>(
-      name,
-      {
-        name: value.name,
-        url: value.beforeUrl,
-        file: null,
-        beforeUrl: value.beforeUrl,
-      },
-      { shouldDirty: true }
-    );
+    change({
+      name: value.name,
+      url: value.beforeUrl,
+      file: null,
+      beforeUrl: value.beforeUrl,
+    });
   };
 
   return (
@@ -424,7 +408,7 @@ function ImageFileInput({
             alt={label}
             css={css`
               object-fit: ${fit};
-              opacity: ${!disabled && !isDirty ? 0.2 : 1};
+              opacity: ${!disabled && !selectedFile ? 0.2 : 1};
             `}
           />
         )}
@@ -444,7 +428,7 @@ function ImageFileInput({
                 cursor: pointer;
               `}
             >
-              {!isDirty && (
+              {!selectedFile && (
                 <i
                   className="fas fa-file-upload"
                   css={css`
@@ -475,7 +459,7 @@ function ImageFileInput({
                 `}
               />
             </label>
-            {isDirty && (
+            {selectedFile && (
               <CloseButton
                 onClick={handleRemoveButtonClick}
                 css={css`
@@ -488,19 +472,9 @@ function ImageFileInput({
           </>
         )}
       </div>
+      {error && <GridItemErrorMessage>{error.message}</GridItemErrorMessage>}
     </>
   );
-}
-
-function TextareaInput({
-  name,
-  ...props
-}: {
-  css?: SerializedStyles;
-} & UseControllerProps<TopImagesFormValues, FieldPathByValue<TopImagesFormValues, Nullable<string>>> &
-  FormControlProps) {
-  const { register } = useFormContext();
-  return <Form.Control as="textarea" {...register(name)} {...props}></Form.Control>;
 }
 
 function DateRow({ label, unixTimestamp }: { label: string; unixTimestamp?: number }) {
@@ -522,7 +496,15 @@ function DateRow({ label, unixTimestamp }: { label: string; unixTimestamp?: numb
   );
 }
 
-function GridItemMoveControl({ index, length, move }: { index: number; length: number; move: UseFieldArrayMove }) {
+function GridItemMoveControl({
+  index,
+  length,
+  move,
+}: {
+  index: number;
+  length: number;
+  move: (beforeIndex: number, afterIndex: number) => void;
+}) {
   return (
     <ButtonGroup
       vertical
@@ -545,7 +527,7 @@ function GridItemMoveControl({ index, length, move }: { index: number; length: n
   );
 }
 
-function GridItemAppendControl({ append }: { append: UseFieldArrayAppend<TopImagesFormValues, "items"> }) {
+function GridItemAppendControl({ append }: { append: (value: TopImageFieldValues) => void }) {
   const handleAppend = () => {
     append({
       id: crypto.randomUUID(),
@@ -561,7 +543,7 @@ function GridItemAppendControl({ append }: { append: UseFieldArrayAppend<TopImag
         file: null,
         beforeUrl: null,
       },
-      description: null,
+      description: "",
       originalId: null,
       removed: false,
     });

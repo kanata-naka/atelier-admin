@@ -31,6 +31,7 @@ import {
 import { withLoading } from "../common/services";
 
 const initialValues: GalleryFormValues = {
+  id: null,
   title: "",
   tags: [],
   images: [],
@@ -140,7 +141,6 @@ function TagsField({
   const inputRef = useRef<HTMLInputElement>(null);
   const { control } = useFormContext<GalleryFormValues>();
   const {
-    formState: { isSubmitSuccessful },
     fieldState: { error },
   } = useController({ name, control, rules });
   const { fields, append, remove } = useFieldArray({ control, name });
@@ -178,7 +178,7 @@ function TagsField({
     >
       <FieldLabel>{label}</FieldLabel>
       {rules?.required && <RequiredBadge />}
-      {!isSubmitSuccessful && error && <FieldErrorMessage>{error.message}</FieldErrorMessage>}
+      {error && <FieldErrorMessage>{error.message}</FieldErrorMessage>}
       <div
         onClick={() => inputRef.current?.focus()}
         css={css`

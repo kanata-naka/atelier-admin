@@ -1,4 +1,4 @@
-import { callFunction } from "@/api/firebase";
+import { callFunction, uploadFile } from "@/api/firebase";
 import { Dispatch, TopImageFieldValues, TopImageState } from "@/types";
 import { TopImageCreateRequest, TopImageGetListResponse, TopImageUpdateRequest } from "@/types/api/topImages";
 import { sortBy } from "@/utils/arrayUtil";
@@ -13,11 +13,7 @@ export async function fetchTopImages(dispatch: Dispatch) {
   });
 }
 
-export async function bulkUpdateTopImages(
-  items: TopImageFieldValues[],
-  beforeItems: TopImageState[],
-  dispatch: Dispatch
-) {
+export async function bulkUpdateTopImages(items: TopImageFieldValues[], beforeItems: TopImageState[]) {
   const createItems: TopImageCreateRequest[] = [];
   const updateItems: TopImageUpdateRequest[] = [];
   const removeItemIds: string[] = [];
@@ -92,7 +88,6 @@ export async function bulkUpdateTopImages(
           name: thumbnailImageName,
         },
         description: item.description,
-        // 表示順を設定し直す
         order: index,
       });
     }
@@ -104,5 +99,13 @@ export async function bulkUpdateTopImages(
     }
   });
 
-  console.log(createItems, updateItems, removeItemIds, uploadImageFiles);
+  await Promise.allSettled(createItems.map((item) => callFunction("topImages-create", item)));
+
+  await Promise.allSettled(removeItemIds.map((id) => callFunction("topImages-deleteById", { id })));
+
+  if (updateItems.length) {
+    await callFunction("topImages-bulkUpdate", updateItems);
+  }
+
+  await Promise.all(uploadImageFiles.map((value) => uploadFile(value[1], value[0])));
 }

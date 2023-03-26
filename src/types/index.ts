@@ -11,7 +11,7 @@ export type Dispatch = typeof store.dispatch;
 export type Nullable<T> = T | null;
 
 export type FieldArrayPathByValue<TFieldValues extends FieldValues, TValue> = {
-  [Key in FieldArrayPath<TFieldValues>]: FieldArrayPathValue<TFieldValues, Key> extends TValue ? Key : never;
+  [Key in FieldArrayPath<TFieldValues>]: FieldArrayPathValue<TFieldValues, Key> extends TValue[] ? Key : never;
 }[FieldArrayPath<TFieldValues>];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -112,7 +112,7 @@ export type PaginationState = {
 };
 
 export type GalleryFormValues = {
-  id?: string;
+  id: Nullable<string>;
   title: string;
   tags: TagFieldValues[];
   images: ImageFieldValues[];

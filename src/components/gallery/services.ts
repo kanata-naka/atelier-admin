@@ -33,31 +33,19 @@ export async function createOrUpdateArt(item: GalleryFormValues) {
       };
     });
 
-  if (!item.id) {
-    const data: ArtCreateRequest = {
-      id,
-      title: item.title,
-      tags: item.tags.map((tag) => tag.name),
-      images,
-      description: item.description,
-      restrict: item.restrict,
-      createdAt: item.createdAt === USE_CURRENT_DATE_TIME ? getNowUnixTimestamp() : item.createdAt,
-    };
+  const data = {
+    id,
+    title: item.title,
+    tags: item.tags.map((tag) => tag.name),
+    images,
+    description: item.description,
+    restrict: item.restrict,
+    createdAt: item.createdAt === USE_CURRENT_DATE_TIME ? getNowUnixTimestamp() : item.createdAt,
+  };
 
-    await callFunction("arts-create", data);
-  } else {
-    const data: ArtUpdateRequest = {
-      id,
-      title: item.title,
-      tags: item.tags.map((tag) => tag.name),
-      images,
-      description: item.description,
-      restrict: item.restrict,
-      createdAt: item.createdAt === USE_CURRENT_DATE_TIME ? getNowUnixTimestamp() : item.createdAt,
-    };
-
-    await callFunction("arts-update", data);
-  }
+  item.id
+    ? await callFunction<ArtUpdateRequest>("arts-update", data)
+    : await callFunction<ArtCreateRequest>("arts-create", data);
 
   await Promise.all(uploadImageFiles.map((value) => uploadFile(value[1], value[0])));
 

@@ -59,16 +59,15 @@ export function FieldErrorMessage({ children }: { children: ReactNode }) {
   );
 }
 
-export function TextField<TFieldValues extends FieldValues>({
+export function TextField<TFieldValues extends FieldValues, TPath extends FieldPathByValue<TFieldValues, string>>({
   label,
   name,
   rules,
 }: {
   label: string;
-} & UseControllerProps<TFieldValues, FieldPathByValue<TFieldValues, string>>) {
+} & UseControllerProps<TFieldValues, TPath>) {
   const { control, register } = useFormContext<TFieldValues>();
   const {
-    formState: { isSubmitSuccessful },
     fieldState: { error },
   } = useController({ name, control, rules });
 
@@ -81,13 +80,16 @@ export function TextField<TFieldValues extends FieldValues>({
     >
       <FieldLabel>{label}</FieldLabel>
       {rules?.required && <RequiredBadge />}
-      {!isSubmitSuccessful && error && <FieldErrorMessage>{error.message}</FieldErrorMessage>}
+      {error && <FieldErrorMessage>{error.message}</FieldErrorMessage>}
       <Form.Control type="text" {...register(name, rules)} />
     </Form.Group>
   );
 }
 
-export function DateTimeField<TFieldValues extends FieldValues>({
+export function DateTimeField<
+  TFieldValues extends FieldValues,
+  TPath extends FieldPathByValue<TFieldValues, number | typeof USE_CURRENT_DATE_TIME>
+>({
   label,
   name,
   defaultValue,
@@ -100,11 +102,11 @@ export function DateTimeField<TFieldValues extends FieldValues>({
   dateFormat?: string | string[];
   showTimeInput?: boolean;
   useCurrentDateTimeCheckbox?: boolean;
-} & UseControllerProps<TFieldValues, FieldPathByValue<TFieldValues, number | typeof USE_CURRENT_DATE_TIME>>) {
+} & UseControllerProps<TFieldValues, TPath>) {
   const [useCurrentDateTime, setUseCurrentDateTime] = useState(useCurrentDateTimeCheckbox);
   const { control, register, setValue, resetField } = useFormContext<TFieldValues>();
   const {
-    formState: { isDirty, isSubmitSuccessful },
+    formState: { isDirty, isSubmitted },
     fieldState: { error },
   } = useController({ name, control, rules });
   const { onBlur, ref } = register(name, rules);
@@ -117,7 +119,7 @@ export function DateTimeField<TFieldValues extends FieldValues>({
   }, [defaultValue, isDirty]);
 
   const change = (value?: number | typeof USE_CURRENT_DATE_TIME) => {
-    setValue(name, value as PathValue<TFieldValues, typeof name>, { shouldDirty: true });
+    setValue(name, value as PathValue<TFieldValues, TPath>, { shouldDirty: true, shouldValidate: isSubmitted });
   };
 
   const changeUseCurrentDateTime = (useCurrentDateTime: boolean) => {
@@ -146,7 +148,7 @@ export function DateTimeField<TFieldValues extends FieldValues>({
     >
       <FieldLabel>{label}</FieldLabel>
       {rules?.required && <RequiredBadge />}
-      {!isSubmitSuccessful && error && <FieldErrorMessage>{error.message}</FieldErrorMessage>}
+      {error && <FieldErrorMessage>{error.message}</FieldErrorMessage>}
       <div
         css={css`
           display: flex;
@@ -191,7 +193,10 @@ export function DateTimeField<TFieldValues extends FieldValues>({
   );
 }
 
-export function ImageFileFieldArray<TFieldValues extends FieldValues>({
+export function ImageFileFieldArray<
+  TFieldValues extends FieldValues,
+  TPath extends FieldPathByValue<TFieldValues, ImageFieldValues[]>
+>({
   label,
   name,
   rules,
@@ -205,12 +210,11 @@ export function ImageFileFieldArray<TFieldValues extends FieldValues>({
   height: number;
   fit?: "contain" | "cover";
   uploadIconWidth: number;
-} & UseControllerProps<TFieldValues, FieldPathByValue<TFieldValues, ImageFieldValues[]>>) {
+} & UseControllerProps<TFieldValues, TPath>) {
   const fileInputLabelRef = useRef<HTMLLabelElement>(null);
   const { control } = useFormContext<TFieldValues>();
   const {
     fieldState: { error },
-    formState: { isSubmitSuccessful },
   } = useController({ name, control, rules });
   const useFieldArrayReturn = useFieldArray({
     control,
@@ -231,7 +235,7 @@ export function ImageFileFieldArray<TFieldValues extends FieldValues>({
     append({
       url: URL.createObjectURL(file),
       file,
-    } as PathValue<TFieldValues, typeof name>);
+    } as PathValue<TFieldValues, TPath>);
   };
 
   useDropFile(fileInputLabelRef, validate, addFile);
@@ -256,7 +260,7 @@ export function ImageFileFieldArray<TFieldValues extends FieldValues>({
     >
       <FieldLabel>{label}</FieldLabel>
       {rules?.required && <RequiredBadge />}
-      {!isSubmitSuccessful && error?.root && <FieldErrorMessage>{error.root.message}</FieldErrorMessage>}
+      {error?.root && <FieldErrorMessage>{error.root.message}</FieldErrorMessage>}
       <div
         css={css`
           display: flex;
@@ -337,7 +341,10 @@ export function ImageFileFieldArray<TFieldValues extends FieldValues>({
   );
 }
 
-function ImageFileFieldArrayItem<TFieldValues extends FieldValues>({
+function ImageFileFieldArrayItem<
+  TFieldValues extends FieldValues,
+  TArrayPath extends FieldArrayPathByValue<TFieldValues, ImageFieldValues>
+>({
   field,
   index,
   width,
@@ -347,12 +354,12 @@ function ImageFileFieldArrayItem<TFieldValues extends FieldValues>({
   update,
   remove,
 }: {
-  field: FieldArrayWithId<TFieldValues, FieldArrayPathByValue<TFieldValues, ImageFieldValues>>;
+  field: FieldArrayWithId<TFieldValues, TArrayPath>;
   index: number;
   width: number;
   height: number;
   fit?: "contain" | "cover";
-} & UseFieldArrayReturn<TFieldValues, FieldArrayPathByValue<TFieldValues, ImageFieldValues>>) {
+} & UseFieldArrayReturn<TFieldValues, TArrayPath>) {
   const itemRef = useRef<HTMLDivElement>(null);
   const item = field as any as ImageFieldValues;
 
@@ -428,16 +435,18 @@ function ImageFileFieldArrayItem<TFieldValues extends FieldValues>({
   );
 }
 
-export function MarkdownTextareaField<TFieldValues extends FieldValues>({
+export function MarkdownTextareaField<
+  TFieldValues extends FieldValues,
+  TPath extends FieldPathByValue<TFieldValues, string>
+>({
   label,
   name,
   rules,
 }: {
   label: string;
-} & UseControllerProps<TFieldValues, FieldPathByValue<TFieldValues, string>>) {
+} & UseControllerProps<TFieldValues, TPath>) {
   const { control, register } = useFormContext<TFieldValues>();
   const {
-    formState: { isSubmitSuccessful },
     fieldState: { error },
   } = useController({ name, control, rules });
   const value = useWatch({ name, control });
@@ -451,7 +460,7 @@ export function MarkdownTextareaField<TFieldValues extends FieldValues>({
     >
       <FieldLabel>{label}</FieldLabel>
       {rules?.required && <RequiredBadge />}
-      {!isSubmitSuccessful && error && <FieldErrorMessage>{error.message}</FieldErrorMessage>}
+      {error && <FieldErrorMessage>{error.message}</FieldErrorMessage>}
       <div
         css={css`
           display: flex;
@@ -493,7 +502,10 @@ export function MarkdownTextareaField<TFieldValues extends FieldValues>({
   );
 }
 
-export function RadioField<TFieldValues extends FieldValues>({
+export function RadioField<
+  TFieldValues extends FieldValues,
+  TPath extends FieldPathByValue<TFieldValues, string | number>
+>({
   label,
   name,
   rules,
@@ -501,10 +513,9 @@ export function RadioField<TFieldValues extends FieldValues>({
 }: {
   label: string;
   options: RadioFieldOption[];
-} & UseControllerProps<TFieldValues, FieldPathByValue<TFieldValues, string | number>>) {
+} & UseControllerProps<TFieldValues, TPath>) {
   const { control, register } = useFormContext<TFieldValues>();
   const {
-    formState: { isSubmitSuccessful },
     fieldState: { error },
   } = useController({ name, control, rules });
 
@@ -517,7 +528,7 @@ export function RadioField<TFieldValues extends FieldValues>({
     >
       <FieldLabel>{label}</FieldLabel>
       {rules?.required && <RequiredBadge />}
-      {!isSubmitSuccessful && error && <FieldErrorMessage>{error.message}</FieldErrorMessage>}
+      {error && <FieldErrorMessage>{error.message}</FieldErrorMessage>}
       <div>
         {options.map((option, index) => (
           <Form.Check
