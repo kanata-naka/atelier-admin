@@ -9,3 +9,7 @@ export type GetByIdRequest = {
 export type GetListResponse<T> = {
   result: T[];
 };
+
+export type DeleteByIdRequest = {
+  id: string;
+};
