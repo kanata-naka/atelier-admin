@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { PER_PAGE } from "@/constants";
 import { WorksState, WorkState, PaginationState } from "@/types";
-import { createPagination } from "@/utils/pageUtil";
+import { createPagination, resetPagination } from "@/utils/pageUtil";
 
 const initialState: WorksState = {
   items: [],
@@ -16,7 +16,7 @@ export const slice = createSlice({
   reducers: {
     fetchItems: (state, action: PayloadAction<WorkState[]>) => {
       state.items = action.payload;
-      state.pagination = createPagination(PER_PAGE, action.payload.length);
+      state.pagination = resetPagination(state.pagination.page, PER_PAGE, action.payload.length);
       state.selectedItemIds = [];
     },
     movePage: (state, action: PayloadAction<PaginationState>) => {

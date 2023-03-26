@@ -2,6 +2,11 @@ export function createPagination(perPage: number, total: number) {
   return { page: 1, perPage, total };
 }
 
+export function resetPagination(beforePage: number, perPage: number, total: number) {
+  const lastPage = Math.ceil(total / perPage);
+  return { page: Math.min(beforePage, lastPage), perPage, total };
+}
+
 export function getPageNumberRange(currentPage: number, lastPage: number) {
   const result: number[] = [];
   for (let page = 1; page <= lastPage; page++) {
