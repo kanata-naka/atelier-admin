@@ -1,3 +1,4 @@
+import { Nullable } from "@/types";
 import { GetListResponse } from "@/types/api";
 
 export type TopImageGetListResponse = GetListResponse<TopImageGetResponse>;
@@ -6,7 +7,7 @@ export type TopImageGetResponse = {
   id: string;
   image: TopImageGetResponse.Image;
   thumbnailImage: TopImageGetResponse.Image;
-  description?: string;
+  description: Nullable<string>;
   order: number;
   createdAt: number;
   updatedAt: number;
@@ -27,7 +28,7 @@ export type TopImageCreateRequest = {
   thumbnailImage: {
     name: string;
   };
-  description?: string;
+  description: Nullable<string>;
   order: number;
 };
 

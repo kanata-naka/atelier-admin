@@ -3,7 +3,7 @@ import { css, SerializedStyles } from "@emotion/react";
 import { Table } from "react-bootstrap";
 import { GridColumn, GridItem, GridItemIdField } from "@/types";
 
-function Grid<Item extends GridItem, Field extends GridItemIdField<Item>>({
+function Grid<TGridItem extends GridItem, TFieldName extends GridItemIdField<TGridItem>>({
   columns,
   items,
   itemIdField,
@@ -11,12 +11,12 @@ function Grid<Item extends GridItem, Field extends GridItemIdField<Item>>({
   checkedItemIds = [],
   onCheck,
 }: {
-  columns: GridColumn<Item>[];
-  items: Item[];
-  itemIdField: Field;
-  itemRowStyle: (item: Item, index: number) => SerializedStyles;
-  checkedItemIds?: Item[Field][];
-  onCheck?: (nextCheckedItemIds: Item[Field][]) => void;
+  columns: GridColumn<TGridItem>[];
+  items: TGridItem[];
+  itemIdField: TFieldName;
+  itemRowStyle: (item: TGridItem, index: number) => SerializedStyles;
+  checkedItemIds?: TGridItem[TFieldName][];
+  onCheck?: (nextCheckedItemIds: TGridItem[TFieldName][]) => void;
 }) {
   const enableCheck = !!onCheck;
   const [checkedAll, setCheckedAll] = useState(false);
@@ -25,8 +25,8 @@ function Grid<Item extends GridItem, Field extends GridItemIdField<Item>>({
     setCheckedAll(!!items.length && items.every((item) => checkedItemIds?.includes(item[itemIdField])));
   }, [items, checkedItemIds]);
 
-  const handleCheck = (id: Item[Field]) => {
-    let nextCheckedItemIds: Item[Field][];
+  const handleCheck = (id: TGridItem[TFieldName]) => {
+    let nextCheckedItemIds: TGridItem[TFieldName][];
     if (checkedItemIds.some((itemId) => itemId === id)) {
       nextCheckedItemIds = checkedItemIds.filter((itemId) => itemId !== id);
     } else {
@@ -36,7 +36,7 @@ function Grid<Item extends GridItem, Field extends GridItemIdField<Item>>({
   };
 
   const handleCheckAll = () => {
-    let nextCheckedItemIds: Item[Field][];
+    let nextCheckedItemIds: TGridItem[TFieldName][];
     if (checkedAll) {
       nextCheckedItemIds = checkedItemIds.filter((itemId) => !items.find((item) => item[itemIdField] === itemId));
     } else {
@@ -113,7 +113,7 @@ function HeaderRow({
   );
 }
 
-function HeaderColumn<Item extends GridItem>({ column }: { column: GridColumn<Item> }) {
+function HeaderColumn<TGridItem extends GridItem>({ column }: { column: GridColumn<TGridItem> }) {
   return (
     <th
       css={css`
@@ -125,7 +125,7 @@ function HeaderColumn<Item extends GridItem>({ column }: { column: GridColumn<It
   );
 }
 
-function ItemRow<Item extends GridItem, Field extends GridItemIdField<Item>>({
+function ItemRow<TGridItem extends GridItem, TFieldName extends GridItemIdField<TGridItem>>({
   enableCheck,
   checked,
   onChange,
@@ -134,7 +134,7 @@ function ItemRow<Item extends GridItem, Field extends GridItemIdField<Item>>({
 }: {
   enableCheck: boolean;
   checked: boolean;
-  onChange: (id: Item[Field]) => void;
+  onChange: (id: TGridItem[TFieldName]) => void;
   style: SerializedStyles;
   children: ReactNode;
 }) {
@@ -166,15 +166,15 @@ function ItemRow<Item extends GridItem, Field extends GridItemIdField<Item>>({
   );
 }
 
-function ItemColumn<Item extends GridItem, Field extends GridItemIdField<Item>>({
+function ItemColumn<TGridItem extends GridItem, TFieldName extends GridItemIdField<TGridItem>>({
   column,
   item,
   itemId,
   itemIndex,
 }: {
-  column: GridColumn<Item>;
-  item: Item;
-  itemId: Item[Field];
+  column: GridColumn<TGridItem>;
+  item: TGridItem;
+  itemId: TGridItem[TFieldName];
   itemIndex: number;
 }) {
   return (

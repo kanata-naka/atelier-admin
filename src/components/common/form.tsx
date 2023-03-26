@@ -1,5 +1,6 @@
 import { ChangeEvent, MouseEventHandler, ReactNode, useEffect, useRef, useState } from "react";
 import { css } from "@emotion/react";
+import Image from "next/image";
 import { Badge, CloseButton, Form } from "react-bootstrap";
 import ReactDatePicker from "react-datepicker";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
@@ -19,7 +20,7 @@ import {
 import Notification from "@/components/common/Notification";
 import { IMAGE_FILE_ACCEPTABLE_EXTENTIONS, IMAGE_FILE_MAX_SIZE, USE_CURRENT_DATE_TIME } from "@/constants";
 import { useDropFile } from "@/hooks";
-import { FieldArrayPathByValue, ImageState } from "@/types";
+import { DragObject, FieldArrayPathByValue, ImageFieldValues, RadioFieldOption } from "@/types";
 import { getDateFromUnixTimestamp, getNowUnixTimestamp, getUnixTimestampFromDate } from "@/utils/dateUtil";
 import { renderMarkdown } from "@/utils/domUtil";
 import { validateFile } from "@/utils/fIleUtil";
@@ -58,12 +59,14 @@ export function FieldErrorMessage({ children }: { children: ReactNode }) {
   );
 }
 
-type TextFieldProps<T extends FieldValues> = {
+export function TextField<TFieldValues extends FieldValues>({
+  label,
+  name,
+  rules,
+}: {
   label: string;
-} & UseControllerProps<T, FieldPathByValue<T, string>>;
-
-export function TextField<T extends FieldValues>({ label, name, rules }: TextFieldProps<T>) {
-  const { control, register } = useFormContext<T>();
+} & UseControllerProps<TFieldValues, FieldPathByValue<TFieldValues, string>>) {
+  const { control, register } = useFormContext<TFieldValues>();
   const {
     formState: { isSubmitSuccessful },
     fieldState: { error },
@@ -84,14 +87,7 @@ export function TextField<T extends FieldValues>({ label, name, rules }: TextFie
   );
 }
 
-type DateTimeFieldProps<T extends FieldValues> = {
-  label: string;
-  dateFormat?: string | string[];
-  showTimeInput?: boolean;
-  useCurrentDateTimeCheckbox?: boolean;
-} & UseControllerProps<T, FieldPathByValue<T, number>>;
-
-export function DateTimeField<T extends FieldValues>({
+export function DateTimeField<TFieldValues extends FieldValues>({
   label,
   name,
   defaultValue,
@@ -99,15 +95,20 @@ export function DateTimeField<T extends FieldValues>({
   dateFormat = "yyyy/MM/dd",
   showTimeInput,
   useCurrentDateTimeCheckbox = false,
-}: DateTimeFieldProps<T>) {
+}: {
+  label: string;
+  dateFormat?: string | string[];
+  showTimeInput?: boolean;
+  useCurrentDateTimeCheckbox?: boolean;
+} & UseControllerProps<TFieldValues, FieldPathByValue<TFieldValues, number | typeof USE_CURRENT_DATE_TIME>>) {
   const [useCurrentDateTime, setUseCurrentDateTime] = useState(useCurrentDateTimeCheckbox);
-  const { control, register, setValue, resetField } = useFormContext<T>();
+  const { control, register, setValue, resetField } = useFormContext<TFieldValues>();
   const {
     formState: { isDirty, isSubmitSuccessful },
     fieldState: { error },
   } = useController({ name, control, rules });
   const { onBlur, ref } = register(name, rules);
-  const value = useWatch<T>({ name, control });
+  const value = useWatch({ name, control });
 
   useEffect(() => {
     if (useCurrentDateTimeCheckbox && !isDirty) {
@@ -115,13 +116,17 @@ export function DateTimeField<T extends FieldValues>({
     }
   }, [defaultValue, isDirty]);
 
+  const change = (value?: number | typeof USE_CURRENT_DATE_TIME) => {
+    setValue(name, value as PathValue<TFieldValues, typeof name>, { shouldDirty: true });
+  };
+
   const changeUseCurrentDateTime = (useCurrentDateTime: boolean) => {
     setUseCurrentDateTime(useCurrentDateTime);
     if (useCurrentDateTime) {
-      setValue(name, USE_CURRENT_DATE_TIME as PathValue<T, typeof name>, { shouldDirty: true });
+      change(USE_CURRENT_DATE_TIME);
     } else {
       if (defaultValue === USE_CURRENT_DATE_TIME) {
-        setValue(name, getNowUnixTimestamp() as PathValue<T, typeof name>, { shouldDirty: true });
+        change(getNowUnixTimestamp());
       } else {
         resetField(name);
       }
@@ -129,7 +134,7 @@ export function DateTimeField<T extends FieldValues>({
   };
 
   const handleChange = (date: Date) => {
-    setValue(name, getUnixTimestampFromDate(date) as PathValue<T, typeof name>, { shouldDirty: true });
+    change(getUnixTimestampFromDate(date));
   };
 
   return (
@@ -186,15 +191,7 @@ export function DateTimeField<T extends FieldValues>({
   );
 }
 
-type ImageFileFieldArrayProps<T extends FieldValues> = {
-  label: string;
-  width: number;
-  height: number;
-  fit?: "contain" | "cover";
-  uploadIconWidth: number;
-} & UseControllerProps<T, FieldPathByValue<T, ImageState[]>>;
-
-export function ImageFileFieldArray<T extends FieldValues>({
+export function ImageFileFieldArray<TFieldValues extends FieldValues>({
   label,
   name,
   rules,
@@ -202,14 +199,23 @@ export function ImageFileFieldArray<T extends FieldValues>({
   height,
   fit = "contain",
   uploadIconWidth,
-}: ImageFileFieldArrayProps<T>) {
+}: {
+  label: string;
+  width: number;
+  height: number;
+  fit?: "contain" | "cover";
+  uploadIconWidth: number;
+} & UseControllerProps<TFieldValues, FieldPathByValue<TFieldValues, ImageFieldValues[]>>) {
   const fileInputLabelRef = useRef<HTMLLabelElement>(null);
-  const { control } = useFormContext<T>();
+  const { control } = useFormContext<TFieldValues>();
   const {
     fieldState: { error },
     formState: { isSubmitSuccessful },
-  } = useController<T, typeof name>({ name, control, rules });
-  const useFieldArrayReturn = useFieldArray({ control, name: name as FieldArrayPathByValue<T, ImageState> });
+  } = useController({ name, control, rules });
+  const useFieldArrayReturn = useFieldArray({
+    control,
+    name: name as FieldArrayPathByValue<TFieldValues, ImageFieldValues>,
+  });
   const { fields, append } = useFieldArrayReturn;
 
   const validate = (file: File) => {
@@ -225,7 +231,7 @@ export function ImageFileFieldArray<T extends FieldValues>({
     append({
       url: URL.createObjectURL(file),
       file,
-    } as PathValue<T, typeof name>);
+    } as PathValue<TFieldValues, typeof name>);
   };
 
   useDropFile(fileInputLabelRef, validate, addFile);
@@ -331,13 +337,8 @@ export function ImageFileFieldArray<T extends FieldValues>({
   );
 }
 
-type DragObject = {
-  id: string;
-  index: number;
-};
-
-function ImageFileFieldArrayItem<T extends FieldValues>({
-  field: fieldWithId,
+function ImageFileFieldArrayItem<TFieldValues extends FieldValues>({
+  field,
   index,
   width,
   height,
@@ -346,18 +347,18 @@ function ImageFileFieldArrayItem<T extends FieldValues>({
   update,
   remove,
 }: {
-  field: FieldArrayWithId<T, FieldArrayPathByValue<T, ImageState>>;
+  field: FieldArrayWithId<TFieldValues, FieldArrayPathByValue<TFieldValues, ImageFieldValues>>;
   index: number;
   width: number;
   height: number;
   fit?: "contain" | "cover";
-} & UseFieldArrayReturn<T, FieldArrayPathByValue<T, ImageState>>) {
+} & UseFieldArrayReturn<TFieldValues, FieldArrayPathByValue<TFieldValues, ImageFieldValues>>) {
   const itemRef = useRef<HTMLDivElement>(null);
-  const field = fieldWithId as ImageState;
+  const item = field as any as ImageFieldValues;
 
   const [, drag] = useDrag<DragObject>({
     type: "ImageFileFieldArrayItem",
-    item: { id: fieldWithId.id, index },
+    item: { id: field.id, index },
   });
 
   const [, drop] = useDrop<DragObject>({
@@ -368,14 +369,14 @@ function ImageFileFieldArrayItem<T extends FieldValues>({
   drag(drop(itemRef));
 
   const handleContainerClick = () => {
-    if (field.removed) {
-      update(index, { ...fieldWithId, removed: false });
+    if (item.removed) {
+      update(index, { ...field, removed: false });
     }
   };
 
   const handleRemoveButtonClick: MouseEventHandler<HTMLButtonElement> = () => {
-    if (field.beforeUrl) {
-      update(index, { ...fieldWithId, removed: true });
+    if (item.beforeUrl) {
+      update(index, { ...field, removed: true });
     } else {
       remove(index);
     }
@@ -395,29 +396,25 @@ function ImageFileFieldArrayItem<T extends FieldValues>({
         margin: 0 8px 8px 0;
         overflow: hidden;
         border: 1px dotted #ababab;
-        cursor: ${field.removed ? "pointer" : "move"};
+        cursor: ${item.removed ? "pointer" : "move"};
       `}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={field.url}
-        alt={""}
-        css={css`
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          width: 100%;
-          height: 100%;
-          object-fit: ${fit};
-          ${field.removed &&
-          css`
-            opacity: 0.2;
-          `};
-        `}
-      />
-      {!field.removed && (
+      {item.url && (
+        <Image
+          src={item.url}
+          width={width}
+          height={height}
+          alt={""}
+          css={css`
+            object-fit: ${fit};
+            ${item.removed &&
+            css`
+              opacity: 0.2;
+            `};
+          `}
+        />
+      )}
+      {!item.removed && (
         <CloseButton
           onClick={handleRemoveButtonClick}
           css={css`
@@ -431,17 +428,19 @@ function ImageFileFieldArrayItem<T extends FieldValues>({
   );
 }
 
-type MarkdownTextareaFieldProps<T extends FieldValues> = {
+export function MarkdownTextareaField<TFieldValues extends FieldValues>({
+  label,
+  name,
+  rules,
+}: {
   label: string;
-} & UseControllerProps<T, FieldPathByValue<T, string>>;
-
-export function MarkdownTextareaField<T extends FieldValues>({ label, name, rules }: MarkdownTextareaFieldProps<T>) {
-  const { control, register } = useFormContext<T>();
+} & UseControllerProps<TFieldValues, FieldPathByValue<TFieldValues, string>>) {
+  const { control, register } = useFormContext<TFieldValues>();
   const {
     formState: { isSubmitSuccessful },
     fieldState: { error },
   } = useController({ name, control, rules });
-  const value = useWatch<T>({ name, control });
+  const value = useWatch({ name, control });
 
   return (
     <Form.Group
@@ -494,23 +493,16 @@ export function MarkdownTextareaField<T extends FieldValues>({ label, name, rule
   );
 }
 
-type RadioFieldProps<T extends FieldValues, R extends string | number> = {
-  label: string;
-  options: RadioFieldOption<R>[];
-} & UseControllerProps<T, FieldPathByValue<T, R>>;
-
-type RadioFieldOption<R extends string | number> = {
-  label: string;
-  value: R;
-};
-
-export function RadioField<T extends FieldValues, R extends string | number>({
+export function RadioField<TFieldValues extends FieldValues>({
   label,
   name,
   rules,
   options,
-}: RadioFieldProps<T, R>) {
-  const { control, register } = useFormContext<T>();
+}: {
+  label: string;
+  options: RadioFieldOption[];
+} & UseControllerProps<TFieldValues, FieldPathByValue<TFieldValues, string | number>>) {
+  const { control, register } = useFormContext<TFieldValues>();
   const {
     formState: { isSubmitSuccessful },
     fieldState: { error },

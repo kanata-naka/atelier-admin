@@ -75,7 +75,7 @@ export async function callFunction<T = Record<string, unknown>, R = Record<strin
   return await callable(data);
 }
 
-export async function uploadFileToStorage(file: Blob, name: string) {
+export async function uploadFile(file: Blob, name: string) {
   const storageRef = ref(getStorage(), name);
   return await uploadBytes(storageRef, file);
 }

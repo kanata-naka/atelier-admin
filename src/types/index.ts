@@ -8,6 +8,8 @@ import store from "@/store";
 export type State = ReturnType<typeof store.getState>;
 export type Dispatch = typeof store.dispatch;
 
+export type Nullable<T> = T | null;
+
 export type FieldArrayPathByValue<TFieldValues extends FieldValues, TValue> = {
   [Key in FieldArrayPath<TFieldValues>]: FieldArrayPathValue<TFieldValues, Key> extends TValue ? Key : never;
 }[FieldArrayPath<TFieldValues>];
@@ -15,14 +17,14 @@ export type FieldArrayPathByValue<TFieldValues extends FieldValues, TValue> = {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type GridItem = Record<string, any>;
 
-export type GridColumn<Item extends GridItem> = {
+export type GridColumn<TGridItem extends GridItem> = {
   label?: ReactNode;
   width?: number;
   css?: SerializedStyles;
-  render: (item: Item, index: number) => ReactNode;
+  render: (item: TGridItem, index: number) => ReactNode;
 };
 
-export type GridItemIdField<Item extends GridItem> = FieldPathByValue<Item, string | number>;
+export type GridItemIdField<TGridItem extends GridItem> = FieldPathByValue<TGridItem, string | number>;
 
 export type AuthState = {
   status: "not_signed_in" | "signing_in" | "signed_in" | "sign_in_failed";
@@ -48,19 +50,38 @@ export type TopImageState = {
   id: string;
   image: ImageState;
   thumbnailImage: ImageState;
-  description?: string;
+  description: Nullable<string>;
   order: number;
-  createdAt?: number;
-  updatedAt?: number;
-  originalId?: string;
-  removed: boolean;
+  createdAt: number;
+  updatedAt: number;
 };
 
 export type ImageState = {
-  name?: string;
-  url?: string;
-  file?: File;
-  beforeUrl?: string;
+  name: string;
+  url: string;
+};
+
+export type TopImagesFormValues = {
+  items: TopImageFieldValues[];
+};
+
+export type TopImageFieldValues = {
+  id: string;
+  image: ImageFieldValues;
+  thumbnailImage: ImageFieldValues;
+  description: Nullable<string>;
+  order: number;
+  createdAt?: number;
+  updatedAt?: number;
+  originalId: Nullable<string>;
+  removed: boolean;
+};
+
+export type ImageFieldValues = {
+  name: Nullable<string>;
+  url: Nullable<string>;
+  file: Nullable<File>;
+  beforeUrl: Nullable<string>;
   removed?: boolean;
 };
 
@@ -75,27 +96,43 @@ export type GalleryState = {
 export type ArtState = {
   id: string;
   title: string;
-  tags: TagState[];
+  tags: string[];
   images: ImageState[];
-  description?: string;
+  description: Nullable<string>;
   restrict: Restrict;
-  createdAt?: number;
-  updatedAt?: number;
-};
-
-export type TagState = {
-  name: string;
+  createdAt: number;
+  updatedAt: number;
 };
 
 export type Restrict = (typeof Restrict)[keyof typeof Restrict];
-
-export type GalleryFormState = {
-  id?: string;
-  createdAt?: number | typeof USE_CURRENT_DATE_TIME;
-} & Omit<ArtState, "id" | "createdAt">;
 
 export type PaginationState = {
   page: number;
   perPage: number;
   total: number;
+};
+
+export type GalleryFormValues = {
+  id?: string;
+  title: string;
+  tags: TagFieldValues[];
+  images: ImageFieldValues[];
+  description: Nullable<string>;
+  restrict: Restrict;
+  createdAt: number | typeof USE_CURRENT_DATE_TIME;
+  updatedAt?: number;
+};
+
+export type TagFieldValues = {
+  name: string;
+};
+
+export type DragObject = {
+  id: string;
+  index: number;
+};
+
+export type RadioFieldOption = {
+  label: string;
+  value: string | number;
 };

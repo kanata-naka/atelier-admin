@@ -1,4 +1,4 @@
-import { Restrict } from "@/types";
+import { Nullable, Restrict } from "@/types";
 import { GetListResponse, GetListRequest } from "@/types/api";
 
 export type ArtGetListRequest = GetListRequest & {
@@ -16,7 +16,7 @@ export type ArtGetResponse = {
   title: string;
   tags: string[];
   images: ArtGetResponse.Image[];
-  description?: string;
+  description: Nullable<string>;
   restrict: Restrict;
   createdAt: number;
   updatedAt: number;
@@ -38,9 +38,9 @@ export type ArtCreateRequest = {
   title: string;
   tags: string[];
   images: ArtCreateRequest.Image[];
-  description?: string;
+  description: Nullable<string>;
   restrict: Restrict;
-  createdAt?: number;
+  createdAt: number;
 };
 
 export namespace ArtCreateRequest {

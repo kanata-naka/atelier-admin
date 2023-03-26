@@ -14,8 +14,9 @@ import {
 import Notification from "@/components/common/Notification";
 import { Restrict, USE_CURRENT_DATE_TIME } from "@/constants";
 import { useDispatch, useSelector } from "@/hooks";
-import { GalleryFormState, TagState } from "@/types";
+import { GalleryFormValues, TagFieldValues } from "@/types";
 import { edit, touchForm } from "./reducer";
+import { convertArtStateToFormValues } from "./selectors";
 import { createOrUpdateArt, fetchArts } from "./services";
 import {
   DateTimeField,
@@ -29,7 +30,7 @@ import {
 } from "../common/form";
 import { withLoading } from "../common/services";
 
-const initialValues: GalleryFormState = {
+const initialValues: GalleryFormValues = {
   title: "",
   tags: [],
   images: [],
@@ -41,7 +42,7 @@ const initialValues: GalleryFormState = {
 function GalleryForm() {
   const item = useSelector((state) => state.gallery.items.find((item) => item.id === state.gallery.editingItemId));
   const dispatch = useDispatch();
-  const useFormReturn = useForm<GalleryFormState>({ defaultValues: initialValues });
+  const useFormReturn = useForm<GalleryFormValues>({ defaultValues: initialValues });
   const {
     handleSubmit,
     reset,
@@ -49,14 +50,14 @@ function GalleryForm() {
   } = useFormReturn;
 
   useEffect(() => {
-    item ? reset(item) : reset(initialValues);
+    item ? reset(convertArtStateToFormValues(item)) : reset(initialValues);
   }, [item]);
 
   useEffect(() => {
     dispatch(touchForm(isDirty));
   }, [isDirty]);
 
-  const submit: SubmitHandler<GalleryFormState> = (data, event) => {
+  const submit: SubmitHandler<GalleryFormValues> = (data, event) => {
     event?.preventDefault();
     withLoading(async () => {
       await createOrUpdateArt(data)
@@ -129,13 +130,15 @@ function GalleryForm() {
   );
 }
 
-type TagsFieldProps = {
+function TagsField({
+  label,
+  name,
+  rules,
+}: {
   label: string;
-} & UseControllerProps<GalleryFormState, FieldPathByValue<GalleryFormState, TagState[]>>;
-
-function TagsField({ label, name, rules }: TagsFieldProps) {
+} & UseControllerProps<GalleryFormValues, FieldPathByValue<GalleryFormValues, TagFieldValues[]>>) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const { control } = useFormContext<GalleryFormState>();
+  const { control } = useFormContext<GalleryFormValues>();
   const {
     formState: { isSubmitSuccessful },
     fieldState: { error },

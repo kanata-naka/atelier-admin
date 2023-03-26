@@ -1,42 +1,23 @@
 import { callFunction } from "@/api/firebase";
-import { Dispatch, TopImageState } from "@/types";
-import {
-  TopImageCreateRequest,
-  TopImageGetListResponse,
-  TopImageGetResponse,
-  TopImageUpdateRequest,
-} from "@/types/api/topImages";
+import { Dispatch, TopImageFieldValues, TopImageState } from "@/types";
+import { TopImageCreateRequest, TopImageGetListResponse, TopImageUpdateRequest } from "@/types/api/topImages";
 import { sortBy } from "@/utils/arrayUtil";
 import { getExtension } from "@/utils/fIleUtil";
 import { fetchItems } from "./reducer";
 
 export async function fetchTopImages(dispatch: Dispatch) {
   return callFunction<never, TopImageGetListResponse>("topImages-get").then((response) => {
-    const items = response.data.result.map((item) => convertTopImageGetResponseToState(item));
+    const items = response.data.result;
     sortBy(items, "order", "asc");
     dispatch(fetchItems(items));
   });
 }
 
-function convertTopImageGetResponseToState(item: TopImageGetResponse): TopImageState {
-  return {
-    ...item,
-    image: {
-      ...item.image,
-      beforeUrl: item.image.url,
-    },
-    thumbnailImage: {
-      ...item.thumbnailImage,
-      beforeUrl: item.thumbnailImage.url,
-    },
-    // IDを退避する
-    // ※React Hook FormのField Arrayにてidプロパティが自動的に生成されたIDに上書きされるため
-    originalId: item.id,
-    removed: false,
-  };
-}
-
-export async function bulkUpdateTopImages(items: TopImageState[], initialItems: TopImageState[], dispatch: Dispatch) {
+export async function bulkUpdateTopImages(
+  items: TopImageFieldValues[],
+  beforeItems: TopImageState[],
+  dispatch: Dispatch
+) {
   const createItems: TopImageCreateRequest[] = [];
   const updateItems: TopImageUpdateRequest[] = [];
   const removeItemIds: string[] = [];
@@ -53,11 +34,11 @@ export async function bulkUpdateTopImages(items: TopImageState[], initialItems: 
       if (
         !item.image.file &&
         !item.thumbnailImage.file &&
-        initialItems.find(
-          (initialItem) =>
-            initialItem.id === item.originalId &&
-            initialItem.description === item.description &&
-            initialItem.order === item.order
+        beforeItems.find(
+          (beforeItem) =>
+            beforeItem.id === item.originalId &&
+            beforeItem.description === item.description &&
+            beforeItem.order === item.order
         )
       ) {
         // 変更がない
@@ -69,10 +50,10 @@ export async function bulkUpdateTopImages(items: TopImageState[], initialItems: 
       }
 
       imageName = item.image.file
-        ? `topImages/${item.originalId}/image/${crypto.randomUUID}.${getExtension(item.image.file.name)}`
+        ? `topImages/${item.originalId}/image/${crypto.randomUUID()}.${getExtension(item.image.file.name)}`
         : item.image.name;
       thumbnailImageName = item.thumbnailImage.file
-        ? `topImages/${item.originalId}/thumbnailImage/${crypto.randomUUID}.${getExtension(
+        ? `topImages/${item.originalId}/thumbnailImage/${crypto.randomUUID()}.${getExtension(
             item.thumbnailImage.file.name
           )}`
         : item.thumbnailImage.name;
@@ -98,8 +79,8 @@ export async function bulkUpdateTopImages(items: TopImageState[], initialItems: 
         throw Error("New item but image file field is empty.");
       }
 
-      imageName = `topImages/${item.id}/image/${crypto.randomUUID}.${getExtension(item.image.file.name)}`;
-      thumbnailImageName = `topImages/${item.id}/thumbnailImage/${crypto.randomUUID}.${getExtension(
+      imageName = `topImages/${item.id}/image/${crypto.randomUUID()}.${getExtension(item.image.file.name)}`;
+      thumbnailImageName = `topImages/${item.id}/thumbnailImage/${crypto.randomUUID()}.${getExtension(
         item.thumbnailImage.file.name
       )}`;
 
@@ -124,6 +105,5 @@ export async function bulkUpdateTopImages(items: TopImageState[], initialItems: 
     }
   });
 
-  // TODO
-  return { createItems, updateItems, removeItemIds, uploadImageFiles };
+  console.log(createItems, updateItems, removeItemIds, uploadImageFiles);
 }

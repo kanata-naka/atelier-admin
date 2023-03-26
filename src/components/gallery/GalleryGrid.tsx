@@ -79,7 +79,7 @@ function GalleryGrid() {
               white-space: pre-wrap;
               overflow-y: auto;
             `,
-            render: (item) => <span>{item.tags.map((tag) => tag.name).join(", ")}</span>,
+            render: (item) => <span>{item.tags.join(", ")}</span>,
           },
           {
             label: "説明",
