@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import { CommonState } from "@/types";
 
 const initialState: CommonState = {
@@ -9,11 +9,14 @@ export const slice = createSlice({
   name: "commonSlice",
   initialState,
   reducers: {
-    setLoading: (state, action: PayloadAction<boolean>) => {
-      state.isLoading = action.payload;
+    loadStart: (state) => {
+      state.isLoading = true;
+    },
+    loadEnd: (state) => {
+      state.isLoading = false;
     },
   },
 });
 
-export const { setLoading } = slice.actions;
+export const { loadStart, loadEnd } = slice.actions;
 export default slice.reducer;
