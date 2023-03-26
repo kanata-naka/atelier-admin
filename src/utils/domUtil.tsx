@@ -1,5 +1,6 @@
 import { css } from "@emotion/react";
 import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 
@@ -10,6 +11,7 @@ export function renderMarkdown(source?: string) {
   return (
     <ReactMarkdown
       className="markdown-body"
+      rehypePlugins={[rehypeRaw]}
       remarkPlugins={[remarkBreaks, remarkGfm]}
       css={css`
         color: inherit !important;
