@@ -38,7 +38,7 @@ export async function bulkUpdateTopImages(
           (beforeItem) =>
             beforeItem.id === item.originalId &&
             beforeItem.description === item.description &&
-            beforeItem.order === item.order
+            beforeItem.order === index
         )
       ) {
         // 変更がない
@@ -67,7 +67,6 @@ export async function bulkUpdateTopImages(
           name: thumbnailImageName,
         },
         description: item.description,
-        // 表示順を設定し直す
         order: index,
       });
     } else {

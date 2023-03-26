@@ -22,7 +22,7 @@ import { TopImagesFormValues, TopImageFieldValues, ImageFieldValues, Nullable } 
 import { formatDateTimeFromUnixTimestamp } from "@/utils/dateUtil";
 import { validateFile } from "@/utils/fIleUtil";
 import { edit, cancelEdit } from "./reducer";
-import { convertTopImageStateToFieldValues, getLastOrder } from "./selectors";
+import { convertTopImageStateToFieldValues } from "./selectors";
 import { bulkUpdateTopImages } from "./services";
 import { RequiredBadge } from "../common/form";
 import Grid from "../common/Grid";
@@ -546,7 +546,6 @@ function GridItemMoveControl({ index, length, move }: { index: number; length: n
 }
 
 function GridItemAppendControl({ append }: { append: UseFieldArrayAppend<TopImagesFormValues, "items"> }) {
-  const lastOrder = useSelector((state) => getLastOrder(state));
   const handleAppend = () => {
     append({
       id: crypto.randomUUID(),
@@ -563,7 +562,6 @@ function GridItemAppendControl({ append }: { append: UseFieldArrayAppend<TopImag
         beforeUrl: null,
       },
       description: null,
-      order: lastOrder + 1,
       originalId: null,
       removed: false,
     });

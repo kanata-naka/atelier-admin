@@ -1,11 +1,4 @@
-import { State, TopImageFieldValues, TopImageState } from "@/types";
-
-export function getLastOrder(state: State) {
-  if (!state.topImages.items.length) {
-    return -1;
-  }
-  return Math.max(...state.topImages.items.map((item) => item.order));
-}
+import { TopImageFieldValues, TopImageState } from "@/types";
 
 export function convertTopImageStateToFieldValues(item: TopImageState): TopImageFieldValues {
   return {
@@ -23,7 +16,6 @@ export function convertTopImageStateToFieldValues(item: TopImageState): TopImage
       beforeUrl: item.thumbnailImage.url,
     },
     description: item.description,
-    order: item.order,
     createdAt: item.createdAt,
     updatedAt: item.updatedAt,
     // IDを退避する

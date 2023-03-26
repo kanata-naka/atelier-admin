@@ -70,7 +70,6 @@ export type TopImageFieldValues = {
   image: ImageFieldValues;
   thumbnailImage: ImageFieldValues;
   description: Nullable<string>;
-  order: number;
   createdAt?: number;
   updatedAt?: number;
   originalId: Nullable<string>;
