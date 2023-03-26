@@ -69,14 +69,7 @@ function WorkForm() {
           dateFormat={["yyyy/MM/dd", "yyyy年MM月dd日"]}
           rules={{ required: "選択してください" }}
         />
-        <ImageFileFieldArray
-          name="images"
-          label="画像"
-          width={200}
-          height={200}
-          uploadIconWidth={64}
-          rules={{ required: "選択してください" }}
-        />
+        <ImageFileFieldArray name="images" label="画像" width={200} height={200} uploadIconWidth={64} />
         <MarkdownTextareaField name="description" label="説明" />
         <RadioField
           name="restrict"
