@@ -22,14 +22,16 @@ export namespace TopImageGetResponse {
 
 export type TopImageCreateRequest = {
   id: string;
-  image: {
-    name: string;
-  };
-  thumbnailImage: {
-    name: string;
-  };
+  image: TopImageCreateRequest.Image;
+  thumbnailImage: TopImageCreateRequest.Image;
   description: Nullable<string>;
   order: number;
 };
+
+export namespace TopImageCreateRequest {
+  export type Image = {
+    name: string;
+  };
+}
 
 export type TopImageUpdateRequest = TopImageCreateRequest;
