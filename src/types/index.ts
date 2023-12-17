@@ -14,7 +14,6 @@ export type FieldArrayPathByValue<TFieldValues extends FieldValues, TValue> = {
   [Key in FieldArrayPath<TFieldValues>]: FieldArrayPathValue<TFieldValues, Key> extends TValue[] ? Key : never;
 }[FieldArrayPath<TFieldValues>];
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type GridItem = Record<string, any>;
 
 export type GridColumn<TGridItem extends GridItem> = {

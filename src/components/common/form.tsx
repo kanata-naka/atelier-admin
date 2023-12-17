@@ -295,6 +295,7 @@ export function ImageFileFieldArray<
           `}
         >
           <label
+            ref={fileInputLabelRef}
             htmlFor={name}
             css={css`
               display: block;
