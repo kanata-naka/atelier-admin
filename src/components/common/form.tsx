@@ -238,7 +238,7 @@ export function ImageFileFieldArray<
     } as PathValue<TFieldValues, TPath>);
   };
 
-  useDropFile(fileInputLabelRef, validate, addFile);
+  useDropFile(fileInputLabelRef, validate, addFile, []);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
