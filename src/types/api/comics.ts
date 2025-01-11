@@ -16,7 +16,7 @@ export type ComicGetByEpisodeIdRequest = GetByIdRequest & {
 export type ComicGetResponse = {
   id: string;
   title: string;
-  image: ComicGetResponse.Image;
+  image: Nullable<ComicGetResponse.Image>;
   description: Nullable<string>;
   type: ComicType;
   completed: boolean;
@@ -36,7 +36,7 @@ export namespace ComicGetResponse {
     id: string;
     no: number;
     title: string;
-    image: Image;
+    image: Nullable<Image>;
     description: Nullable<string>;
     pages: Page[];
     restrict: Restrict;
