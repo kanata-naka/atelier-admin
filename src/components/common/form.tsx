@@ -193,6 +193,171 @@ export function DateTimeField<
   );
 }
 
+export function ImageFileField<
+  TFieldValues extends FieldValues,
+  TPath extends FieldPathByValue<TFieldValues, ImageFieldValues>
+>({
+  label,
+  name,
+  rules,
+  width,
+  height,
+  fit = "contain",
+  uploadIconWidth,
+}: {
+  label: string;
+  width: number;
+  height: number;
+  fit?: "contain" | "cover";
+  uploadIconWidth: number;
+} & UseControllerProps<TFieldValues, TPath>) {
+  const fileInputLabelRef = useRef<HTMLLabelElement>(null);
+  const { control, setValue } = useFormContext<TFieldValues>();
+  const {
+    fieldState: { error },
+    formState: { isSubmitted },
+  } = useController({ name, control, rules });
+  const value: ImageFieldValues = useWatch({ name, control });
+
+  const validate = (file: File) => {
+    const validationResult = validateFile(file, IMAGE_FILE_ACCEPTABLE_EXTENTIONS, IMAGE_FILE_MAX_SIZE);
+    if (validationResult) {
+      Notification.error(validationResult);
+      return false;
+    }
+    return true;
+  };
+
+  const change = (value: ImageFieldValues) => {
+    setValue(name, value as PathValue<TFieldValues, TPath>, { shouldDirty: true, shouldValidate: isSubmitted });
+  };
+
+  const setFile = (file: File) => {
+    change({
+      name: value.name,
+      url: URL.createObjectURL(file),
+      file,
+      beforeUrl: value.beforeUrl,
+    });
+  };
+
+  useDropFile(fileInputLabelRef, validate, setFile);
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    if (e.target.files) {
+      const file = e.target.files[0];
+      if (validate(file)) {
+        setFile(file);
+      }
+    }
+    // 同じファイルをアップロードしてもonChangeイベントを走らせるためvalueを空にする
+    e.target.value = "";
+  };
+
+  const handleRemoveButtonClick: MouseEventHandler<HTMLButtonElement> = (event) => {
+    event.preventDefault();
+    change({
+      name: value.name,
+      url: value.beforeUrl,
+      file: null,
+      beforeUrl: value.beforeUrl,
+    });
+  };
+
+  return (
+    <div
+      css={css`
+        padding: 8px 0;
+      `}
+    >
+      <FieldLabel>{label}</FieldLabel>
+      {rules?.required && <RequiredBadge />}
+      {error?.root && <FieldErrorMessage>{error.root.message}</FieldErrorMessage>}
+      <div
+        css={css`
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+          padding: 4px;
+          overflow: hidden;
+          border: 1px dotted #ababab;
+          width: ${width}px;
+          height: ${height}px;
+        `}
+      >
+        {value.url && (
+          <Image
+            src={value.url}
+            width={width}
+            height={height}
+            alt={label}
+            css={css`
+              object-fit: ${fit};
+              opacity: ${value.removed ? 0.2 : 1};
+            `}
+          />
+        )}
+        <label
+          ref={fileInputLabelRef}
+          htmlFor={name}
+          css={css`
+            display: block;
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            margin: 0;
+            cursor: pointer;
+          `}
+        >
+          {!value.url && (
+            <i
+              className="fas fa-file-upload"
+              css={css`
+                display: block;
+                position: absolute;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                margin: auto;
+                color: lightgray;
+                text-align: center;
+                width: ${uploadIconWidth}px;
+                height: ${uploadIconWidth}px;
+                font-size: ${uploadIconWidth}px;
+                line-height: ${uploadIconWidth}px;
+              `}
+            ></i>
+          )}
+          <input
+            type="file"
+            id={name}
+            accept={IMAGE_FILE_ACCEPTABLE_EXTENTIONS.join(", ")}
+            onChange={handleChange}
+            css={css`
+              display: none;
+            `}
+          />
+        </label>
+        {!value.removed && (
+          <CloseButton
+            onClick={handleRemoveButtonClick}
+            css={css`
+              position: absolute;
+              top: 8px;
+              right: 8px;
+            `}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
 export function ImageFileFieldArray<
   TFieldValues extends FieldValues,
   TPath extends FieldPathByValue<TFieldValues, ImageFieldValues[]>
@@ -543,6 +708,34 @@ export function RadioField<
           />
         ))}
       </div>
+    </Form.Group>
+  );
+}
+
+export function CheckBoxField<
+  TFieldValues extends FieldValues,
+  TPath extends FieldPathByValue<TFieldValues, string | number>
+>({
+  label,
+  name,
+  rules,
+}: {
+  label: string;
+} & UseControllerProps<TFieldValues, TPath>) {
+  const { control, register } = useFormContext<TFieldValues>();
+  const {
+    fieldState: { error },
+  } = useController({ name, control, rules });
+
+  return (
+    <Form.Group
+      controlId={name}
+      css={css`
+        margin-bottom: 1rem;
+      `}
+    >
+      {error && <FieldErrorMessage>{error.message}</FieldErrorMessage>}
+      <Form.Check id={name} type="checkbox" label={label} {...register(name, rules)} />
     </Form.Group>
   );
 }

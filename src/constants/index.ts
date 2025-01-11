@@ -10,6 +10,11 @@ export const Restrict = {
   PRIVATE: "2",
 } as const;
 
+export const ComicType = {
+  ONE_SHOT: "0",
+  SERIES: "1",
+} as const;
+
 export const PER_PAGE = 20;
 
 export const USE_CURRENT_DATE_TIME = Symbol();

@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import { SerializedStyles } from "@emotion/utils";
 import { User } from "@firebase/auth";
 import { FieldValues, FieldArrayPathValue, FieldArrayPath, FieldPathByValue } from "react-hook-form";
-import { Restrict, USE_CURRENT_DATE_TIME } from "@/constants";
+import { ComicType, Restrict, USE_CURRENT_DATE_TIME } from "@/constants";
 import store from "@/store";
 
 export type State = ReturnType<typeof store.getState>;
@@ -163,4 +163,81 @@ export type WorkFormValues = {
   restrict: Restrict;
   createdAt?: number;
   updatedAt?: number;
+};
+
+export type ComicsState = {
+  items: ComicState[];
+  pagination: PaginationState;
+  selectedItemIds: string[];
+  editingItemId?: string;
+  isFormDirty: boolean;
+};
+
+export type ComicState = {
+  id: string;
+  title: string;
+  image: Nullable<ImageState>;
+  description: Nullable<string>;
+  type: ComicType;
+  completed: boolean;
+  restrict: Restrict;
+  createdAt: number;
+  updatedAt: number;
+};
+
+export type ComicType = (typeof ComicType)[keyof typeof ComicType];
+
+export type ComicFormValues = {
+  id: Nullable<string>;
+  title: string;
+  image: ImageFieldValues;
+  description: Nullable<string>;
+  type: ComicType;
+  completed: boolean;
+  restrict: Restrict;
+  createdAt: number | typeof USE_CURRENT_DATE_TIME;
+  updatedAt?: number;
+};
+
+export type EpisodesState = {
+  parent?: ComicState;
+  items: EpisodeState[];
+  pagination: PaginationState;
+  selectedItemIds: string[];
+  editingItemId?: string;
+  isFormDirty: boolean;
+};
+
+export type EpisodeState = {
+  id: string;
+  no: number;
+  title: string;
+  image: Nullable<ImageState>;
+  description: Nullable<string>;
+  pages: PageState[];
+  restrict: Restrict;
+  createdAt: number;
+  updatedAt: number;
+};
+
+export type PageState = {
+  id: string;
+  no: number;
+  image: ImageState;
+};
+
+export type EpisodeFormValues = {
+  id: Nullable<string>;
+  no: number;
+  title: string;
+  image: ImageFieldValues;
+  description: Nullable<string>;
+  pages: PageFieldValues[];
+  restrict: Restrict;
+  createdAt: number | typeof USE_CURRENT_DATE_TIME;
+  updatedAt?: number;
+};
+
+export type PageFieldValues = ImageFieldValues & {
+  originalId: Nullable<string>;
 };

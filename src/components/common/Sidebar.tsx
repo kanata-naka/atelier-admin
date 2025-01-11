@@ -114,6 +114,11 @@ const globalNavigationEntries: (GlobalNavigationLinkItem | typeof GlobalNavigati
     url: "/gallery",
     label: <span>GALLERY</span>,
   },
+  {
+    id: "comics",
+    url: "/comics",
+    label: <span>COMICS</span>,
+  },
 ];
 
 function GlobalNavigation({ id }: { id: string }) {
