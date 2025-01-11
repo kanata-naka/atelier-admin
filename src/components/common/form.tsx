@@ -238,6 +238,7 @@ export function ImageFileField<
       url: URL.createObjectURL(file),
       file,
       beforeUrl: value.beforeUrl,
+      removed: false,
     });
   };
 
@@ -255,6 +256,12 @@ export function ImageFileField<
     e.target.value = "";
   };
 
+  const handleContainerClick = () => {
+    if (value.removed) {
+      change({ ...value, removed: false });
+    }
+  };
+
   const handleRemoveButtonClick: MouseEventHandler<HTMLButtonElement> = (event) => {
     event.preventDefault();
     change({
@@ -262,6 +269,7 @@ export function ImageFileField<
       url: value.beforeUrl,
       file: null,
       beforeUrl: value.beforeUrl,
+      removed: !value.file,
     });
   };
 
@@ -275,6 +283,7 @@ export function ImageFileField<
       {rules?.required && <RequiredBadge />}
       {error?.root && <FieldErrorMessage>{error.root.message}</FieldErrorMessage>}
       <div
+        onClick={handleContainerClick}
         css={css`
           display: flex;
           align-items: center;
@@ -343,7 +352,7 @@ export function ImageFileField<
             `}
           />
         </label>
-        {!value.removed && (
+        {value.url && !value.removed && (
           <CloseButton
             onClick={handleRemoveButtonClick}
             css={css`

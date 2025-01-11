@@ -26,13 +26,11 @@ export async function createOrUpdateComic(item: ComicFormValues) {
         name: imageName,
       };
     } else {
-      if (!item.image.name) {
-        console.error(item);
-        throw Error("Existing item but image name field is empty.");
+      if (item.image.name) {
+        image = {
+          name: item.image.name,
+        };
       }
-      image = {
-        name: item.image.name,
-      };
     }
   }
 
