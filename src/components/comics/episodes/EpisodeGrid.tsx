@@ -129,7 +129,7 @@ function GridControl() {
       return;
     }
     withLoading(async () => {
-      await deleteEpisodes(selectedItemIds)
+      await deleteEpisodes(parent!.id, selectedItemIds)
         .then(async () => {
           Notification.success("作品を削除しました。");
           await fetchEpisodes(dispatch, parent!.id).catch((error) => {

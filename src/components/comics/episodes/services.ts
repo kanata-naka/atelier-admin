@@ -10,6 +10,7 @@ import {
   PageDeleteRequest,
   PageCreateRequest,
   PageUpdateRequest,
+  EpisodeDeleteRequest,
 } from "@/types/api/comics";
 import { getNowUnixTimestamp } from "@/utils/dateUtil";
 import { getExtension } from "@/utils/fIleUtil";
@@ -149,8 +150,8 @@ export async function createOrUpdateEpisode(
   return id;
 }
 
-export async function deleteEpisodes(selectedItemIds: string[]) {
+export async function deleteEpisodes(comicId: string, selectedItemIds: string[]) {
   await Promise.allSettled(
-    selectedItemIds.map((itemId) => callFunction<DeleteByIdRequest>("comics-deleteEpisodeById", { id: itemId }))
+    selectedItemIds.map((itemId) => callFunction<EpisodeDeleteRequest>("comics-deleteEpisode", { comicId, id: itemId }))
   );
 }
