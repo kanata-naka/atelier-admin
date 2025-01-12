@@ -16,7 +16,7 @@ import { useDispatch, useSelector } from "@/hooks";
 import { EpisodeFormValues } from "@/types";
 import { touchForm } from "./reducer";
 import { convertEpisodeStateToFormValues, getLastNo } from "./selectors";
-import { createOrUpdateEpisode, fetchEpisode } from "./services";
+import { createOrUpdateEpisode, fetchEpisode, fetchEpisodes } from "./services";
 
 const initialValues: EpisodeFormValues = {
   id: null,
@@ -62,10 +62,17 @@ function EpisodeForm() {
       await createOrUpdateEpisode(parent!.id, data, lastNo, item)
         .then(async (id) => {
           Notification.success("作品を登録しました。");
-          fetchEpisode(dispatch, parent!.id, id).catch((error) => {
-            console.error(error);
-            Notification.error("読み込みに失敗しました。");
-          });
+          fetchEpisodes(dispatch, parent!.id)
+            .then(() => {
+              fetchEpisode(dispatch, parent!.id, id).catch((error) => {
+                console.error(error);
+                Notification.error("読み込みに失敗しました。");
+              });
+            })
+            .catch((error) => {
+              console.error(error);
+              Notification.error("読み込みに失敗しました。");
+            });
         })
         .catch((error) => {
           console.error(error);
