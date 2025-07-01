@@ -75,7 +75,15 @@ function EpisodeGrid() {
               white-space: pre-wrap;
               overflow-y: auto;
             `,
-            render: (item) => <span>{item.description}</span>,
+            render: (item) => (
+              <span
+                css={css`
+                  word-break: break-all;
+                `}
+              >
+                {item.description}
+              </span>
+            ),
           },
           {
             css: css`
