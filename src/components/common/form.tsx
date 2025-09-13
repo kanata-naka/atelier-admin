@@ -1,4 +1,4 @@
-import { ChangeEvent, MouseEventHandler, ReactNode, useEffect, useRef, useState } from "react";
+import { ChangeEvent, KeyboardEventHandler, MouseEventHandler, ReactNode, useEffect, useRef, useState } from "react";
 import { css } from "@emotion/react";
 import Image from "next/image";
 import { Badge, CloseButton, Form } from "react-bootstrap";
@@ -20,7 +20,7 @@ import {
 import Notification from "@/components/common/Notification";
 import { IMAGE_FILE_ACCEPTABLE_EXTENTIONS, IMAGE_FILE_MAX_SIZE, USE_CURRENT_DATE_TIME } from "@/constants";
 import { useDropFile } from "@/hooks";
-import { DragObject, FieldArrayPathByValue, ImageFieldValues, RadioFieldOption } from "@/types";
+import { DragObject, FieldArrayPathByValue, ImageFieldValues, RadioFieldOption, TagFieldValues } from "@/types";
 import { getDateFromUnixTimestamp, getNowUnixTimestamp, getUnixTimestampFromDate } from "@/utils/dateUtil";
 import { renderMarkdown } from "@/utils/domUtil";
 import { validateFile } from "@/utils/fIleUtil";
@@ -745,6 +745,128 @@ export function CheckBoxField<
     >
       {error && <FieldErrorMessage>{error.message}</FieldErrorMessage>}
       <Form.Check id={name} type="checkbox" label={label} {...register(name, rules)} />
+    </Form.Group>
+  );
+}
+
+export function TagsField<
+  TFieldValues extends FieldValues,
+  TPath extends FieldPathByValue<TFieldValues, TagFieldValues[]>
+>({
+  label,
+  name,
+  rules,
+}: {
+  label: string;
+} & UseControllerProps<TFieldValues, TPath>) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const { control } = useFormContext<TFieldValues>();
+  const {
+    fieldState: { error },
+  } = useController({ name, control, rules });
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: name as FieldArrayPathByValue<TFieldValues, TagFieldValues>,
+  });
+
+  const handleTagClick = (index: number) => {
+    remove(index);
+  };
+
+  const addTag = () => {
+    if (inputRef.current) {
+      const value = inputRef.current.value.trim();
+      if (value !== "") {
+        append({ name: value } as PathValue<TFieldValues, TPath>);
+        inputRef.current.value = "";
+      }
+    }
+  };
+
+  const handleKeyUp: KeyboardEventHandler<HTMLInputElement> = (event) => {
+    if (
+      event.keyCode === 13 ||
+      (event.keyCode === 32 && inputRef.current?.value !== inputRef.current?.value.trimEnd())
+    ) {
+      // エンターキーorスペースキーが(日本語入力の場合は確定後に)押下された場合、タグを追加する
+      addTag();
+    }
+  };
+
+  return (
+    <Form.Group
+      controlId={name}
+      css={css`
+        margin-bottom: 1rem;
+      `}
+    >
+      <FieldLabel>{label}</FieldLabel>
+      {rules?.required && <RequiredBadge />}
+      {error && <FieldErrorMessage>{error.message}</FieldErrorMessage>}
+      <div
+        onClick={() => inputRef.current?.focus()}
+        css={css`
+          width: 100%;
+          padding: 0.375rem 0.75rem;
+          background-color: #fff;
+          background-clip: padding-box;
+          border: 1px solid #ced4da;
+          border-radius: 0.25rem;
+          color: #495057;
+          font-size: 1rem;
+          font-weight: 400;
+          line-height: 1.5;
+          transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+          cursor: text;
+        `}
+      >
+        <ul
+          css={css`
+            display: inline;
+            margin: 0;
+            padding: 0;
+            list-style-type: none;
+          `}
+        >
+          {fields.map((field, index) => {
+            return (
+              <li
+                key={field.id}
+                onClick={() => handleTagClick(index)}
+                css={css`
+                  display: inline;
+                  margin-right: 12px;
+                  padding: 2px;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  white-space: nowrap;
+                  cursor: pointer;
+
+                  &:hover {
+                    text-decoration: line-through;
+                  }
+                `}
+              >
+                {(field as any as TagFieldValues).name}
+              </li>
+            );
+          })}
+        </ul>
+        <input
+          type="text"
+          placeholder="タグ"
+          autoComplete="off"
+          ref={inputRef}
+          onKeyDown={(event) => event.keyCode === 13 && event.preventDefault()}
+          onKeyUp={handleKeyUp}
+          onBlur={addTag}
+          css={css`
+            border: none;
+            flex-grow: 1;
+            outline: none;
+          `}
+        />
+      </div>
     </Form.Group>
   );
 }

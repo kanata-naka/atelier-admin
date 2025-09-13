@@ -4,7 +4,9 @@ export function convertWorkStateToFormValues(item: WorkState): WorkFormValues {
   return {
     id: item.id,
     title: item.title,
-    publishedDate: item.publishedDate,
+    tags: item.tags.map((tag) => ({
+      name: tag,
+    })),
     images: item.images.map((image) => ({
       name: image.name,
       url: image.url,

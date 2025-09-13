@@ -37,10 +37,11 @@ export async function createOrUpdateWork(item: WorkFormValues) {
   const data = {
     id,
     title: item.title,
-    publishedDate: item.publishedDate === USE_CURRENT_DATE_TIME ? getNowUnixTimestamp() : item.publishedDate,
+    tags: item.tags.map((tag) => tag.name),
     images,
     description: item.description,
     restrict: item.restrict,
+    createdAt: item.createdAt === USE_CURRENT_DATE_TIME ? getNowUnixTimestamp() : item.createdAt,
   };
 
   if (!item.id) {

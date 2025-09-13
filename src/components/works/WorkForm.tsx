@@ -8,16 +8,24 @@ import { WorkFormValues } from "@/types";
 import { edit, touchForm } from "./reducer";
 import { convertWorkStateToFormValues } from "./selectors";
 import { createOrUpdateWork, fetchWorks } from "./services";
-import { DateTimeField, ImageFileFieldArray, MarkdownTextareaField, RadioField, TextField } from "../common/form";
+import {
+  DateTimeField,
+  ImageFileFieldArray,
+  MarkdownTextareaField,
+  RadioField,
+  TagsField,
+  TextField,
+} from "../common/form";
 import { withLoading } from "../common/services";
 
 const initialValues: WorkFormValues = {
   id: null,
   title: "",
-  publishedDate: USE_CURRENT_DATE_TIME,
+  tags: [],
   images: [],
   description: "",
   restrict: Restrict.ALL,
+  createdAt: USE_CURRENT_DATE_TIME,
 };
 
 function WorkForm() {
@@ -62,14 +70,16 @@ function WorkForm() {
       <Form onSubmit={handleSubmit(submit)}>
         <TextField name="title" label="タイトル" rules={{ required: "入力してください" }} />
         <DateTimeField
-          name="publishedDate"
-          label="出版日"
-          defaultValue={defaultValues?.publishedDate}
+          name="createdAt"
+          label="投稿日時"
+          defaultValue={defaultValues?.createdAt}
           useCurrentDateTimeCheckbox={true}
-          dateFormat={["yyyy/MM/dd", "yyyy年MM月dd日"]}
+          dateFormat={["yyyy/MM/dd HH:mm", "yyyy年MM月dd日 HH:mm"]}
+          showTimeInput={true}
           rules={{ required: "選択してください" }}
         />
         <ImageFileFieldArray name="images" label="画像" width={200} height={200} uploadIconWidth={64} />
+        <TagsField name="tags" label="タグ" />
         <MarkdownTextareaField name="description" label="説明" />
         <RadioField
           name="restrict"

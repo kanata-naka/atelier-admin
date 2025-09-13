@@ -146,7 +146,7 @@ export type WorksState = {
 export type WorkState = {
   id: string;
   title: string;
-  publishedDate: number;
+  tags: string[];
   images: ImageState[];
   description: Nullable<string>;
   restrict: Restrict;
@@ -157,11 +157,11 @@ export type WorkState = {
 export type WorkFormValues = {
   id: Nullable<string>;
   title: string;
-  publishedDate: number | typeof USE_CURRENT_DATE_TIME;
+  tags: TagFieldValues[];
   images: ImageFieldValues[];
   description: Nullable<string>;
   restrict: Restrict;
-  createdAt?: number;
+  createdAt: number | typeof USE_CURRENT_DATE_TIME;
   updatedAt?: number;
 };
 

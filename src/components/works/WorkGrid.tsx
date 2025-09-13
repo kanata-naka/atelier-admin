@@ -41,10 +41,6 @@ function WorkGrid() {
             },
           },
           {
-            label: "出版日",
-            render: (item) => <span>{formatDateTimeFromUnixTimestamp(item.publishedDate, "YYYY/MM/DD")}</span>,
-          },
-          {
             label: "画像",
             css: css`
               min-width: 250px;
@@ -73,6 +69,17 @@ function WorkGrid() {
                 </>
               );
             },
+          },
+          {
+            label: "タグ",
+            css: css`
+              min-width: 250px;
+              max-height: 152px;
+              vertical-align: middle;
+              white-space: pre-wrap;
+              overflow-y: auto;
+            `,
+            render: (item) => <span>{item.tags.join(", ")}</span>,
           },
           {
             label: "説明",
